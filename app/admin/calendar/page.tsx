@@ -90,7 +90,7 @@ export default function AdminCalendarPage() {
       .concat(Array.from({length: daysInMonth}, (_, i) => {
         const d = i + 1;
         const dateStr = `${y}-${String(m+1).padStart(2,"0")}-${String(d).padStart(2,"0")}`;
-        return { key: dateStr, empty: false, d, dateStr };
+        return { key: dateStr, empty: false, dateStr };
       }));
 
     return (
@@ -108,7 +108,7 @@ export default function AdminCalendarPage() {
                 onMouseEnter={e => { if (dayBookings.length) e.currentTarget.style.background = "var(--bg-elevated)"; }}
                 onMouseLeave={e => { e.currentTarget.style.background = "var(--bg-card)"; }}
                 onClick={() => { if (dayBookings.length) { setCursor(new Date(cell.dateStr + "T12:00:00")); setView("day"); } }}>
-                <span style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", width: 24, height: 24, borderRadius: "50%", fontSize: 12, fontWeight: 500, background: isToday ? "var(--gold)" : "transparent", color: isToday ? "#080808" : "var(--text-muted)" }}>{cell.d}</span>
+                <span style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", width: 24, height: 24, borderRadius: "50%", fontSize: 12, fontWeight: 500, background: isToday ? "var(--gold)" : "transparent", color: isToday ? "#080808" : "var(--text-muted)" }}>{parseInt(cell.dateStr.split("-")[2])}</span>
                 <div style={{ marginTop: 4, display: "flex", flexDirection: "column", gap: 2 }}>
                   {dayBookings.slice(0, 3).map(b => (
                     <div key={b.id} style={{ padding: "2px 6px", borderRadius: 2, background: `${STATUS_COLOR[b.status] ?? "#888"}22`, borderLeft: `2px solid ${STATUS_COLOR[b.status] ?? "#888"}`, fontSize: 10, color: STATUS_COLOR[b.status] ?? "var(--text-muted)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
