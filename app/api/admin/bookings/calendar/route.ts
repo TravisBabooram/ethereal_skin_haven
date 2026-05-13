@@ -4,7 +4,7 @@ import { withAdmin } from "@/lib/utils/auth";
 import { prisma } from "@/lib/prisma";
 import { JWTPayload } from "@/lib/utils/jwt";
 
-async function GET(req: NextRequest, _user: JWTPayload) {
+async function calendarHandler(req: NextRequest, _user: JWTPayload) {
   try {
     const { searchParams } = req.nextUrl;
     const from = searchParams.get("from");
@@ -32,4 +32,4 @@ async function GET(req: NextRequest, _user: JWTPayload) {
   }
 }
 
-export const GET = withAdmin(GET);
+export const GET = withAdmin(calendarHandler);
