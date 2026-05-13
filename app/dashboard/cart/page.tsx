@@ -72,7 +72,7 @@ export default function CustomerCartPage() {
           <p style={{ fontSize: 13, color: "var(--text-subtle)", margin: 0 }}>Browse our services and products to add items.</p>
         </div>
       ) : (
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 300px", gap: 24, alignItems: "start" }}>
+        <div className="cart-layout-grid" style={{ display: "grid", gridTemplateColumns: "1fr 300px", gap: 24, alignItems: "start" }}>
           {/* Items */}
           <div style={{ background: "var(--bg-card)", border: "1px solid var(--border)", borderRadius: 8, overflow: "hidden" }}>
             <div style={{ height: 1, background: "linear-gradient(90deg, transparent, var(--gold), transparent)" }} />
@@ -93,11 +93,11 @@ export default function CustomerCartPage() {
                     </p>
                   </div>
                   <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                    <button onClick={() => updateQty(item.id, item.quantity - 1)} disabled={busy} style={{ width: 28, height: 28, borderRadius: 4, background: "var(--bg-elevated)", border: "1px solid var(--border)", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", color: "var(--text-muted)" }}>
+                    <button onClick={() => updateQty(item.id, item.quantity - 1)} disabled={busy} style={{ width: 36, height: 36, borderRadius: 4, background: "var(--bg-elevated)", border: "1px solid var(--border)", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", color: "var(--text-muted)" }}>
                       <Minus size={11} />
                     </button>
                     <span style={{ fontSize: 13, color: "var(--text)", minWidth: 20, textAlign: "center" }}>{item.quantity}</span>
-                    <button onClick={() => updateQty(item.id, item.quantity + 1)} disabled={busy} style={{ width: 28, height: 28, borderRadius: 4, background: "var(--bg-elevated)", border: "1px solid var(--border)", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", color: "var(--text-muted)" }}>
+                    <button onClick={() => updateQty(item.id, item.quantity + 1)} disabled={busy} style={{ width: 36, height: 36, borderRadius: 4, background: "var(--bg-elevated)", border: "1px solid var(--border)", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", color: "var(--text-muted)" }}>
                       <Plus size={11} />
                     </button>
                   </div>

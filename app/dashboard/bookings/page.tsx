@@ -80,7 +80,7 @@ export default function CustomerBookingsPage() {
       </div>
 
       {/* Stats */}
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 16, marginBottom: 32 }}>
+      <div className="dashboard-stats-grid" style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 16, marginBottom: 32 }}>
         {[
           { label: "Total Bookings", value: bookings.length },
           { label: "Upcoming", value: upcoming },

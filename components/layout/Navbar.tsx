@@ -163,7 +163,7 @@ export default function Navbar() {
                         position: "absolute",
                         top: "calc(100% + 10px)",
                         left: 0,
-                        width: 280,
+                        width: "min(280px, calc(100vw - 32px))",
                         background: "var(--bg-card)",
                         border: "1px solid var(--border)",
                         borderRadius: 8,
@@ -377,11 +377,11 @@ export default function Navbar() {
               exit={{ x: "100%" }}
               transition={{ type: "spring", damping: 28, stiffness: 280 }}
               style={{
-                position: "absolute", right: 0, top: 0, bottom: 0, width: 300,
+                position: "absolute", right: 0, top: 0, bottom: 0, width: "min(300px, 88vw)",
                 background: "var(--bg-card)",
                 borderLeft: "1px solid var(--border)",
                 display: "flex", flexDirection: "column",
-                padding: "96px 40px 48px",
+                padding: "96px clamp(20px, 8vw, 40px) 48px",
               }}
             >
               {/* Mobile auth links */}
@@ -416,6 +416,7 @@ export default function Navbar() {
                   >
                     <Link
                       href={href}
+                      className="nav-drawer-link"
                       style={{
                         fontFamily: "var(--font-cormorant, Georgia, serif)",
                         fontSize: 30,

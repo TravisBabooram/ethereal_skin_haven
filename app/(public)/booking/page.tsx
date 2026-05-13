@@ -230,7 +230,7 @@ export default function BookingPage() {
                     </div>
                     <span style={{ fontSize: 9, letterSpacing: "0.2em", color: i === step ? "var(--gold)" : i < step ? "var(--text-muted)" : "var(--text-subtle)", textTransform: "uppercase" }}>{label}</span>
                   </div>
-                  {i < 4 && <div style={{ width: 48, height: 1, background: i < step ? "var(--gold)" : "var(--border)", margin: "0 4px 20px", transition: "background 0.4s" }} />}
+                  {i < 4 && <div className="booking-step-connector" style={{ width: 48, height: 1, background: i < step ? "var(--gold)" : "var(--border)", margin: "0 4px 20px", transition: "background 0.4s" }} />}
                 </div>
               ))}
             </div>
@@ -379,7 +379,7 @@ export default function BookingPage() {
                     </div>
                   )}
                   <div style={{ display: "flex", flexDirection: "column", gap: 20, maxWidth: 520 }}>
-                    <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}>
+                    <div className="booking-name-grid" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}>
                       <div>
                         <label style={{ fontSize: 9, letterSpacing: "0.25em", color: "var(--text-muted)", textTransform: "uppercase", display: "block", marginBottom: 8 }}>Full Name *</label>
                         <input className="input-base" placeholder="Your name" value={form.name} onChange={e => setForm(f => ({ ...f, name: e.target.value }))} />

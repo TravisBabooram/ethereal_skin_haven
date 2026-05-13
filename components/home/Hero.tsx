@@ -60,7 +60,7 @@ export default function Hero() {
       <div style={{ position: "absolute", left: "5%", top: "20%", bottom: "20%", width: 1, background: "linear-gradient(180deg, transparent, var(--gold), transparent)", opacity: 0.2 }} />
 
       {/* Content */}
-      <div style={{ position: "relative", zIndex: 10, textAlign: "center", padding: "140px 24px 80px", maxWidth: 900, width: "100%" }}>
+      <div className="hero-content" style={{ position: "relative", zIndex: 10, textAlign: "center", padding: "140px 24px 80px", maxWidth: 900, width: "100%" }}>
         {/* Eyebrow */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -83,7 +83,7 @@ export default function Hero() {
         >
           <h1 style={{
             fontFamily: "var(--font-cormorant, Georgia, serif)",
-            fontSize: "clamp(52px, 9vw, 110px)",
+            fontSize: "clamp(42px, 9vw, 110px)",
             fontWeight: 300,
             lineHeight: 0.95,
             margin: 0,

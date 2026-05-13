@@ -370,3 +370,47 @@ a { transition: color 0.2s ease; }
 @media (max-width: 900px)  { .admin-main, .dashboard-main { margin-left: 0 !important; } }
 
 .gallery-card:hover .gallery-label { opacity: 1 !important; }
+
+/* ─── Mobile (≤ 480px) ────────────────────────────────────── */
+@media (max-width: 480px) {
+
+  /* Section spacing */
+  .section-pad { padding: 56px 0 !important; }
+
+  /* Hero content — reduce top padding so it doesn't dominate the viewport */
+  .hero-content { padding: 90px 16px 60px !important; }
+
+  /* All standard container side padding → 16px */
+  .about-grid,
+  .contact-grid { padding: 0 16px !important; }
+
+  /* Grids → single column */
+  .booking-name-grid      { grid-template-columns: 1fr !important; }
+  .booking-summary-grid   { grid-template-columns: 1fr !important; gap: 24px !important; }
+  .booking-slot-grid      { grid-template-columns: repeat(2, 1fr) !important; }
+  .dashboard-stats-grid   { grid-template-columns: 1fr !important; }
+  .cart-layout-grid       { grid-template-columns: 1fr !important; gap: 16px !important; }
+
+  /* Gallery masonry → 2 columns on small screens */
+  .gallery-masonry { columns: 2 !important; column-gap: 12px !important; }
+
+  /* Nav drawer font size */
+  .nav-drawer-link { font-size: clamp(22px, 6vw, 30px) !important; }
+
+  /* Tighten up about/contact page hero padding */
+  .about-grid   { gap: 36px !important; }
+  .contact-grid { gap: 28px !important; }
+
+  /* Instagram grid → 2 columns */
+  .ig-grid { grid-template-columns: repeat(2, 1fr) !important; }
+
+  /* Step indicator — tighter spacing */
+  .booking-step-connector { width: 24px !important; }
+}
+
+/* ─── Mobile (≤ 360px) — very small screens ──────────────── */
+@media (max-width: 360px) {
+  .gallery-masonry { columns: 1 !important; }
+  .booking-slot-grid { grid-template-columns: repeat(2, 1fr) !important; }
+  .hero-content { padding: 80px 12px 48px !important; }
+}

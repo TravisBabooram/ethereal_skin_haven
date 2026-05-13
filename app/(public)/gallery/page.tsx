@@ -61,7 +61,7 @@ export default function GalleryPage() {
       {/* Masonry grid */}
       <section style={{ background: "var(--bg)", padding: "60px 0" }}>
         <div style={{ maxWidth: 1280, margin: "0 auto", padding: "0 32px" }}>
-          <div style={{ columns: "3 300px", columnGap: 20 }}>
+          <div className="gallery-masonry" style={{ columns: "3 300px", columnGap: 20 }}>
             {filtered.map((img, i) => (
               <AnimatedSection key={img.id} delay={i * 0.04} style={{ breakInside: "avoid", marginBottom: 20, display: "block" }}>
                 <div
