@@ -1,0 +1,221 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Get a free hosted Postgres database in seconds: `npx create-db`
+
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model User {
+  id            String     @id @default(cuid())
+  email         String     @unique
+  name          String
+  phone         String?
+  passwordHash  String
+  createdAt     DateTime   @default(now())
+  updatedAt     DateTime   @updatedAt
+
+  bookings              Booking[]
+  bookingItems          BookingItem[]
+  cartItems             CartItem[]
+  reviews               Review[]
+  emailNotifications    EmailNotification[]
+
+  @@map("users")
+}
+
+model Admin {
+  id            String     @id @default(cuid())
+  email         String     @unique
+  name          String
+  passwordHash  String
+  role          String     @default("admin")
+  createdAt     DateTime   @default(now())
+  updatedAt     DateTime   @updatedAt
+
+  auditLogs     AuditLog[]
+
+  @@map("admins")
+}
+
+model Service {
+  id            String     @id @default(cuid())
+  name          String
+  description   String
+  price         Float
+  duration      Int
+  benefits      String?
+  aftercare     String?
+  category      String?
+  featured      Boolean    @default(false)
+  image         String?
+  createdAt     DateTime   @default(now())
+  updatedAt     DateTime   @updatedAt
+
+  bookingItems  BookingItem[]
+  cartItems     CartItem[]
+  reviews       Review[]
+
+  @@map("services")
+}
+
+model Product {
+  id            String     @id @default(cuid())
+  name          String
+  description   String
+  price         Float
+  image         String?
+  category      String
+  usageInstructions String?
+  skinTypeSuitability String?
+  availabilityStatus String @default("available")
+  featured      Boolean    @default(false)
+  createdAt     DateTime   @default(now())
+  updatedAt     DateTime   @updatedAt
+
+  cartItems     CartItem[]
+  reviews       Review[]
+
+  @@map("products")
+}
+
+model Booking {
+  id            String     @id @default(cuid())
+  userId        String
+  user          User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  appointmentDate DateTime
+  appointmentTime String
+  status        String     @default("Pending")
+  notes         String?
+  paymentMethod String
+  totalPrice    Float
+  createdAt     DateTime   @default(now())
+  updatedAt     DateTime   @updatedAt
+
+  bookingItems          BookingItem[]
+  emailNotifications    EmailNotification[]
+
+  @@map("bookings")
+}
+
+model BookingItem {
+  id            String     @id @default(cuid())
+  bookingId     String
+  booking       Booking    @relation(fields: [bookingId], references: [id], onDelete: Cascade)
+  serviceId     String
+  service       Service    @relation(fields: [serviceId], references: [id])
+  userId        String
+  user          User       @relation(fields: [userId], references: [id])
+  quantity      Int        @default(1)
+  price         Float
+  createdAt     DateTime   @default(now())
+
+  @@map("booking_items")
+}
+
+model CartItem {
+  id            String     @id @default(cuid())
+  userId        String
+  user          User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  serviceId     String?
+  service       Service?   @relation(fields: [serviceId], references: [id])
+  productId     String?
+  product       Product?   @relation(fields: [productId], references: [id])
+  quantity      Int        @default(1)
+  createdAt     DateTime   @default(now())
+  updatedAt     DateTime   @updatedAt
+
+  @@map("cart")
+}
+
+model Review {
+  id            String     @id @default(cuid())
+  userId        String
+  user          User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  serviceId     String?
+  service       Service?   @relation(fields: [serviceId], references: [id])
+  productId     String?
+  product       Product?   @relation(fields: [productId], references: [id])
+  rating        Int
+  comment       String?
+  createdAt     DateTime   @default(now())
+  updatedAt     DateTime   @updatedAt
+
+  @@map("reviews")
+}
+
+model EmailNotification {
+  id            String     @id @default(cuid())
+  userId        String
+  user          User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  bookingId     String
+  booking       Booking    @relation(fields: [bookingId], references: [id], onDelete: Cascade)
+  type          String
+  sentAt        DateTime   @default(now())
+  createdAt     DateTime   @default(now())
+
+  @@map("email_notifications")
+}
+
+model AuditLog {
+  id            String     @id @default(cuid())
+  adminId       String
+  admin         Admin      @relation(fields: [adminId], references: [id], onDelete: Cascade)
+  action        String
+  resource      String
+  resourceId    String
+  changes       String?
+  createdAt     DateTime   @default(now())
+
+  @@map("audit_logs")
+}
+
+model GalleryImage {
+  id            String     @id @default(cuid())
+  title         String
+  image         String
+  category      String?
+  order         Int        @default(0)
+  createdAt     DateTime   @default(now())
+  updatedAt     DateTime   @updatedAt
+
+  @@map("gallery")
+}
+
+model FAQ {
+  id            String     @id @default(cuid())
+  question      String
+  answer        String
+  category      String
+  order         Int        @default(0)
+  createdAt     DateTime   @default(now())
+  updatedAt     DateTime   @updatedAt
+
+  @@map("faq")
+}
+
+model Policy {
+  id            String     @id @default(cuid())
+  title         String
+  content       String
+  type          String
+  createdAt     DateTime   @default(now())
+  updatedAt     DateTime   @updatedAt
+
+  @@map("policies")
+}
+
+model SiteSettings {
+  id        String   @id @default(cuid())
+  key       String   @unique
+  value     String
+  updatedAt DateTime @updatedAt
+
+  @@map("site_settings")
+}

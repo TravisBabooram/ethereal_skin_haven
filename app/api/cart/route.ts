@@ -1,0 +1,29 @@
+import { NextRequest } from "next/server";
+import { success, handleError } from "@/lib/utils/error";
+import { withAuth } from "@/lib/utils/auth";
+import { getCartByUser, addToCart } from "@/lib/services/cart";
+import { JWTPayload } from "@/lib/utils/jwt";
+
+async function GET(req: NextRequest, user: JWTPayload) {
+  try {
+    const cart = await getCartByUser(user.userId);
+    return success(cart);
+  } catch (error) {
+    return handleError(error);
+  }
+}
+
+async function POST(req: NextRequest, user: JWTPayload) {
+  try {
+    const { serviceId, productId, quantity } = await req.json();
+    const item = await addToCart(user.userId, serviceId, productId, quantity);
+    return success(item, 201);
+  } catch (error) {
+    return handleError(error);
+  }
+}
+
+export const getRoute = withAuth(GET);
+export const postRoute = withAuth(POST);
+
+export { getRoute as GET, postRoute as POST };

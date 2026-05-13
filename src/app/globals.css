@@ -1,0 +1,372 @@
+@import "tailwindcss";
+
+@theme inline {
+  --font-serif: var(--font-cormorant);
+  --font-sans: var(--font-inter);
+}
+
+/* ─── Registered (animatable) CSS custom properties ──────── */
+/* @property makes variables transition just like normal CSS values */
+@property --bg            { syntax: '<color>'; inherits: true; initial-value: #0A0808; }
+@property --bg-card       { syntax: '<color>'; inherits: true; initial-value: #110C0C; }
+@property --bg-elevated   { syntax: '<color>'; inherits: true; initial-value: #180E0E; }
+@property --text          { syntax: '<color>'; inherits: true; initial-value: #F2EDE5; }
+@property --text-muted    { syntax: '<color>'; inherits: true; initial-value: #8E7D6E; }
+@property --text-subtle   { syntax: '<color>'; inherits: true; initial-value: #524440; }
+@property --gold          { syntax: '<color>'; inherits: true; initial-value: #C9A96E; }
+@property --gold-light    { syntax: '<color>'; inherits: true; initial-value: #E4C98B; }
+@property --gold-dark     { syntax: '<color>'; inherits: true; initial-value: #A88845; }
+@property --pink          { syntax: '<color>'; inherits: true; initial-value: #E07898; }
+@property --pink-light    { syntax: '<color>'; inherits: true; initial-value: #EFA8BC; }
+@property --pink-dark     { syntax: '<color>'; inherits: true; initial-value: #C0587A; }
+
+/* ─── Design Tokens ───────────────────────────────────────── */
+:root {
+  /* ── Dark theme (default) ─────────────────────────────────
+     Gold = primary accent  |  Pink = visible secondary accent
+     Background has a warm pink-dark undertone                */
+  --bg:           #0A0808;
+  --bg-card:      #130D0D;
+  --bg-elevated:  #1C1010;
+  --bg-glass:     rgba(10, 8, 8, 0.88);
+  --text:         #F2EDE5;
+  --text-muted:   #9A8070;
+  --text-subtle:  #5A4440;
+
+  --gold:         #C9A96E;
+  --gold-light:   #E4C98B;
+  --gold-dark:    #A88845;
+  --gold-glow:    rgba(201, 169, 110, 0.20);
+
+  --pink:         #E07898;
+  --pink-light:   #F0A8BC;
+  --pink-dark:    #C05878;
+  --pink-glow:    rgba(224, 120, 152, 0.20);
+
+  /* Border: pink-warm tint in dark so card edges feel rose-tinged */
+  --border:         rgba(230, 140, 160, 0.13);
+  /* Hover shows gold */
+  --border-hover:   rgba(201, 169, 110, 0.50);
+  --shadow-card:    0 8px 40px rgba(0, 0, 0, 0.65);
+
+  /* Animate all registered vars when data-theme changes */
+  transition:
+    --bg 0.5s ease,
+    --bg-card 0.5s ease,
+    --bg-elevated 0.5s ease,
+    --text 0.5s ease,
+    --text-muted 0.5s ease,
+    --text-subtle 0.5s ease,
+    --gold 0.5s ease,
+    --gold-light 0.5s ease,
+    --gold-dark 0.5s ease,
+    --pink 0.5s ease,
+    --pink-light 0.5s ease,
+    --pink-dark 0.5s ease;
+}
+
+[data-theme="light"] {
+  /* ── Light theme ──────────────────────────────────────────
+     Gold = real champagne gold (NOT pink)
+     Pink = prominent — drives borders, hovers, backgrounds
+     Base = warm peachy cream                                 */
+  --bg:           #FEF0EC;
+  --bg-card:      #FFF8F5;
+  --bg-elevated:  #FAE8E2;
+  --bg-glass:     rgba(254, 240, 236, 0.94);
+  --text:         #28141A;
+  --text-muted:   #7A4855;
+  --text-subtle:  #BC8490;
+
+  --gold:         #C9A96E;
+  --gold-light:   #E4C98B;
+  --gold-dark:    #A88845;
+  --gold-glow:    rgba(201, 169, 110, 0.28);
+
+  --pink:         #D04D6A;
+  --pink-light:   #E8809A;
+  --pink-dark:    #AE3055;
+  --pink-glow:    rgba(208, 77, 106, 0.22);
+
+  /* Border: pink in light so everything feels rose-warm */
+  --border:         rgba(208, 77, 106, 0.20);
+  /* Hover: gold in light so gold is visibly featured */
+  --border-hover:   rgba(201, 169, 110, 0.60);
+  --shadow-card:    0 8px 40px rgba(180, 30, 60, 0.12);
+}
+
+/* ─── Base ────────────────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; }
+
+html {
+  scroll-behavior: smooth;
+  -webkit-tap-highlight-color: transparent;
+}
+
+body {
+  background:  var(--bg);
+  color:       var(--text);
+  font-family: var(--font-sans, system-ui, sans-serif);
+  -webkit-font-smoothing:  antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overflow-x: hidden;
+}
+
+/* ─── Scrollbar ───────────────────────────────────────────── */
+::-webkit-scrollbar              { width: 5px; }
+::-webkit-scrollbar-track        { background: var(--bg); }
+::-webkit-scrollbar-thumb        { background: var(--pink-dark); border-radius: 4px; }
+::-webkit-scrollbar-thumb:hover  { background: var(--pink); }
+
+[data-theme="light"] ::-webkit-scrollbar-thumb       { background: var(--gold-dark); }
+[data-theme="light"] ::-webkit-scrollbar-thumb:hover { background: var(--gold); }
+
+/* ─── Selection ───────────────────────────────────────────── */
+/* Dark: pink highlight to show it's there */
+::selection { background: var(--pink); color: #fff; }
+/* Light: gold highlight */
+[data-theme="light"] ::selection { background: var(--gold); color: #1a0a0e; }
+
+/* ─── Typography ──────────────────────────────────────────── */
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-serif, Georgia, serif);
+  font-weight: 400;
+  line-height: 1.15;
+  letter-spacing: -0.01em;
+  color: var(--text);
+}
+
+/* ─── Utility Classes ─────────────────────────────────────── */
+.font-serif { font-family: var(--font-serif, Georgia, serif); }
+.font-sans  { font-family: var(--font-sans, system-ui, sans-serif); }
+
+/* Dark: pure gold shimmer  |  Light: pink-to-gold-to-pink rose-gold shimmer */
+.text-gold-gradient {
+  background: linear-gradient(120deg, var(--gold-dark) 0%, var(--gold-light) 45%, var(--gold-dark) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+[data-theme="light"] .text-gold-gradient {
+  background: linear-gradient(120deg, var(--pink-dark) 0%, var(--gold) 40%, var(--pink) 70%, var(--pink-dark) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.glass {
+  background: var(--bg-glass);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border: 1px solid var(--border);
+}
+
+/* ─── Cards ───────────────────────────────────────────────── */
+.card-base {
+  position: relative;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease, transform 0.35s ease;
+}
+
+/*
+ * Applied per-card during theme cascade.
+ * !important beats React's inline style={{ background: "var(--bg-card)" }}.
+ * z-index: 0 forces a new stacking context so that the z=-1 overlay
+ * paints between the card's background and its content (not over it).
+ */
+.card-cascade-live {
+  background: transparent !important;
+  z-index: 0 !important;
+}
+
+/* Dark hover: gold border + gold glow with pink undertone */
+.card-base:hover {
+  border-color: var(--border-hover);
+  box-shadow:
+    0 0 0 1px var(--border-hover),
+    0 20px 60px rgba(0, 0, 0, 0.45),
+    0 0 32px var(--gold-glow),
+    0 0 16px var(--pink-glow);
+  transform: translateY(-3px);
+}
+
+/* Light hover: gold border + gold glow (gold is the "treat" in light mode) */
+[data-theme="light"] .card-base:hover {
+  border-color: var(--border-hover);
+  box-shadow:
+    0 0 0 1px var(--border-hover),
+    0 16px 48px rgba(180, 30, 60, 0.13),
+    0 0 32px var(--gold-glow),
+    0 0 16px var(--pink-glow);
+  transform: translateY(-3px);
+}
+
+/* ─── Card shimmer sweep on hover ────────────────────────── */
+@keyframes card-shimmer {
+  0%   { transform: translateX(-120%) skewX(-12deg); }
+  100% { transform: translateX(240%)  skewX(-12deg); }
+}
+
+.card-base {
+  overflow: hidden;
+}
+
+.card-base::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 45%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(201,169,110,0.07) 40%,
+    rgba(201,169,110,0.13) 50%,
+    rgba(201,169,110,0.07) 60%,
+    transparent 100%
+  );
+  transform: translateX(-120%) skewX(-12deg);
+  pointer-events: none;
+  z-index: 1;
+}
+
+.card-base:hover::after {
+  animation: card-shimmer 0.75s ease forwards;
+}
+
+[data-theme="light"] .card-base::after {
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(201,169,110,0.10) 40%,
+    rgba(201,169,110,0.18) 50%,
+    rgba(201,169,110,0.10) 60%,
+    transparent 100%
+  );
+}
+
+/* ─── Noise grain overlay ─────────────────────────────────── */
+.noise-overlay::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  opacity: 0.025;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  pointer-events: none;
+}
+
+/* ─── Section spacing ─────────────────────────────────────── */
+.section-pad { padding: 110px 0; }
+@media (max-width: 768px) { .section-pad { padding: 72px 0; } }
+
+/* ─── Accent line ─────────────────────────────────────────── */
+/* Dark: gold → pink  |  Light: pink → gold */
+.gold-line {
+  display: block;
+  width: 40px;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--gold) 45%, var(--pink) 70%, transparent);
+}
+[data-theme="light"] .gold-line {
+  background: linear-gradient(90deg, transparent, var(--pink) 40%, var(--gold) 65%, transparent);
+}
+
+/* ─── Inputs ──────────────────────────────────────────────── */
+.input-base {
+  width: 100%;
+  background: var(--bg-elevated);
+  border: 1px solid var(--border);
+  color: var(--text);
+  border-radius: 4px;
+  padding: 14px 16px;
+  font-size: 14px;
+  font-family: var(--font-sans, system-ui, sans-serif);
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  outline: none;
+  -webkit-appearance: none;
+}
+.input-base::placeholder { color: var(--text-subtle); }
+
+/* Dark focus: gold ring  |  Light focus: pink ring */
+.input-base:focus {
+  border-color: var(--gold);
+  box-shadow: 0 0 0 3px var(--gold-glow);
+}
+[data-theme="light"] .input-base:focus {
+  border-color: var(--pink);
+  box-shadow: 0 0 0 3px var(--pink-glow);
+}
+
+/* ─── Links ───────────────────────────────────────────────── */
+a { transition: color 0.2s ease; }
+
+/* ─── Logo blending ───────────────────────────────────────── */
+.logo-wrap {
+  display: inline-flex;
+  border-radius: 50%;
+  overflow: hidden;
+  flex-shrink: 0;
+  line-height: 0;
+}
+.logo-wrap img { mix-blend-mode: screen; display: block; }
+[data-theme="light"] .logo-wrap { background: #0A0808; box-shadow: 0 2px 12px rgba(0,0,0,0.22); }
+[data-theme="light"] .logo-wrap img { mix-blend-mode: normal; }
+
+.logo-wrap-lg {
+  display: inline-flex;
+  border-radius: 8px;
+  overflow: hidden;
+  flex-shrink: 0;
+  line-height: 0;
+}
+.logo-wrap-lg img { mix-blend-mode: screen; display: block; }
+[data-theme="light"] .logo-wrap-lg { background: #0A0808; box-shadow: 0 3px 16px rgba(0,0,0,0.2); }
+[data-theme="light"] .logo-wrap-lg img { mix-blend-mode: normal; }
+
+/* ─── Navbar ──────────────────────────────────────────────── */
+@media (min-width: 768px) {
+  .nav-desktop { display: flex !important; }
+  .nav-menu-btn { display: none !important; }
+  .nav-book-btn { display: inline-flex !important; }
+}
+@media (max-width: 767px) {
+  .nav-desktop { display: none !important; }
+  .nav-menu-btn { display: flex !important; }
+  .nav-book-btn { display: none !important; }
+}
+
+/* Dark: gold outline button  |  Light: pink outline button */
+.nav-book-btn {
+  display: inline-flex; align-items: center;
+  padding: 9px 22px;
+  border: 1px solid var(--gold);
+  color: var(--gold);
+  font-size: 10px; letter-spacing: 0.22em; text-transform: uppercase;
+  text-decoration: none; font-weight: 500; border-radius: 2px;
+  transition: background 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+}
+.nav-book-btn:hover { background: var(--gold); color: #0A0808; }
+
+[data-theme="light"] .nav-book-btn { border-color: var(--pink); color: var(--pink); }
+[data-theme="light"] .nav-book-btn:hover { background: var(--pink); color: #fff; border-color: var(--pink); }
+
+
+/* ─── Animations ──────────────────────────────────────────── */
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* ─── Responsive helpers ──────────────────────────────────── */
+@media (max-width: 640px)  { .stats-grid   { grid-template-columns: repeat(2, 1fr) !important; } }
+@media (max-width: 900px)  { .about-grid   { grid-template-columns: 1fr !important; }
+                              .contact-grid { grid-template-columns: 1fr !important; } }
+@media (max-width: 768px)  {
+  .booking-summary-grid { grid-template-columns: 1fr !important; }
+  .booking-service-grid { grid-template-columns: 1fr !important; }
+  .booking-slot-grid    { grid-template-columns: repeat(3, 1fr) !important; }
+  .booking-details-grid { grid-template-columns: 1fr !important; }
+}
+@media (max-width: 900px)  { .admin-main, .dashboard-main { margin-left: 0 !important; } }
+
+.gallery-card:hover .gallery-label { opacity: 1 !important; }
