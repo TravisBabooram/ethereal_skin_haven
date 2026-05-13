@@ -43,11 +43,11 @@ export default function AboutPage() {
               <p style={{ fontSize: 15, lineHeight: 1.8, color: "var(--text-muted)", marginBottom: 36 }}>
                 We believe in continuous education, professional-grade products, and an unwavering commitment to hygiene. From the products we select to the tools we sterilise, every decision is made with your skin's health and safety in mind.
               </p>
-              <a href="https://wa.me/18687057023" target="_blank" rel="noopener noreferrer"
+              <Link href="/booking"
                 style={{ display: "inline-flex", alignItems: "center", gap: 10, padding: "14px 32px", background: "linear-gradient(135deg, var(--gold-dark), var(--gold))", color: "#080808", textDecoration: "none", fontSize: 10, letterSpacing: "0.25em", textTransform: "uppercase", fontWeight: 600, borderRadius: 2 }}
               >
                 Book an Appointment <ArrowRight size={12} />
-              </a>
+              </Link>
             </AnimatedSection>
 
             <AnimatedSection direction="right">
