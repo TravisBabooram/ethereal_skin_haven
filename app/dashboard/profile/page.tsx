@@ -1,7 +1,8 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Save, Loader2, Eye, EyeOff } from "lucide-react";
+import { Save, Loader2, Eye, EyeOff, Trash2, X, AlertTriangle } from "lucide-react";
+import { useRouter } from "next/navigation";
 
 interface UserProfile {
   id: string;
@@ -12,6 +13,7 @@ interface UserProfile {
 }
 
 export default function CustomerProfilePage() {
+  const router = useRouter();
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [form, setForm] = useState({ name: "", email: "", phone: "", currentPassword: "", newPassword: "" });
   const [showCurrent, setShowCurrent] = useState(false);
@@ -20,6 +22,10 @@ export default function CustomerProfilePage() {
   const [saving, setSaving] = useState(false);
   const [success, setSuccess] = useState("");
   const [error, setError] = useState("");
+  const [deleteModal, setDeleteModal] = useState(false);
+  const [deleteConfirm, setDeleteConfirm] = useState("");
+  const [deleting, setDeleting] = useState(false);
+  const [deleteError, setDeleteError] = useState("");
 
   useEffect(() => {
     fetch("/api/users/profile", { credentials: "include" })
@@ -61,6 +67,21 @@ export default function CustomerProfilePage() {
     }
   };
 
+  const handleDeleteAccount = async () => {
+    if (deleteConfirm !== "DELETE") return;
+    setDeleting(true);
+    setDeleteError("");
+    try {
+      const res = await fetch("/api/users/profile/delete", { method: "DELETE", credentials: "include" });
+      if (!res.ok) { const d = await res.json(); setDeleteError(d.error || "Failed to delete account."); return; }
+      router.push("/");
+    } catch {
+      setDeleteError("Something went wrong. Please try again.");
+    } finally {
+      setDeleting(false);
+    }
+  };
+
   if (loading) return (
     <div style={{ display: "flex", alignItems: "center", justifyContent: "center", height: 300 }}>
       <Loader2 size={20} style={{ animation: "spin 1s linear infinite", color: "var(--gold)" }} />
@@ -75,7 +96,7 @@ export default function CustomerProfilePage() {
         <p style={{ fontSize: 13, color: "var(--text-muted)", marginTop: 6 }}>Update your personal details and password.</p>
       </div>
 
-      <div style={{ background: "var(--bg-card)", border: "1px solid var(--border)", borderRadius: 8, overflow: "hidden" }}>
+      <div style={{ background: "var(--bg-card)", border: "1px solid var(--border)", borderRadius: 8, overflow: "hidden", marginBottom: 32 }}>
         <div style={{ height: 1, background: "linear-gradient(90deg, transparent, var(--gold), transparent)" }} />
         <form onSubmit={handleSave} style={{ padding: "36px 40px", display: "flex", flexDirection: "column", gap: 22 }}>
 
@@ -128,6 +149,63 @@ export default function CustomerProfilePage() {
           </div>
         </form>
       </div>
+      {/* Danger zone */}
+      <div style={{ background: "var(--bg-card)", border: "1px solid rgba(224,85,85,0.3)", borderRadius: 8, padding: "28px 40px" }}>
+        <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: 24 }}>
+          <div>
+            <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 6 }}>
+              <AlertTriangle size={14} style={{ color: "#e05555" }} />
+              <p style={{ fontSize: 11, letterSpacing: "0.2em", color: "#e05555", textTransform: "uppercase", fontWeight: 600, margin: 0 }}>Danger Zone</p>
+            </div>
+            <p style={{ fontSize: 13, color: "var(--text-muted)", margin: 0, lineHeight: 1.6 }}>
+              Permanently delete your account and all associated data. This action cannot be undone.
+            </p>
+          </div>
+          <button onClick={() => { setDeleteModal(true); setDeleteConfirm(""); setDeleteError(""); }}
+            style={{ flexShrink: 0, display: "flex", alignItems: "center", gap: 7, padding: "10px 18px", background: "rgba(224,85,85,0.08)", border: "1px solid rgba(224,85,85,0.35)", borderRadius: 2, color: "#e05555", fontSize: 11, letterSpacing: "0.15em", textTransform: "uppercase", cursor: "pointer", fontWeight: 600, whiteSpace: "nowrap" }}>
+            <Trash2 size={12} /> Delete Account
+          </button>
+        </div>
+      </div>
+
+      {/* Delete confirmation modal */}
+      {deleteModal && (
+        <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.75)", zIndex: 200, display: "flex", alignItems: "center", justifyContent: "center", padding: 24 }}>
+          <div style={{ background: "var(--bg-card)", border: "1px solid rgba(224,85,85,0.35)", borderRadius: 8, padding: "36px", width: "100%", maxWidth: 440, position: "relative" }}>
+            <button onClick={() => setDeleteModal(false)} style={{ position: "absolute", top: 16, right: 16, background: "none", border: "none", cursor: "pointer", color: "var(--text-muted)" }}>
+              <X size={18} />
+            </button>
+            <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 16 }}>
+              <AlertTriangle size={18} style={{ color: "#e05555" }} />
+              <h2 style={{ fontFamily: "var(--font-cormorant, Georgia, serif)", fontSize: 22, color: "var(--text)", margin: 0, fontWeight: 500 }}>Delete Account</h2>
+            </div>
+            <p style={{ fontSize: 13, color: "var(--text-muted)", lineHeight: 1.65, marginBottom: 20 }}>
+              This will permanently delete your account, all your bookings, and personal data. This cannot be reversed.
+            </p>
+            <p style={{ fontSize: 12, color: "var(--text-muted)", marginBottom: 8 }}>
+              Type <strong style={{ color: "#e05555" }}>DELETE</strong> to confirm:
+            </p>
+            <input
+              value={deleteConfirm}
+              onChange={e => setDeleteConfirm(e.target.value)}
+              placeholder="DELETE"
+              style={{ width: "100%", padding: "10px 12px", background: "var(--bg-elevated)", border: "1px solid rgba(224,85,85,0.4)", borderRadius: 4, color: "var(--text)", fontSize: 13, outline: "none", boxSizing: "border-box", marginBottom: 16 }}
+            />
+            {deleteError && <p style={{ fontSize: 12, color: "#e05555", marginBottom: 12 }}>{deleteError}</p>}
+            <div style={{ display: "flex", gap: 10, justifyContent: "flex-end" }}>
+              <button onClick={() => setDeleteModal(false)}
+                style={{ padding: "10px 18px", background: "none", border: "1px solid var(--border)", borderRadius: 2, color: "var(--text-muted)", fontSize: 11, letterSpacing: "0.12em", textTransform: "uppercase", cursor: "pointer" }}>
+                Cancel
+              </button>
+              <button onClick={handleDeleteAccount} disabled={deleteConfirm !== "DELETE" || deleting}
+                style={{ padding: "10px 20px", background: deleteConfirm === "DELETE" ? "#e05555" : "rgba(224,85,85,0.3)", border: "none", borderRadius: 2, color: "#fff", fontSize: 11, letterSpacing: "0.12em", textTransform: "uppercase", fontWeight: 600, cursor: deleteConfirm === "DELETE" ? "pointer" : "not-allowed", display: "flex", alignItems: "center", gap: 7, transition: "background 0.2s" }}>
+                {deleting ? <><Loader2 size={11} style={{ animation: "spin 1s linear infinite" }} /> Deleting…</> : "Delete My Account"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+      <style>{`@keyframes spin{to{transform:rotate(360deg)}}`}</style>
     </div>
   );
 }

@@ -17,8 +17,9 @@ const links = [
   { label: "About Us",  href: "/about" },
   { label: "Gallery",   href: "/gallery" },
   { label: "FAQ",       href: "/faq" },
-  { label: "Policies",  href: "/policies" },
-  { label: "Contact",   href: "/contact" },
+  { label: "Policies",       href: "/policies" },
+  { label: "Privacy Policy", href: "/privacy-policy" },
+  { label: "Contact",        href: "/contact" },
 ];
 
 function InstagramIcon({ size = 15 }: { size?: number }) {
@@ -183,9 +184,10 @@ export default function Footer() {
           </p>
           <div style={{ display: "flex", gap: 24 }}>
             {[
-              { label: "Policies",  href: "/policies" },
-              { label: "FAQ",       href: "/faq" },
-              { label: "Dashboard", href: "/dashboard" },
+              { label: "Policies",       href: "/policies" },
+              { label: "Privacy Policy", href: "/privacy-policy" },
+              { label: "FAQ",            href: "/faq" },
+              { label: "Dashboard",      href: "/dashboard" },
             ].map(({ label, href }) => (
               <Link key={label} href={href} style={{ fontSize: 11, letterSpacing: "0.1em", color: "var(--text-subtle)", textDecoration: "none", transition: "color 0.2s" }}
                 onMouseEnter={e => (e.currentTarget.style.color = "var(--gold)")}
