@@ -1,5 +1,5 @@
 import { NextRequest } from "next/server";
-import { success, handleError } from "@/lib/utils/error";
+import { success, handleError, APIError } from "@/lib/utils/error";
 import { withAuth } from "@/lib/utils/auth";
 import { getCartByUser, addToCart } from "@/lib/services/cart";
 import { JWTPayload } from "@/lib/utils/jwt";
