@@ -4,9 +4,11 @@ import { authLimiter, bookingLimiter, apiLimiter } from "@/lib/ratelimit";
 
 const JWT_SECRET = new TextEncoder().encode(process.env.JWT_SECRET || "dev-secret");
 
-async function getMaintenanceMode(origin: string): Promise<boolean> {
+async function getMaintenanceMode(): Promise<boolean> {
+  // Use the configured app URL — never the request's Host header (SSRF prevention)
+  const base = process.env.NEXT_PUBLIC_APP_URL || "https://etherealskinhaven.com";
   try {
-    const res = await fetch(`${origin}/api/public/maintenance`);
+    const res = await fetch(`${base}/api/public/maintenance`);
     if (!res.ok) return false;
     const data = await res.json();
     return data.maintenance === true;
@@ -16,9 +18,12 @@ async function getMaintenanceMode(origin: string): Promise<boolean> {
 }
 
 function getIP(req: NextRequest): string {
+  // Netlify injects the real client IP into x-nf-client-connection-ip
+  // which cannot be spoofed by the client unlike x-forwarded-for
   return (
-    req.headers.get("x-forwarded-for")?.split(",")[0].trim() ||
+    req.headers.get("x-nf-client-connection-ip") ||
     req.headers.get("x-real-ip") ||
+    req.headers.get("x-forwarded-for")?.split(",")[0].trim() ||
     "anonymous"
   );
 }
@@ -102,7 +107,7 @@ export async function middleware(req: NextRequest) {
 
   // Maintenance mode — admins, admin routes, auth pages, and API routes always bypass
   if (!isAdminRoute && !isAdmin && !isAuthRoute && !isApiRoute) {
-    const maintenance = await getMaintenanceMode(req.nextUrl.origin);
+    const maintenance = await getMaintenanceMode();
 
     if (maintenance && !isMaintenancePage) {
       return NextResponse.redirect(new URL("/maintenance", req.url));

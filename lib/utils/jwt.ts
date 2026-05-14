@@ -1,5 +1,8 @@
 import jwt, { type SignOptions } from "jsonwebtoken";
 
+if (!process.env.JWT_SECRET && process.env.NODE_ENV === "production") {
+  throw new Error("JWT_SECRET environment variable is not set");
+}
 const JWT_SECRET = process.env.JWT_SECRET || "dev-secret";
 const JWT_EXPIRY = process.env.JWT_EXPIRY || "7d";
 

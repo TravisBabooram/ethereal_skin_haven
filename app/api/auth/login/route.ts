@@ -32,7 +32,7 @@ export async function POST(req: NextRequest) {
 
       const token = generateToken({ userId: user.id, email: user.email });
       const res = NextResponse.json(
-        { user: { id: user.id, email: user.email, name: user.name }, token },
+        { user: { id: user.id, email: user.email, name: user.name } },
         { status: 200 }
       );
       res.cookies.set("token", token, COOKIE_OPTS);
@@ -47,7 +47,7 @@ export async function POST(req: NextRequest) {
 
       const token = generateToken({ userId: admin.id, email: admin.email, role: "admin" });
       const res = NextResponse.json(
-        { user: { id: admin.id, email: admin.email, name: admin.name, role: "admin" }, token },
+        { user: { id: admin.id, email: admin.email, name: admin.name, role: "admin" } },
         { status: 200 }
       );
       res.cookies.set("token", token, COOKIE_OPTS);

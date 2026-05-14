@@ -18,9 +18,13 @@ async function PUT(req: NextRequest, user: JWTPayload) {
   try {
     const { name, email, phone, currentPassword, newPassword } = await req.json();
     const updateData: Record<string, string> = {};
-    if (name) updateData.name = name.trim();
-    if (email) updateData.email = email.trim().toLowerCase();
-    if (phone !== undefined) updateData.phone = phone.trim();
+    if (name) {
+      const trimmed = String(name).trim().slice(0, 100);
+      if (!trimmed) throw new APIError(400, "Name cannot be empty");
+      updateData.name = trimmed;
+    }
+    if (email) updateData.email = String(email).trim().toLowerCase().slice(0, 254);
+    if (phone !== undefined) updateData.phone = String(phone).trim().slice(0, 20);
 
     if (newPassword) {
       if (!currentPassword) throw new APIError(400, "Current password is required to set a new password");

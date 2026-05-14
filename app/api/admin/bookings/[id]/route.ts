@@ -31,13 +31,25 @@ async function putHandler(
     const booking = await getBookingById(id);
     if (!booking) throw new APIError(404, "Booking not found");
 
-    const data = await req.json();
+    const body = await req.json();
     const previousStatus = booking.status;
+
+    // Whitelist allowed fields — prevent mass assignment
+    const VALID_STATUSES = ["Pending", "Confirmed", "Completed", "Cancelled"];
+    const data: Record<string, unknown> = {};
+    if (body.status !== undefined) {
+      if (!VALID_STATUSES.includes(body.status)) throw new APIError(400, "Invalid status");
+      data.status = body.status;
+    }
+    if (body.appointmentDate !== undefined) data.appointmentDate = new Date(body.appointmentDate);
+    if (body.appointmentTime !== undefined) data.appointmentTime = String(body.appointmentTime).slice(0, 5);
+    if (body.notes !== undefined) data.notes = String(body.notes).slice(0, 1000);
+
     const updated = await updateBooking(id, data);
 
     await createAuditLog(user.userId, "UPDATE", "booking", id, {
       before: { status: previousStatus },
-      after: { status: data.status },
+      after: { status: data.status ?? previousStatus },
     });
 
     // Trigger email notifications on status changes

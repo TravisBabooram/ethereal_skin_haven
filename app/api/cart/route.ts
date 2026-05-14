@@ -16,7 +16,10 @@ async function GET(req: NextRequest, user: JWTPayload) {
 async function POST(req: NextRequest, user: JWTPayload) {
   try {
     const { serviceId, productId, quantity } = await req.json();
-    const item = await addToCart(user.userId, serviceId, productId, quantity);
+    if (!serviceId && !productId) throw new APIError(400, "serviceId or productId is required");
+    const qty = typeof quantity === "number" ? quantity : 1;
+    if (qty < 1 || qty > 20 || !Number.isInteger(qty)) throw new APIError(400, "Invalid quantity");
+    const item = await addToCart(user.userId, serviceId ?? undefined, productId ?? undefined, qty);
     return success(item, 201);
   } catch (error) {
     return handleError(error);

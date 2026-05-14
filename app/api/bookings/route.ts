@@ -22,6 +22,14 @@ async function handlePost(req: NextRequest, user: JWTPayload) {
     if (!appointmentDate || !appointmentTime || !paymentMethod || !services?.length) {
       throw new APIError(400, "Missing required booking fields");
     }
+    if (!Array.isArray(services) || services.length > 10) {
+      throw new APIError(400, "Invalid services selection");
+    }
+    for (const s of services) {
+      if (!s.serviceId || typeof s.quantity !== "number" || s.quantity < 1 || s.quantity > 10 || !Number.isInteger(s.quantity)) {
+        throw new APIError(400, "Invalid service quantity");
+      }
+    }
 
     if (!captchaToken) throw new APIError(400, "Please complete the CAPTCHA");
     const captchaOk = await verifyCaptcha(captchaToken);
