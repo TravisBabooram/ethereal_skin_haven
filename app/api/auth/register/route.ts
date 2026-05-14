@@ -4,6 +4,7 @@ import { hashPassword } from "@/lib/utils/password";
 import { validateEmail, validatePassword, sanitizeEmail } from "@/lib/utils/validation";
 import { handleError, APIError } from "@/lib/utils/error";
 import { getUserByEmail, createUser } from "@/lib/services/users";
+import { verifyCaptcha } from "@/lib/utils/captcha";
 
 const COOKIE_OPTS = {
   httpOnly: true,
@@ -15,11 +16,15 @@ const COOKIE_OPTS = {
 
 export async function POST(req: NextRequest) {
   try {
-    const { email, name, phone, password } = await req.json();
+    const { email, name, phone, password, captchaToken } = await req.json();
 
     if (!email || !name || !phone || !password) {
       throw new APIError(400, "Missing required fields");
     }
+
+    if (!captchaToken) throw new APIError(400, "Please complete the CAPTCHA");
+    const captchaOk = await verifyCaptcha(captchaToken);
+    if (!captchaOk) throw new APIError(400, "CAPTCHA verification failed. Please try again.");
     if (!validateEmail(email)) throw new APIError(400, "Invalid email");
     if (!validatePassword(password)) throw new APIError(400, "Password must be at least 8 characters");
 

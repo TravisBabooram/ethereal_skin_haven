@@ -1,11 +1,14 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Eye, EyeOff, ArrowRight, Loader2, Check } from "lucide-react";
 import { motion } from "framer-motion";
 import { useAuth } from "@/components/providers/AuthProvider";
+import HCaptcha from "@hcaptcha/react-hcaptcha";
+
+const SITE_KEY = "cda45378-45f6-463a-a83e-758e8e9c4d7e";
 
 export default function RegisterPage() {
   const router = useRouter();
@@ -14,6 +17,8 @@ export default function RegisterPage() {
   const [showPw, setShowPw] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [captchaToken, setCaptchaToken] = useState("");
+  const captchaRef = useRef<HCaptcha>(null);
 
   const pwStrength = form.password.length === 0 ? 0 : form.password.length < 8 ? 1 : form.password.length < 12 ? 2 : 3;
   const pwLabels = ["", "Weak", "Good", "Strong"];
@@ -21,21 +26,29 @@ export default function RegisterPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!captchaToken) { setError("Please complete the CAPTCHA."); return; }
     setError("");
     setLoading(true);
     try {
       const res = await fetch("/api/auth/register", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(form),
+        body: JSON.stringify({ ...form, captchaToken }),
         credentials: "include",
       });
       const data = await res.json();
-      if (!res.ok) { setError(data.error || "Registration failed. Please try again."); return; }
+      if (!res.ok) {
+        setError(data.error || "Registration failed. Please try again.");
+        captchaRef.current?.resetCaptcha();
+        setCaptchaToken("");
+        return;
+      }
       await refreshUser();
       router.push("/dashboard");
     } catch {
       setError("Something went wrong. Please try again.");
+      captchaRef.current?.resetCaptcha();
+      setCaptchaToken("");
     } finally {
       setLoading(false);
     }
@@ -104,7 +117,17 @@ export default function RegisterPage() {
             ))}
           </div>
 
-          <button type="submit" disabled={loading} style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 10, padding: "16px", background: "linear-gradient(135deg, var(--gold-dark), var(--gold))", border: "none", color: "#080808", fontSize: 10, letterSpacing: "0.28em", textTransform: "uppercase", fontWeight: 600, borderRadius: 2, cursor: loading ? "not-allowed" : "pointer", opacity: loading ? 0.8 : 1 }}>
+          <div style={{ display: "flex", justifyContent: "center" }}>
+            <HCaptcha
+              sitekey={SITE_KEY}
+              onVerify={token => setCaptchaToken(token)}
+              onExpire={() => setCaptchaToken("")}
+              ref={captchaRef}
+              theme="dark"
+            />
+          </div>
+
+          <button type="submit" disabled={loading || !captchaToken} style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 10, padding: "16px", background: "linear-gradient(135deg, var(--gold-dark), var(--gold))", border: "none", color: "#080808", fontSize: 10, letterSpacing: "0.28em", textTransform: "uppercase", fontWeight: 600, borderRadius: 2, cursor: loading || !captchaToken ? "not-allowed" : "pointer", opacity: loading || !captchaToken ? 0.7 : 1 }}>
             {loading ? <><Loader2 size={14} style={{ animation: "spin 1s linear infinite" }} /> Creating account…</> : <>Create Account <ArrowRight size={13} /></>}
           </button>
         </form>

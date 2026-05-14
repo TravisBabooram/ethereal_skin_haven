@@ -5,6 +5,9 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Check, ChevronRight, ChevronLeft, Clock, Calendar, User, CreditCard, CheckCircle, Loader2 } from "lucide-react";
 import Link from "next/link";
 import { useAuth } from "@/components/providers/AuthProvider";
+import HCaptcha from "@hcaptcha/react-hcaptcha";
+
+const HCAPTCHA_SITE_KEY = "cda45378-45f6-463a-a83e-758e8e9c4d7e";
 
 interface Service { id: string; name: string; price: number; duration: number; category?: string; }
 
@@ -63,6 +66,8 @@ export default function BookingPage() {
   const [form, setForm] = useState({ name: "", email: "", phone: "", notes: "" });
   const [payment, setPayment] = useState<"Cash" | "Bank Transfer">("Cash");
 
+  const [captchaToken, setCaptchaToken] = useState("");
+  const captchaRef = useRef<HCaptcha>(null);
   const preselectedRef = useRef(false);
   const STORAGE_KEY = "ethereal_booking_progress";
   const STORAGE_TTL = 24 * 60 * 60 * 1000; // 24 hours
@@ -167,6 +172,10 @@ export default function BookingPage() {
       window.location.href = "/login?redirect=/booking";
       return;
     }
+    if (!captchaToken) {
+      alert("Please complete the CAPTCHA before submitting.");
+      return;
+    }
     setSubmitting(true);
     try {
       const res = await fetch("/api/bookings", {
@@ -179,6 +188,7 @@ export default function BookingPage() {
           notes: form.notes,
           paymentMethod: payment,
           services: selectedServices.map(id => ({ serviceId: id, quantity: 1 })),
+          captchaToken,
         }),
       });
       const data = await res.json();
@@ -187,6 +197,8 @@ export default function BookingPage() {
         setBookingDone(true);
         setStep(5);
       } else {
+        captchaRef.current?.resetCaptcha();
+        setCaptchaToken("");
         alert(data.error || "There was an issue processing your booking. Please try again.");
       }
     } catch {
@@ -461,6 +473,17 @@ export default function BookingPage() {
                     <div style={{ borderTop: "1px solid var(--border)", paddingTop: 14, marginTop: 4, display: "flex", justifyContent: "space-between", alignItems: "center" }}>
                       <span style={{ fontSize: 12, letterSpacing: "0.15em", color: "var(--text-muted)", textTransform: "uppercase" }}>Total</span>
                       <span style={{ fontFamily: "var(--font-cormorant, Georgia, serif)", fontSize: 26, color: "var(--gold)", fontWeight: 500 }}>${totalPrice}</span>
+                    </div>
+
+                    {/* CAPTCHA */}
+                    <div style={{ marginTop: 24, display: "flex", justifyContent: "center" }}>
+                      <HCaptcha
+                        sitekey={HCAPTCHA_SITE_KEY}
+                        onVerify={token => setCaptchaToken(token)}
+                        onExpire={() => setCaptchaToken("")}
+                        ref={captchaRef}
+                        theme="dark"
+                      />
                     </div>
                   </div>
                 </div>
