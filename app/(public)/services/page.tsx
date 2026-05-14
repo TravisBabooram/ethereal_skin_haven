@@ -34,17 +34,9 @@ export default function ServicesPage() {
         credentials: "include",
         body: JSON.stringify({ serviceId, quantity: 1 }),
       });
-      if (res.status === 401) {
-        window.location.href = "/login?redirect=/services";
-        return;
-      }
-      if (res.ok) {
-        setAddedToCart(serviceId);
-        setTimeout(() => setAddedToCart(null), 2000);
-      }
-    } finally {
-      setAddingToCart(null);
-    }
+      if (res.status === 401) { window.location.href = "/login?redirect=/services"; return; }
+      if (res.ok) { setAddedToCart(serviceId); setTimeout(() => setAddedToCart(null), 2000); }
+    } finally { setAddingToCart(null); }
   };
 
   useEffect(() => {
@@ -59,13 +51,14 @@ export default function ServicesPage() {
 
   return (
     <>
-      <section style={{ paddingTop: 160, paddingBottom: 80, background: "var(--bg)", textAlign: "center", position: "relative", overflow: "hidden" }}>
+      {/* Hero */}
+      <section className="page-hero" style={{ background: "var(--bg)", textAlign: "center", position: "relative", overflow: "hidden" }}>
         <div style={{ position: "absolute", inset: 0, background: "radial-gradient(ellipse 70% 50% at 50% 0%, rgba(201,169,110,0.05) 0%, transparent 70%)", pointerEvents: "none" }} />
-        <div style={{ position: "relative", maxWidth: 700, margin: "0 auto", padding: "0 32px" }}>
+        <div style={{ position: "relative", maxWidth: 700, margin: "0 auto", padding: "0 clamp(16px, 5vw, 32px)" }}>
           <AnimatedSection>
             <p style={{ fontSize: 9, letterSpacing: "0.45em", color: "var(--gold)", textTransform: "uppercase", fontWeight: 600, marginBottom: 20 }}>What We Offer</p>
-            <h1 style={{ fontFamily: "var(--font-cormorant, Georgia, serif)", fontSize: "clamp(48px, 7vw, 80px)", fontWeight: 300, color: "var(--text)", margin: "0 0 20px", lineHeight: 1.05 }}>Our Services</h1>
-            <p style={{ fontSize: 15, lineHeight: 1.75, color: "var(--text-muted)", maxWidth: 520, margin: "0 auto 24px" }}>
+            <h1 style={{ fontFamily: "var(--font-cormorant, Georgia, serif)", fontSize: "clamp(38px, 7vw, 80px)", fontWeight: 300, color: "var(--text)", margin: "0 0 20px", lineHeight: 1.05 }}>Our Services</h1>
+            <p style={{ fontSize: "clamp(13px, 1.8vw, 15px)", lineHeight: 1.75, color: "var(--text-muted)", maxWidth: 520, margin: "0 auto 24px" }}>
               Every treatment is results-driven and professionally executed in a calm, luxurious space designed just for you.
             </p>
             <a href="https://wa.me/18687057023" target="_blank" rel="noopener noreferrer"
@@ -77,22 +70,22 @@ export default function ServicesPage() {
         </div>
       </section>
 
-      {/* Filter */}
+      {/* Sticky filter */}
       <div style={{ background: "var(--bg-glass)", backdropFilter: "blur(20px)", borderTop: "1px solid var(--border)", borderBottom: "1px solid var(--border)", position: "sticky", top: 72, zIndex: 30 }}>
-        <div style={{ maxWidth: 1280, margin: "0 auto", padding: "0 32px", display: "flex", gap: 4, alignItems: "center", overflowX: "auto" }}>
-          <Filter size={12} style={{ color: "var(--text-subtle)", flexShrink: 0, marginRight: 12 }} />
+        <div style={{ maxWidth: 1280, margin: "0 auto", padding: "0 clamp(16px, 5vw, 32px)", display: "flex", gap: 4, alignItems: "center", overflowX: "auto", WebkitOverflowScrolling: "touch" as "touch" }}>
+          <Filter size={12} style={{ color: "var(--text-subtle)", flexShrink: 0, marginRight: 8 }} />
           {CATS.map(c => (
             <button key={c} onClick={() => { setCat(c); setExpanded(null); }}
-              style={{ padding: "14px 18px", background: "none", border: "none", borderBottom: cat === c ? "2px solid var(--gold)" : "2px solid transparent", color: cat === c ? "var(--gold)" : "var(--text-muted)", fontSize: 10, letterSpacing: "0.22em", textTransform: "uppercase", cursor: "pointer", flexShrink: 0, transition: "color 0.2s, border-color 0.2s", fontWeight: cat === c ? 600 : 400 }}>
+              style={{ padding: "14px 16px", background: "none", border: "none", borderBottom: cat === c ? "2px solid var(--gold)" : "2px solid transparent", color: cat === c ? "var(--gold)" : "var(--text-muted)", fontSize: 10, letterSpacing: "0.2em", textTransform: "uppercase", cursor: "pointer", flexShrink: 0, transition: "color 0.2s, border-color 0.2s", fontWeight: cat === c ? 600 : 400, whiteSpace: "nowrap" }}>
               {c}
             </button>
           ))}
         </div>
       </div>
 
-      {/* Grid */}
+      {/* Cards grid */}
       <section className="section-pad" style={{ background: "var(--bg)" }}>
-        <div style={{ maxWidth: 1280, margin: "0 auto", padding: "0 32px" }}>
+        <div style={{ maxWidth: 1280, margin: "0 auto", padding: "0 clamp(16px, 5vw, 32px)" }}>
           {loading ? (
             <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 12, padding: "80px 0", color: "var(--text-muted)" }}>
               <Loader2 size={18} style={{ animation: "spin 1s linear infinite" }} />
@@ -103,14 +96,14 @@ export default function ServicesPage() {
               <p style={{ fontSize: 15, color: "var(--text-muted)" }}>No services found in this category.</p>
             </div>
           ) : (
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(360px, 1fr))", gap: 24 }}>
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(min(340px, 100%), 1fr))", gap: "clamp(16px, 3vw, 24px)" }}>
               {filtered.map((svc, i) => (
                 <AnimatedSection key={svc.id} delay={i * 0.05}>
-                  <article className="card-base" style={{ padding: "36px", height: "100%", display: "flex", flexDirection: "column" }}>
+                  <article className="card-base" style={{ padding: "clamp(20px, 4vw, 36px)", height: "100%", display: "flex", flexDirection: "column" }}>
                     {svc.category && (
                       <span style={{ fontSize: 9, letterSpacing: "0.35em", color: "var(--gold)", textTransform: "uppercase", fontWeight: 600, display: "block", marginBottom: 16 }}>{svc.category}</span>
                     )}
-                    <h2 style={{ fontFamily: "var(--font-cormorant, Georgia, serif)", fontSize: 22, fontWeight: 400, color: "var(--text)", margin: "0 0 12px", lineHeight: 1.25 }}>{svc.name}</h2>
+                    <h2 style={{ fontFamily: "var(--font-cormorant, Georgia, serif)", fontSize: "clamp(19px, 3vw, 22px)", fontWeight: 400, color: "var(--text)", margin: "0 0 12px", lineHeight: 1.25 }}>{svc.name}</h2>
                     <p style={{ fontSize: 13.5, lineHeight: 1.75, color: "var(--text-muted)", margin: "0 0 20px", flex: 1 }}>{svc.description}</p>
 
                     {expanded === svc.id && (
@@ -137,19 +130,20 @@ export default function ServicesPage() {
                       </div>
                     )}
 
-                    <div style={{ borderTop: "1px solid var(--border)", paddingTop: 20, display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-                      <div>
-                        <p style={{ fontFamily: "var(--font-cormorant, Georgia, serif)", fontSize: 20, color: "var(--gold)", margin: "0 0 4px", fontWeight: 500 }}>
+                    {/* Card footer — stacks on mobile via CSS */}
+                    <div className="service-card-footer" style={{ borderTop: "1px solid var(--border)", paddingTop: 20, display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12 }}>
+                      <div style={{ flexShrink: 0 }}>
+                        <p style={{ fontFamily: "var(--font-cormorant, Georgia, serif)", fontSize: "clamp(16px, 3vw, 20px)", color: "var(--gold)", margin: "0 0 4px", fontWeight: 500 }}>
                           {svc.price > 0 ? `$${svc.price} TTD` : "Contact for pricing"}
                         </p>
                         {svc.duration > 0 && (
                           <p style={{ fontSize: 11, color: "var(--text-subtle)", margin: 0, letterSpacing: "0.1em" }}>{svc.duration} min</p>
                         )}
                       </div>
-                      <div style={{ display: "flex", gap: 12, alignItems: "center" }}>
+                      <div className="service-card-actions" style={{ display: "flex", gap: 10, alignItems: "center", flexWrap: "wrap", justifyContent: "flex-end" }}>
                         {(svc.benefits || svc.aftercare) && (
                           <button onClick={() => setExpanded(expanded === svc.id ? null : svc.id)}
-                            style={{ background: "none", border: "none", fontSize: 10, letterSpacing: "0.15em", color: "var(--text-subtle)", cursor: "pointer", textTransform: "uppercase", transition: "color 0.2s" }}
+                            style={{ background: "none", border: "none", fontSize: 10, letterSpacing: "0.15em", color: "var(--text-subtle)", cursor: "pointer", textTransform: "uppercase", transition: "color 0.2s", padding: "8px 0" }}
                             onMouseEnter={e => (e.currentTarget.style.color = "var(--text)")}
                             onMouseLeave={e => (e.currentTarget.style.color = "var(--text-subtle)")}
                           >{expanded === svc.id ? "Less" : "Details"}</button>
@@ -157,12 +151,12 @@ export default function ServicesPage() {
                         <button
                           onClick={() => handleAddToCart(svc.id)}
                           disabled={addingToCart === svc.id}
-                          style={{ display: "inline-flex", alignItems: "center", gap: 6, padding: "8px 14px", background: addedToCart === svc.id ? "rgba(76,175,80,0.1)" : "rgba(201,169,110,0.08)", border: `1px solid ${addedToCart === svc.id ? "rgba(76,175,80,0.4)" : "var(--border)"}`, borderRadius: 2, fontSize: 10, letterSpacing: "0.15em", textTransform: "uppercase", color: addedToCart === svc.id ? "#4caf50" : "var(--gold)", cursor: addingToCart === svc.id ? "not-allowed" : "pointer", transition: "all 0.2s", fontWeight: 500 }}
+                          style={{ display: "inline-flex", alignItems: "center", gap: 6, padding: "10px 14px", background: addedToCart === svc.id ? "rgba(76,175,80,0.1)" : "rgba(201,169,110,0.08)", border: `1px solid ${addedToCart === svc.id ? "rgba(76,175,80,0.4)" : "var(--border)"}`, borderRadius: 2, fontSize: 10, letterSpacing: "0.15em", textTransform: "uppercase", color: addedToCart === svc.id ? "#4caf50" : "var(--gold)", cursor: addingToCart === svc.id ? "not-allowed" : "pointer", transition: "all 0.2s", fontWeight: 500 }}
                         >
                           {addedToCart === svc.id ? <><Check size={11} /> Added</> : addingToCart === svc.id ? <><Loader2 size={11} style={{ animation: "spin 1s linear infinite" }} /> Adding…</> : <><ShoppingBag size={11} /> Add to Cart</>}
                         </button>
                         <a href={`/booking?services=${svc.id}`}
-                          style={{ display: "inline-flex", alignItems: "center", gap: 7, fontSize: 10, letterSpacing: "0.2em", textTransform: "uppercase", color: "var(--gold)", textDecoration: "none", fontWeight: 600 }}
+                          style={{ display: "inline-flex", alignItems: "center", gap: 7, padding: "10px 14px", fontSize: 10, letterSpacing: "0.2em", textTransform: "uppercase", color: "var(--gold)", textDecoration: "none", fontWeight: 600, background: "rgba(201,169,110,0.08)", border: "1px solid var(--border)", borderRadius: 2 }}
                         >
                           Book <ArrowRight size={11} />
                         </a>
@@ -175,7 +169,7 @@ export default function ServicesPage() {
           )}
 
           <AnimatedSection delay={0.3}>
-            <div style={{ maxWidth: 700, margin: "56px auto 0", padding: "24px 28px", border: "1px solid var(--border)", borderRadius: 6, background: "var(--bg-card)", textAlign: "center" }}>
+            <div style={{ maxWidth: 700, margin: "clamp(32px, 5vw, 56px) auto 0", padding: "clamp(18px, 4vw, 24px) clamp(16px, 4vw, 28px)", border: "1px solid var(--border)", borderRadius: 6, background: "var(--bg-card)", textAlign: "center" }}>
               <p style={{ fontSize: 10, letterSpacing: "0.3em", color: "var(--gold)", textTransform: "uppercase", fontWeight: 600, marginBottom: 8 }}>Booking Policy</p>
               <p style={{ fontSize: 13.5, color: "var(--text-muted)", margin: "0 0 4px", lineHeight: 1.7 }}>
                 A <strong style={{ color: "var(--text)" }}>50% deposit</strong> is required to secure all appointments. Book via WhatsApp — confirmed after payment receipt.

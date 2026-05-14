@@ -59,8 +59,8 @@ export default function Footer() {
     <footer style={{ background: "var(--bg-card)", borderTop: "1px solid var(--border)", position: "relative", overflow: "hidden" }}>
       <div style={{ height: 1, background: "linear-gradient(90deg, transparent 0%, var(--pink) 30%, var(--gold) 55%, var(--pink-light) 70%, transparent 100%)" }} />
 
-      <div style={{ maxWidth: 1280, margin: "0 auto", padding: "80px 32px 48px" }}>
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: "48px 64px", marginBottom: 72 }}>
+      <div style={{ maxWidth: 1280, margin: "0 auto", padding: "clamp(48px, 8vw, 80px) clamp(16px, 5vw, 32px) clamp(32px, 5vw, 48px)" }}>
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(min(200px, 100%), 1fr))", gap: "clamp(32px, 5vw, 48px) clamp(24px, 5vw, 64px)", marginBottom: "clamp(40px, 6vw, 72px)" }}>
 
           {/* Brand */}
           <div>

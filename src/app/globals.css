@@ -357,6 +357,26 @@ a { transition: color 0.2s ease; }
 /* ─── Animations ──────────────────────────────────────────── */
 @keyframes spin { to { transform: rotate(360deg); } }
 
+/* ─── Page hero sections (services / products / about / contact / etc.) ── */
+.page-hero {
+  padding-top: 160px;
+  padding-bottom: 80px;
+}
+@media (max-width: 768px) {
+  .page-hero { padding-top: 110px; padding-bottom: 56px; }
+}
+@media (max-width: 480px) {
+  .page-hero { padding-top: 90px !important; padding-bottom: 40px !important; }
+}
+
+/* ─── Service card footer — stacks on small screens ──────── */
+@media (max-width: 520px) {
+  .service-card-footer  { flex-direction: column !important; align-items: flex-start !important; }
+  .service-card-actions { justify-content: flex-start !important; }
+  .product-card-footer  { flex-direction: column !important; align-items: flex-start !important; }
+  .product-card-actions { justify-content: flex-start !important; }
+}
+
 /* ─── Responsive helpers ──────────────────────────────────── */
 @media (max-width: 640px)  { .stats-grid   { grid-template-columns: repeat(2, 1fr) !important; } }
 @media (max-width: 900px)  { .about-grid   { grid-template-columns: 1fr !important; }

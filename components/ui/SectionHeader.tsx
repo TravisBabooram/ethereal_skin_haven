@@ -12,7 +12,7 @@ interface Props {
 export default function SectionHeader({ eyebrow, title, subtitle, align = "center" }: Props) {
   const isCenter = align === "center";
   return (
-    <div style={{ textAlign: isCenter ? "center" : "left", marginBottom: 64 }}>
+    <div style={{ textAlign: isCenter ? "center" : "left", marginBottom: "clamp(36px, 6vw, 64px)" }}>
       {eyebrow && (
         <AnimatedSection delay={0}>
           <div style={{ display: "flex", alignItems: "center", gap: 14, justifyContent: isCenter ? "center" : "flex-start", marginBottom: 16 }}>

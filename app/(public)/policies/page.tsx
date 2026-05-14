@@ -32,7 +32,7 @@ export default function PoliciesPage() {
 
   return (
     <>
-      <section style={{ paddingTop: 160, paddingBottom: 72, background: "var(--bg)", textAlign: "center", position: "relative", overflow: "hidden" }}>
+      <section className="page-hero" style={{ background: "var(--bg)", textAlign: "center", position: "relative", overflow: "hidden" }}>
         <div style={{ position: "absolute", inset: 0, background: "radial-gradient(ellipse 60% 40% at 50% 0%, rgba(201,169,110,0.04) 0%, transparent 60%)", pointerEvents: "none" }} />
         <AnimatedSection style={{ position: "relative", maxWidth: 600, margin: "0 auto", padding: "0 32px" }}>
           <p style={{ fontSize: 9, letterSpacing: "0.45em", color: "var(--gold)", textTransform: "uppercase", fontWeight: 600, marginBottom: 20 }}>Transparency First</p>

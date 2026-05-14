@@ -29,9 +29,9 @@ export default function ContactPage() {
   return (
     <>
       {/* Hero */}
-      <section style={{ paddingTop: 160, paddingBottom: 80, background: "var(--bg)", textAlign: "center", position: "relative", overflow: "hidden" }}>
+      <section className="page-hero" style={{ background: "var(--bg)", textAlign: "center", position: "relative", overflow: "hidden" }}>
         <div style={{ position: "absolute", inset: 0, background: "radial-gradient(ellipse 70% 50% at 50% 0%, rgba(201,169,110,0.04) 0%, transparent 70%)", pointerEvents: "none" }} />
-        <AnimatedSection style={{ position: "relative", maxWidth: 600, margin: "0 auto", padding: "0 32px" }}>
+        <AnimatedSection style={{ position: "relative", maxWidth: 600, margin: "0 auto", padding: "0 clamp(16px, 5vw, 32px)" }}>
           <p style={{ fontSize: 9, letterSpacing: "0.45em", color: "var(--gold)", textTransform: "uppercase", fontWeight: 600, marginBottom: 20 }}>Get in Touch</p>
           <h1 style={{ fontFamily: "var(--font-cormorant, Georgia, serif)", fontSize: "clamp(44px, 6vw, 72px)", fontWeight: 300, color: "var(--text)", margin: "0 0 20px", lineHeight: 1.1 }}>
             We&apos;d Love to<br />
@@ -50,7 +50,7 @@ export default function ContactPage() {
       </section>
 
       <section className="section-pad" style={{ background: "var(--bg)" }}>
-        <div style={{ maxWidth: 1100, margin: "0 auto", padding: "0 32px" }}>
+        <div style={{ maxWidth: 1100, margin: "0 auto", padding: "0 clamp(16px, 5vw, 32px)" }}>
           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 64, alignItems: "start" }} className="contact-grid">
 
             {/* Contact info */}
