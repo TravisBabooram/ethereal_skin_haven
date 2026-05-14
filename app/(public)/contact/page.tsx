@@ -22,7 +22,7 @@ function TikTokIcon({ size = 16 }: { size?: number }) {
 }
 
 const hours = [
-  { day: "Hours", time: "Contact us via WhatsApp for availability" },
+  { day: "Monday – Sunday", time: "8:00 AM – 6:00 PM" },
 ];
 
 export default function ContactPage() {

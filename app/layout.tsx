@@ -25,7 +25,7 @@ export const metadata: Metadata = {
     template: "%s | Ethereal Skin Haven",
   },
   description:
-    "Book luxury facials, waxing, brow lamination & nail services in Couva, Trinidad. Open Tuesday–Saturday, 9am–6pm.",
+    "Book luxury facials, waxing, brow lamination & nail services in Couva, Trinidad. Open every day, 8am–6pm.",
   keywords: ["luxury spa Trinidad", "esthetics Trinidad", "facial Couva", "waxing Trinidad", "brow lamination Trinidad", "skincare Trinidad", "Ethereal Skin Haven"],
   icons: {
     icon: "/logo.png",
@@ -36,7 +36,7 @@ export const metadata: Metadata = {
     type: "website",
     locale: "en_US",
     title: "Ethereal Skin Haven — Luxury Spa & Esthetics in Trinidad",
-    description: "Book luxury facials, waxing, brow lamination & nail services in Couva, Trinidad. Open Tue–Sat, 9am–6pm.",
+    description: "Book luxury facials, waxing, brow lamination & nail services in Couva, Trinidad. Open every day, 8am–6pm.",
     siteName: "Ethereal Skin Haven",
     images: [{ url: "/logo.png", width: 685, height: 685, alt: "Ethereal Skin Haven" }],
   },

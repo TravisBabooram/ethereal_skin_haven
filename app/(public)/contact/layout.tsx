@@ -6,7 +6,7 @@ export async function generateMetadata(): Promise<Metadata> {
   const [title, desc] = await Promise.all([getSetting("seo_contact_title"), getSetting("seo_contact_desc")]);
   return {
     title: title || "Contact Us — Ethereal Skin Haven, Couva Trinidad",
-    description: desc || "Reach Ethereal Skin Haven in Couva, Trinidad. Call, WhatsApp, or message us online. Open Tuesday–Saturday 9am–6pm. Book your treatment today.",
+    description: desc || "Reach Ethereal Skin Haven in Couva, Trinidad. Call, WhatsApp, or message us online. Open every day, 8am–6pm. Book your treatment today.",
   };
 }
 

@@ -33,7 +33,7 @@ const STEPS = [
   { icon: Check, label: "Confirm" },
 ];
 
-const TIME_SLOTS = ["09:00", "09:30", "10:00", "10:30", "11:00", "11:30", "12:00", "13:00", "13:30", "14:00", "14:30", "15:00", "15:30", "16:00", "16:30", "17:00", "17:30"];
+const TIME_SLOTS = ["08:00", "08:30", "09:00", "09:30", "10:00", "10:30", "11:00", "11:30", "12:00", "12:30", "13:00", "13:30", "14:00", "14:30", "15:00", "15:30", "16:00", "16:30", "17:00", "17:30"];
 
 function getDaysInMonth(year: number, month: number) {
   return new Date(year, month + 1, 0).getDate();
@@ -288,7 +288,7 @@ export default function BookingPage() {
               {step === 1 && (
                 <div>
                   <h2 style={{ fontFamily: "var(--font-cormorant, Georgia, serif)", fontSize: 28, color: "var(--text)", margin: "0 0 8px", fontWeight: 400 }}>Choose a Date</h2>
-                  <p style={{ fontSize: 13, color: "var(--text-muted)", margin: "0 0 28px" }}>Select your preferred appointment date. We&apos;re open Tuesday through Saturday.</p>
+                  <p style={{ fontSize: 13, color: "var(--text-muted)", margin: "0 0 28px" }}>Select your preferred appointment date. We&apos;re open every day, 8am–6pm.</p>
                   <div className="card-base" style={{ padding: "32px", maxWidth: 420 }}>
                     {/* Calendar nav */}
                     <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 24 }}>
@@ -311,8 +311,7 @@ export default function BookingPage() {
                         const date = new Date(calYear, calMonth, day);
                         const dateStr = `${calYear}-${String(calMonth + 1).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
                         const isPast = date < new Date(today.getFullYear(), today.getMonth(), today.getDate());
-                        const isSunMon = date.getDay() === 0 || date.getDay() === 1;
-                        const isDisabled = isPast || isSunMon;
+                        const isDisabled = isPast;
                         const isSel = dateStr === selectedDate;
                         return (
                           <button

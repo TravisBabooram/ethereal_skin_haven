@@ -13,8 +13,8 @@ export async function generateMetadata(): Promise<Metadata> {
   const [title, desc] = await Promise.all([getSetting("seo_home_title"), getSetting("seo_home_desc")]);
   return {
     title: title || "Luxury Spa & Esthetics in Couva, Trinidad",
-    description: desc || "Book luxury facials, waxing, brow lamination & nail services in Couva, Trinidad. Open Tuesday–Saturday, 9am–6pm. Easy online booking.",
-    openGraph: { title: title || "Ethereal Skin Haven — Luxury Spa & Esthetics", description: desc || "Book luxury facials, waxing, brow lamination & nail services in Couva, Trinidad. Open Tue–Sat, 9am–6pm." },
+    description: desc || "Book luxury facials, waxing, brow lamination & nail services in Couva, Trinidad. Open every day, 8am–6pm. Easy online booking.",
+    openGraph: { title: title || "Ethereal Skin Haven — Luxury Spa & Esthetics", description: desc || "Book luxury facials, waxing, brow lamination & nail services in Couva, Trinidad. Open every day, 8am–6pm." },
   };
 }
 

@@ -30,7 +30,7 @@ export const LOCAL_BUSINESS_SCHEMA = {
     "longitude": -61.4699,
   },
   "openingHoursSpecification": [
-    { "@type": "OpeningHoursSpecification", "dayOfWeek": ["Tuesday","Wednesday","Thursday","Friday","Saturday"], "opens": "09:00", "closes": "18:00" },
+    { "@type": "OpeningHoursSpecification", "dayOfWeek": ["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday"], "opens": "08:00", "closes": "18:00" },
   ],
   "priceRange": "$$",
   "sameAs": [

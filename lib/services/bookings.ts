@@ -1,6 +1,6 @@
 import { prisma } from "@/lib/prisma";
 
-const BUSINESS_START = 9 * 60;  // 9:00 AM in minutes
+const BUSINESS_START = 8 * 60;  // 8:00 AM in minutes
 const BUSINESS_END = 18 * 60;   // 6:00 PM in minutes
 const SLOT_INTERVAL = 30;       // minutes between slot options
 const BUFFER_MINUTES = 15;      // buffer between appointments
