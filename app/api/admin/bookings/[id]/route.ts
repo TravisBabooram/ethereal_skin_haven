@@ -3,7 +3,7 @@ import { success, handleError, APIError } from "@/lib/utils/error";
 import { withAdmin } from "@/lib/utils/auth";
 import { getBookingById, updateBooking } from "@/lib/services/bookings";
 import { createAuditLog } from "@/lib/services/audit";
-import { sendCancellationEmail, sendRescheduleEmail } from "@/lib/email";
+import { sendBookingConfirmedEmail, sendCancellationEmail, sendRescheduleEmail } from "@/lib/email";
 import { JWTPayload } from "@/lib/utils/jwt";
 
 async function getHandler(
@@ -42,14 +42,16 @@ async function putHandler(
 
     // Trigger email notifications on status changes
     if (data.status && data.status !== previousStatus) {
-      if (data.status === "Cancelled") {
+      if (data.status === "Confirmed") {
+        await sendBookingConfirmedEmail(updated).catch(() => null);
+      } else if (data.status === "Cancelled") {
         await sendCancellationEmail(booking).catch(() => null);
-      } else if (
-        (data.appointmentDate || data.appointmentTime) &&
-        previousStatus !== "Pending"
-      ) {
-        await sendRescheduleEmail(updated).catch(() => null);
       }
+    }
+
+    // Reschedule email when date/time changes on a confirmed booking
+    if ((data.appointmentDate || data.appointmentTime) && previousStatus === "Confirmed") {
+      await sendRescheduleEmail(updated).catch(() => null);
     }
 
     return success(updated);

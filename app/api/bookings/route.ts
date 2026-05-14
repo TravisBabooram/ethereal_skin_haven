@@ -2,7 +2,7 @@ import { NextRequest } from "next/server";
 import { success, handleError, APIError } from "@/lib/utils/error";
 import { withAuth } from "@/lib/utils/auth";
 import { getBookingsByUser, createBooking, getBookingById } from "@/lib/services/bookings";
-import { sendConfirmationEmail } from "@/lib/email";
+import { sendBookingReceivedEmail, sendAdminNewBookingNotification } from "@/lib/email";
 import { JWTPayload } from "@/lib/utils/jwt";
 
 async function handleGet(req: NextRequest, user: JWTPayload) {
@@ -31,9 +31,12 @@ async function handlePost(req: NextRequest, user: JWTPayload) {
       services,
     });
 
-    // Fetch full booking with relations for the email
+    // Fetch full booking with relations for emails
     const full = await getBookingById(booking.id);
-    if (full) sendConfirmationEmail(full).catch(() => null);
+    if (full) {
+      sendBookingReceivedEmail(full).catch(() => null);
+      sendAdminNewBookingNotification(full).catch(() => null);
+    }
 
     return success(booking, 201);
   } catch (error) {
