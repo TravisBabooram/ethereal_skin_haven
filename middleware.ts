@@ -38,8 +38,8 @@ export async function middleware(req: NextRequest) {
 
   const isAdmin = payload?.role === "admin";
 
-  // Maintenance mode — admins and admin routes always bypass
-  if (!isAdminRoute && !isAdmin) {
+  // Maintenance mode — admins, admin routes, and login page always bypass
+  if (!isAdminRoute && !isAdmin && !isAuthRoute) {
     const maintenance = await getMaintenanceMode(req.nextUrl.origin);
 
     if (maintenance && !isMaintenancePage) {

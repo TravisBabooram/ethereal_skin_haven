@@ -126,7 +126,7 @@ export default function MaintenancePage() {
 
         {/* WhatsApp CTA */}
         <a
-          href="https://wa.me/18683XXXXXX"
+          href="https://wa.me/18687057023"
           target="_blank"
           rel="noopener noreferrer"
           style={{
