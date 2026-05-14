@@ -4,7 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import NextImage from "next/image";
 import { usePathname, useRouter } from "next/navigation";
-import { BarChart3, Calendar, Users, Package, Image, FileText, HelpCircle, LogOut, Shield, ShoppingBag, UserCog, Layout, Search, Menu, X, Sun, Moon } from "lucide-react";
+import { BarChart3, Calendar, Users, Package, Image, FileText, HelpCircle, LogOut, Shield, ShoppingBag, UserCog, Layout, Search, Menu, X, Sun, Moon, Settings } from "lucide-react";
 import { useTheme } from "@/components/providers/ThemeProvider";
 
 const NAV = [
@@ -20,6 +20,7 @@ const NAV = [
   { href: "/admin/gallery",  label: "Gallery",         icon: Image },
   { href: "/admin/faq",      label: "FAQ",             icon: HelpCircle },
   { href: "/admin/policies", label: "Policies",        icon: FileText },
+  { href: "/admin/settings", label: "Settings",         icon: Settings },
   { href: "/admin/profile",  label: "My Profile",      icon: UserCog },
 ];
 
