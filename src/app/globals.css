@@ -369,6 +369,15 @@ a { transition: color 0.2s ease; }
   .page-hero { padding-top: 90px !important; padding-bottom: 40px !important; }
 }
 
+/* ─── Filter bar — hidden scrollbar, touch-friendly ─────── */
+.filter-scroll {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;        /* Firefox */
+  -ms-overflow-style: none;     /* IE / Edge */
+}
+.filter-scroll::-webkit-scrollbar { display: none; } /* Chrome / Safari */
+
 /* ─── Service card footer — stacks on small screens ──────── */
 @media (max-width: 520px) {
   .service-card-footer  { flex-direction: column !important; align-items: flex-start !important; }

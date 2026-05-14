@@ -72,7 +72,7 @@ export default function ServicesPage() {
 
       {/* Sticky filter */}
       <div style={{ background: "var(--bg-glass)", backdropFilter: "blur(20px)", borderTop: "1px solid var(--border)", borderBottom: "1px solid var(--border)", position: "sticky", top: 72, zIndex: 30 }}>
-        <div style={{ maxWidth: 1280, margin: "0 auto", padding: "0 clamp(16px, 5vw, 32px)", display: "flex", gap: 4, alignItems: "center", overflowX: "auto", WebkitOverflowScrolling: "touch" as "touch" }}>
+        <div className="filter-scroll" style={{ maxWidth: 1280, margin: "0 auto", padding: "0 clamp(16px, 5vw, 32px)", display: "flex", gap: 4, alignItems: "center" }}>
           <Filter size={12} style={{ color: "var(--text-subtle)", flexShrink: 0, marginRight: 8 }} />
           {CATS.map(c => (
             <button key={c} onClick={() => { setCat(c); setExpanded(null); }}
