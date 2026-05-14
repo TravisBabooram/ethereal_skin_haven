@@ -32,8 +32,11 @@ async function applyRateLimit(req: NextRequest): Promise<NextResponse | null> {
   const { pathname } = req.nextUrl;
   const ip = getIP(req);
 
-  // Auth routes — strictest limit
-  if (pathname === "/api/auth/login" || pathname === "/api/auth/register") {
+  // Auth routes — only rate limit POST (actual login/register attempts, not session checks)
+  if (
+    req.method === "POST" &&
+    (pathname === "/api/auth/login" || pathname === "/api/auth/register")
+  ) {
     if (!authLimiter) return null;
     const { success } = await authLimiter.limit(ip);
     if (!success) {
