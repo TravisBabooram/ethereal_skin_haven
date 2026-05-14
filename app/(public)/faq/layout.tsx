@@ -6,6 +6,9 @@ export async function generateMetadata(): Promise<Metadata> {
   return {
     title: title || "Frequently Asked Questions — Ethereal Skin Haven",
     description: desc || "Find answers about booking, cancellations, preparation, payments, aftercare & skincare products at Ethereal Skin Haven in Couva, Trinidad.",
+    alternates: { canonical: "https://etherealskinhaven.com/faq" },
+    openGraph: { title: title || "FAQ | Ethereal Skin Haven", description: desc || "Find answers about booking, cancellations, payments & aftercare at Ethereal Skin Haven, Couva, Trinidad.", url: "https://etherealskinhaven.com/faq" },
+    twitter: { card: "summary", title: title || "FAQ | Ethereal Skin Haven", description: desc || "Answers to your questions about booking, cancellations, and treatments at Ethereal Skin Haven." },
   };
 }
 

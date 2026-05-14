@@ -7,6 +7,9 @@ export async function generateMetadata(): Promise<Metadata> {
   return {
     title: title || "Spa Services — Facials, Waxing & Brow Lamination",
     description: desc || "Explore luxury esthetics treatments in Couva, Trinidad — HydraFacials, Brazilian waxing, brow lamination, intimate care & nail services. Book online.",
+    alternates: { canonical: "https://etherealskinhaven.com/services" },
+    openGraph: { title: title || "Spa Services | Ethereal Skin Haven", description: desc || "Explore luxury esthetics treatments in Couva, Trinidad — HydraFacials, Brazilian waxing, brow lamination, intimate care & nail services.", url: "https://etherealskinhaven.com/services" },
+    twitter: { card: "summary", title: title || "Spa Services | Ethereal Skin Haven", description: desc || "Explore luxury esthetics treatments in Couva, Trinidad. Book online." },
   };
 }
 

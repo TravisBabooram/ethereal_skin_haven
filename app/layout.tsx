@@ -20,6 +20,7 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL || "https://etherealskinhaven.com"),
   title: {
     default: "Ethereal Skin Haven — Luxury Spa & Esthetics in Trinidad",
     template: "%s | Ethereal Skin Haven",
@@ -38,7 +39,18 @@ export const metadata: Metadata = {
     title: "Ethereal Skin Haven — Luxury Spa & Esthetics in Trinidad",
     description: "Book luxury facials, waxing, brow lamination & nail services in Couva, Trinidad. Open every day, 8am–6pm.",
     siteName: "Ethereal Skin Haven",
+    url: "https://etherealskinhaven.com",
     images: [{ url: "/logo.png", width: 685, height: 685, alt: "Ethereal Skin Haven" }],
+  },
+  twitter: {
+    card: "summary",
+    site: "@etherealskinhaven",
+    title: "Ethereal Skin Haven — Luxury Spa & Esthetics in Trinidad",
+    description: "Book luxury facials, waxing, brow lamination & nail services in Couva, Trinidad. Open every day, 8am–6pm.",
+    images: ["/logo.png"],
+  },
+  alternates: {
+    canonical: "https://etherealskinhaven.com",
   },
 };
 

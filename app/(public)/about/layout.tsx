@@ -6,6 +6,9 @@ export async function generateMetadata(): Promise<Metadata> {
   return {
     title: title || "About Us — Our Story & Licensed Esthetician",
     description: desc || "Meet the qualified esthetician behind Ethereal Skin Haven — trained, passionate about skin care, and dedicated to luxury results in Couva, Trinidad.",
+    alternates: { canonical: "https://etherealskinhaven.com/about" },
+    openGraph: { title: title || "About Ethereal Skin Haven", description: desc || "Meet the qualified esthetician behind Ethereal Skin Haven — dedicated to luxury skin care results in Couva, Trinidad.", url: "https://etherealskinhaven.com/about" },
+    twitter: { card: "summary", title: title || "About Ethereal Skin Haven", description: desc || "Meet the esthetician behind Ethereal Skin Haven — luxury spa in Couva, Trinidad." },
   };
 }
 
