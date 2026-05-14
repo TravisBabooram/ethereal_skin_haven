@@ -33,9 +33,11 @@ export const LOCAL_BUSINESS_SCHEMA = {
     { "@type": "OpeningHoursSpecification", "dayOfWeek": ["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday"], "opens": "08:00", "closes": "18:00" },
   ],
   "priceRange": "$$",
+  "email": "etherealskinhaven@gmail.com",
   "sameAs": [
     "https://www.instagram.com/ethereal.skin.haven_/",
     "https://www.tiktok.com/@ethereal.skin.haven",
+    "https://www.facebook.com/profile.php?id=61587540374992",
   ],
   "contactPoint": {
     "@type": "ContactPoint",

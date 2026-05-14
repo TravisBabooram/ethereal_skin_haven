@@ -30,6 +30,14 @@ function InstagramIcon({ size = 15 }: { size?: number }) {
   );
 }
 
+function FacebookIcon({ size = 15 }: { size?: number }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+      <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
+    </svg>
+  );
+}
+
 function TikTokIcon({ size = 15 }: { size?: number }) {
   return (
     <svg width={size} height={size} viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
@@ -52,6 +60,12 @@ const socials = [
     href: "https://www.tiktok.com/@ethereal.skin.haven",
     Icon: TikTokIcon,
     hoverColor: "var(--gold)",
+  },
+  {
+    label: "Facebook",
+    href: "https://www.facebook.com/profile.php?id=61587540374992",
+    Icon: FacebookIcon,
+    hoverColor: "#1877F2",
   },
 ];
 
@@ -151,6 +165,16 @@ export default function Footer() {
                   onMouseEnter={e => (e.currentTarget.style.color = "var(--gold)")}
                   onMouseLeave={e => (e.currentTarget.style.color = "var(--text-muted)")}
                 >+1 (868) 705-7023</a>
+              </div>
+
+              {/* Email */}
+              <div style={{ display: "flex", alignItems: "flex-start", gap: 12 }}>
+                <svg width={13} height={13} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" style={{ color: "var(--gold)", marginTop: 2, flexShrink: 0 }}><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
+                <a href="mailto:etherealskinhaven@gmail.com"
+                  style={{ fontSize: 13, color: "var(--text-muted)", lineHeight: 1.5, textDecoration: "none", transition: "color 0.2s" }}
+                  onMouseEnter={e => (e.currentTarget.style.color = "var(--gold)")}
+                  onMouseLeave={e => (e.currentTarget.style.color = "var(--text-muted)")}
+                >etherealskinhaven@gmail.com</a>
               </div>
 
               {/* Location → Google Maps */}

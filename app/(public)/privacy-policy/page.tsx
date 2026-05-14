@@ -57,7 +57,7 @@ const SECTIONS = [
   {
     title: "Contact",
     body: [
-      "If you have any questions about this Privacy Policy or how your data is handled, please contact us via WhatsApp at +1 (868) 705-7023 or through the contact form on our website.",
+      "If you have any questions about this Privacy Policy or how your data is handled, please contact us via WhatsApp at +1 (868) 705-7023, email us at etherealskinhaven@gmail.com, or use the contact form on our website.",
     ],
   },
 ];
