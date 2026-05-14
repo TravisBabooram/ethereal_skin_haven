@@ -18,7 +18,7 @@ const REPLY_TO = "etherealskinhaven@gmail.com";
 const ADMIN_EMAIL = "etherealskinhaven@gmail.com";
 
 async function send(to: string, subject: string, html: string) {
-  return resend.emails.send({ from: FROM, reply_to: REPLY_TO, to, subject, html });
+  return resend.emails.send({ from: FROM, replyTo: REPLY_TO, to, subject, html });
 }
 
 function toEmailData(booking: any): BookingEmailData {
