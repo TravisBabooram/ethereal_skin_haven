@@ -75,6 +75,7 @@ model Product {
   usageInstructions String?
   skinTypeSuitability String?
   availabilityStatus String @default("available")
+  stockQty      Int        @default(0)
   featured      Boolean    @default(false)
   createdAt     DateTime   @default(now())
   updatedAt     DateTime   @updatedAt

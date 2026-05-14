@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { Users, Calendar, TrendingUp, Clock, ArrowRight, Loader2 } from "lucide-react";
+import { Users, Calendar, TrendingUp, Clock, ArrowRight, Loader2, Package, AlertTriangle } from "lucide-react";
 
 interface Stats {
   totalUsers: number;
@@ -19,6 +19,7 @@ interface Stats {
   }>;
   popularServices: Array<{ id: string; name: string; price: number; bookingCount: number }>;
   recentUsers: Array<{ id: string; name: string; email: string; createdAt: string }>;
+  lowStockProducts: Array<{ id: string; name: string; stockQty: number; availabilityStatus: string; category: string }>;
 }
 
 const STATUS_COLORS: Record<string, string> = {
@@ -138,6 +139,59 @@ export default function AdminOverview() {
           </div>
         </div>
       </div>
+
+      {/* Low Stock Alerts */}
+      {(stats?.lowStockProducts ?? []).length > 0 && (
+        <div style={{ marginTop: 40 }}>
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16 }}>
+            <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+              <AlertTriangle size={16} style={{ color: "#f59e0b" }} />
+              <h2 style={{ fontFamily: "var(--font-cormorant, Georgia, serif)", fontSize: 22, color: "var(--text)", margin: 0, fontWeight: 400 }}>Low Stock Alerts</h2>
+            </div>
+            <Link href="/admin/products" style={{ fontSize: 10, letterSpacing: "0.15em", textTransform: "uppercase", color: "var(--gold)", textDecoration: "none" }}>Manage Stock →</Link>
+          </div>
+          <div style={{ background: "var(--bg-card)", border: "1px solid rgba(245,158,11,0.3)", borderRadius: 6, overflow: "hidden" }}>
+            {(stats?.lowStockProducts ?? []).map((p, i) => {
+              const isOut = p.stockQty === 0;
+              return (
+                <div key={p.id} style={{
+                  padding: "14px 20px",
+                  borderBottom: i < (stats?.lowStockProducts?.length ?? 1) - 1 ? "1px solid var(--border)" : "none",
+                  display: "flex",
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                  background: isOut ? "rgba(224,85,85,0.03)" : "transparent",
+                }}>
+                  <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+                    <Package size={14} style={{ color: isOut ? "#e05555" : "#f59e0b", flexShrink: 0 }} />
+                    <div>
+                      <p style={{ fontSize: 13, color: "var(--text)", margin: "0 0 2px", fontWeight: 500 }}>{p.name}</p>
+                      <p style={{ fontSize: 11, color: "var(--text-subtle)", margin: 0 }}>{p.category}</p>
+                    </div>
+                  </div>
+                  <div style={{ display: "flex", alignItems: "center", gap: 14 }}>
+                    <span style={{ fontSize: 13, fontWeight: 700, color: isOut ? "#e05555" : "#f59e0b" }}>
+                      {p.stockQty} left
+                    </span>
+                    <span style={{
+                      fontSize: 9,
+                      letterSpacing: "0.12em",
+                      textTransform: "uppercase",
+                      fontWeight: 600,
+                      padding: "3px 8px",
+                      borderRadius: 2,
+                      background: isOut ? "rgba(224,85,85,0.1)" : "rgba(245,158,11,0.1)",
+                      color: isOut ? "#e05555" : "#f59e0b",
+                    }}>
+                      {isOut ? "Out of Stock" : "Low Stock"}
+                    </span>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      )}
 
       {/* Quick actions */}
       <div style={{ marginTop: 40, padding: "24px", background: "var(--bg-card)", border: "1px solid var(--border)", borderRadius: 6, display: "flex", gap: 12, flexWrap: "wrap" }}>

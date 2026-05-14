@@ -1,11 +1,12 @@
 import { prisma } from "@/lib/prisma";
+import { getLowStockProducts } from "@/lib/services/products";
 
 export async function getDashboardStats() {
   const now = new Date();
   const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate());
   const todayEnd = new Date(todayStart.getTime() + 24 * 60 * 60 * 1000);
 
-  const [totalUsers, totalBookings, todayBookings, upcomingBookings, recentUsers, popularRaw] =
+  const [totalUsers, totalBookings, todayBookings, upcomingBookings, recentUsers, popularRaw, lowStockProducts] =
     await Promise.all([
       prisma.user.count(),
       prisma.booking.count(),
@@ -32,6 +33,7 @@ export async function getDashboardStats() {
         orderBy: { _count: { serviceId: "desc" } },
         take: 5,
       }),
+      getLowStockProducts(5),
     ]);
 
   const serviceDetails = await prisma.service.findMany({
@@ -57,6 +59,7 @@ export async function getDashboardStats() {
     upcomingBookings,
     recentUsers,
     popularServices,
+    lowStockProducts,
   };
 }
 
