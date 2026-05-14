@@ -7,12 +7,12 @@
 
 /* ─── Registered (animatable) CSS custom properties ──────── */
 /* @property makes variables transition just like normal CSS values */
-@property --bg            { syntax: '<color>'; inherits: true; initial-value: #080509; }
-@property --bg-card       { syntax: '<color>'; inherits: true; initial-value: #0F080F; }
-@property --bg-elevated   { syntax: '<color>'; inherits: true; initial-value: #170B17; }
+@property --bg            { syntax: '<color>'; inherits: true; initial-value: #18101E; }
+@property --bg-card       { syntax: '<color>'; inherits: true; initial-value: #221628; }
+@property --bg-elevated   { syntax: '<color>'; inherits: true; initial-value: #2E1C36; }
 @property --text          { syntax: '<color>'; inherits: true; initial-value: #F8EEF3; }
-@property --text-muted    { syntax: '<color>'; inherits: true; initial-value: #C0909F; }
-@property --text-subtle   { syntax: '<color>'; inherits: true; initial-value: #6A3F52; }
+@property --text-muted    { syntax: '<color>'; inherits: true; initial-value: #D4A8BC; }
+@property --text-subtle   { syntax: '<color>'; inherits: true; initial-value: #9A6880; }
 @property --gold          { syntax: '<color>'; inherits: true; initial-value: #C9A050; }
 @property --gold-light    { syntax: '<color>'; inherits: true; initial-value: #E2C068; }
 @property --gold-dark     { syntax: '<color>'; inherits: true; initial-value: #A07830; }
@@ -25,13 +25,13 @@
   /* ── Dark theme (default) ─────────────────────────────────
      Deep black base — logo black  |  Hot rose-pink primary
      Champagne gold secondary accent                          */
-  --bg:           #080509;
-  --bg-card:      #0F080F;
-  --bg-elevated:  #170B17;
-  --bg-glass:     rgba(8, 5, 9, 0.90);
+  --bg:           #18101E;
+  --bg-card:      #221628;
+  --bg-elevated:  #2E1C36;
+  --bg-glass:     rgba(24, 16, 30, 0.92);
   --text:         #F8EEF3;
-  --text-muted:   #C0909F;
-  --text-subtle:  #6A3F52;
+  --text-muted:   #D4A8BC;
+  --text-subtle:  #9A6880;
 
   --gold:         #C9A050;
   --gold-light:   #E2C068;
@@ -43,11 +43,11 @@
   --pink-dark:    #C42050;
   --pink-glow:    rgba(240, 78, 120, 0.25);
 
-  /* Border: vivid pink tint so card edges glow rose */
-  --border:         rgba(240, 78, 120, 0.18);
+  /* Border: pink tint, slightly stronger so edges show on dark bg */
+  --border:         rgba(240, 78, 120, 0.22);
   /* Hover: gold border flash */
-  --border-hover:   rgba(201, 160, 80, 0.55);
-  --shadow-card:    0 8px 40px rgba(0, 0, 0, 0.70);
+  --border-hover:   rgba(201, 160, 80, 0.60);
+  --shadow-card:    0 8px 40px rgba(0, 0, 0, 0.55);
 
   /* Animate all registered vars when data-theme changes */
   transition:
