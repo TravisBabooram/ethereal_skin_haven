@@ -21,6 +21,7 @@ export async function middleware(req: NextRequest) {
   const isAuthRoute = pathname === "/login" || pathname === "/register";
   const isDashboardRoute = pathname.startsWith("/dashboard");
   const isAdminRoute = pathname.startsWith("/admin");
+  const isApiRoute = pathname.startsWith("/api/");
   const isMaintenancePage = pathname === "/maintenance";
 
   // Decode JWT (best-effort)
@@ -38,8 +39,8 @@ export async function middleware(req: NextRequest) {
 
   const isAdmin = payload?.role === "admin";
 
-  // Maintenance mode — admins, admin routes, and login page always bypass
-  if (!isAdminRoute && !isAdmin && !isAuthRoute) {
+  // Maintenance mode — admins, admin routes, auth pages, and API routes always bypass
+  if (!isAdminRoute && !isAdmin && !isAuthRoute && !isApiRoute) {
     const maintenance = await getMaintenanceMode(req.nextUrl.origin);
 
     if (maintenance && !isMaintenancePage) {
