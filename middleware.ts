@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { jwtVerify } from "jose";
+import { authLimiter, bookingLimiter, apiLimiter } from "@/lib/ratelimit";
 
 const JWT_SECRET = new TextEncoder().encode(process.env.JWT_SECRET || "dev-secret");
 
@@ -10,8 +11,62 @@ async function getMaintenanceMode(origin: string): Promise<boolean> {
     const data = await res.json();
     return data.maintenance === true;
   } catch {
-    return false; // fail open — never block the site if the check errors
+    return false;
   }
+}
+
+function getIP(req: NextRequest): string {
+  return (
+    req.headers.get("x-forwarded-for")?.split(",")[0].trim() ||
+    req.headers.get("x-real-ip") ||
+    "anonymous"
+  );
+}
+
+async function applyRateLimit(req: NextRequest): Promise<NextResponse | null> {
+  const { pathname } = req.nextUrl;
+  const ip = getIP(req);
+
+  // Auth routes — strictest limit
+  if (pathname === "/api/auth/login" || pathname === "/api/auth/register") {
+    if (!authLimiter) return null;
+    const { success } = await authLimiter.limit(ip);
+    if (!success) {
+      return NextResponse.json(
+        { error: "Too many attempts. Please wait a minute and try again." },
+        { status: 429 }
+      );
+    }
+    return null;
+  }
+
+  // Booking creation — moderate limit
+  if (pathname === "/api/bookings" && req.method === "POST") {
+    if (!bookingLimiter) return null;
+    const { success } = await bookingLimiter.limit(ip);
+    if (!success) {
+      return NextResponse.json(
+        { error: "Too many booking attempts. Please wait a few minutes and try again." },
+        { status: 429 }
+      );
+    }
+    return null;
+  }
+
+  // All other public API routes — general limit
+  if (pathname.startsWith("/api/") && !pathname.startsWith("/api/admin/")) {
+    if (!apiLimiter) return null;
+    const { success } = await apiLimiter.limit(ip);
+    if (!success) {
+      return NextResponse.json(
+        { error: "Too many requests. Please slow down." },
+        { status: 429 }
+      );
+    }
+    return null;
+  }
+
+  return null;
 }
 
 export async function middleware(req: NextRequest) {
@@ -23,6 +78,12 @@ export async function middleware(req: NextRequest) {
   const isAdminRoute = pathname.startsWith("/admin");
   const isApiRoute = pathname.startsWith("/api/");
   const isMaintenancePage = pathname === "/maintenance";
+
+  // Apply rate limiting to API routes
+  if (isApiRoute) {
+    const limited = await applyRateLimit(req);
+    if (limited) return limited;
+  }
 
   // Decode JWT (best-effort)
   type Payload = { role?: string; userId?: string };
@@ -47,7 +108,6 @@ export async function middleware(req: NextRequest) {
       return NextResponse.redirect(new URL("/maintenance", req.url));
     }
 
-    // If maintenance is OFF but someone navigates to /maintenance directly → send home
     if (!maintenance && isMaintenancePage) {
       return NextResponse.redirect(new URL("/", req.url));
     }
@@ -82,7 +142,6 @@ export async function middleware(req: NextRequest) {
 }
 
 export const config = {
-  // Run on all routes except Next.js internals, static files, and the public maintenance API
   matcher: [
     "/((?!_next/static|_next/image|favicon\\.ico|logo\\.png|api/public/maintenance).*)",
   ],
