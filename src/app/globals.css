@@ -7,47 +7,47 @@
 
 /* ─── Registered (animatable) CSS custom properties ──────── */
 /* @property makes variables transition just like normal CSS values */
-@property --bg            { syntax: '<color>'; inherits: true; initial-value: #0A0808; }
-@property --bg-card       { syntax: '<color>'; inherits: true; initial-value: #110C0C; }
-@property --bg-elevated   { syntax: '<color>'; inherits: true; initial-value: #180E0E; }
-@property --text          { syntax: '<color>'; inherits: true; initial-value: #F2EDE5; }
-@property --text-muted    { syntax: '<color>'; inherits: true; initial-value: #8E7D6E; }
-@property --text-subtle   { syntax: '<color>'; inherits: true; initial-value: #524440; }
-@property --gold          { syntax: '<color>'; inherits: true; initial-value: #C9A96E; }
-@property --gold-light    { syntax: '<color>'; inherits: true; initial-value: #E4C98B; }
-@property --gold-dark     { syntax: '<color>'; inherits: true; initial-value: #A88845; }
-@property --pink          { syntax: '<color>'; inherits: true; initial-value: #E07898; }
-@property --pink-light    { syntax: '<color>'; inherits: true; initial-value: #EFA8BC; }
-@property --pink-dark     { syntax: '<color>'; inherits: true; initial-value: #C0587A; }
+@property --bg            { syntax: '<color>'; inherits: true; initial-value: #080509; }
+@property --bg-card       { syntax: '<color>'; inherits: true; initial-value: #0F080F; }
+@property --bg-elevated   { syntax: '<color>'; inherits: true; initial-value: #170B17; }
+@property --text          { syntax: '<color>'; inherits: true; initial-value: #F8EEF3; }
+@property --text-muted    { syntax: '<color>'; inherits: true; initial-value: #C0909F; }
+@property --text-subtle   { syntax: '<color>'; inherits: true; initial-value: #6A3F52; }
+@property --gold          { syntax: '<color>'; inherits: true; initial-value: #C9A050; }
+@property --gold-light    { syntax: '<color>'; inherits: true; initial-value: #E2C068; }
+@property --gold-dark     { syntax: '<color>'; inherits: true; initial-value: #A07830; }
+@property --pink          { syntax: '<color>'; inherits: true; initial-value: #F04E78; }
+@property --pink-light    { syntax: '<color>'; inherits: true; initial-value: #FF7A9E; }
+@property --pink-dark     { syntax: '<color>'; inherits: true; initial-value: #C42050; }
 
 /* ─── Design Tokens ───────────────────────────────────────── */
 :root {
   /* ── Dark theme (default) ─────────────────────────────────
-     Gold = primary accent  |  Pink = visible secondary accent
-     Background has a warm pink-dark undertone                */
-  --bg:           #0A0808;
-  --bg-card:      #130D0D;
-  --bg-elevated:  #1C1010;
-  --bg-glass:     rgba(10, 8, 8, 0.88);
-  --text:         #F2EDE5;
-  --text-muted:   #9A8070;
-  --text-subtle:  #5A4440;
+     Deep black base — logo black  |  Hot rose-pink primary
+     Champagne gold secondary accent                          */
+  --bg:           #080509;
+  --bg-card:      #0F080F;
+  --bg-elevated:  #170B17;
+  --bg-glass:     rgba(8, 5, 9, 0.90);
+  --text:         #F8EEF3;
+  --text-muted:   #C0909F;
+  --text-subtle:  #6A3F52;
 
-  --gold:         #C9A96E;
-  --gold-light:   #E4C98B;
-  --gold-dark:    #A88845;
-  --gold-glow:    rgba(201, 169, 110, 0.20);
+  --gold:         #C9A050;
+  --gold-light:   #E2C068;
+  --gold-dark:    #A07830;
+  --gold-glow:    rgba(201, 160, 80, 0.22);
 
-  --pink:         #E07898;
-  --pink-light:   #F0A8BC;
-  --pink-dark:    #C05878;
-  --pink-glow:    rgba(224, 120, 152, 0.20);
+  --pink:         #F04E78;
+  --pink-light:   #FF7A9E;
+  --pink-dark:    #C42050;
+  --pink-glow:    rgba(240, 78, 120, 0.25);
 
-  /* Border: pink-warm tint in dark so card edges feel rose-tinged */
-  --border:         rgba(230, 140, 160, 0.13);
-  /* Hover shows gold */
-  --border-hover:   rgba(201, 169, 110, 0.50);
-  --shadow-card:    0 8px 40px rgba(0, 0, 0, 0.65);
+  /* Border: vivid pink tint so card edges glow rose */
+  --border:         rgba(240, 78, 120, 0.18);
+  /* Hover: gold border flash */
+  --border-hover:   rgba(201, 160, 80, 0.55);
+  --shadow-card:    0 8px 40px rgba(0, 0, 0, 0.70);
 
   /* Animate all registered vars when data-theme changes */
   transition:
@@ -67,32 +67,32 @@
 
 [data-theme="light"] {
   /* ── Light theme ──────────────────────────────────────────
-     Gold = real champagne gold (NOT pink)
-     Pink = prominent — drives borders, hovers, backgrounds
-     Base = warm peachy cream                                 */
-  --bg:           #FEF0EC;
-  --bg-card:      #FFF8F5;
-  --bg-elevated:  #FAE8E2;
-  --bg-glass:     rgba(254, 240, 236, 0.94);
-  --text:         #28141A;
-  --text-muted:   #7A4855;
-  --text-subtle:  #BC8490;
+     Crisp white base — clean canvas
+     Bright rose-pink primary, visible everywhere
+     Champagne gold secondary — deeper for contrast on white  */
+  --bg:           #FFFCFE;
+  --bg-card:      #FFFFFF;
+  --bg-elevated:  #FFF0F6;
+  --bg-glass:     rgba(255, 252, 254, 0.94);
+  --text:         #180810;
+  --text-muted:   #6B2840;
+  --text-subtle:  #C080A0;
 
-  --gold:         #C9A96E;
-  --gold-light:   #E4C98B;
-  --gold-dark:    #A88845;
-  --gold-glow:    rgba(201, 169, 110, 0.28);
+  --gold:         #A87828;
+  --gold-light:   #C89840;
+  --gold-dark:    #885018;
+  --gold-glow:    rgba(168, 120, 40, 0.28);
 
-  --pink:         #D04D6A;
-  --pink-light:   #E8809A;
-  --pink-dark:    #AE3055;
-  --pink-glow:    rgba(208, 77, 106, 0.22);
+  --pink:         #E8204E;
+  --pink-light:   #F55070;
+  --pink-dark:    #B80038;
+  --pink-glow:    rgba(232, 32, 78, 0.22);
 
-  /* Border: pink in light so everything feels rose-warm */
-  --border:         rgba(208, 77, 106, 0.20);
-  /* Hover: gold in light so gold is visibly featured */
-  --border-hover:   rgba(201, 169, 110, 0.60);
-  --shadow-card:    0 8px 40px rgba(180, 30, 60, 0.12);
+  /* Border: strong pink so elements are clearly framed */
+  --border:         rgba(232, 32, 78, 0.20);
+  /* Hover: gold flash — feels premium */
+  --border-hover:   rgba(168, 120, 40, 0.58);
+  --shadow-card:    0 8px 40px rgba(184, 0, 56, 0.12);
 }
 
 /* ─── Base ────────────────────────────────────────────────── */
@@ -115,17 +115,15 @@ body {
 /* ─── Scrollbar ───────────────────────────────────────────── */
 ::-webkit-scrollbar              { width: 5px; }
 ::-webkit-scrollbar-track        { background: var(--bg); }
-::-webkit-scrollbar-thumb        { background: var(--pink-dark); border-radius: 4px; }
-::-webkit-scrollbar-thumb:hover  { background: var(--pink); }
+::-webkit-scrollbar-thumb        { background: var(--pink); border-radius: 4px; }
+::-webkit-scrollbar-thumb:hover  { background: var(--pink-light); }
 
-[data-theme="light"] ::-webkit-scrollbar-thumb       { background: var(--gold-dark); }
-[data-theme="light"] ::-webkit-scrollbar-thumb:hover { background: var(--gold); }
+[data-theme="light"] ::-webkit-scrollbar-thumb       { background: var(--pink); }
+[data-theme="light"] ::-webkit-scrollbar-thumb:hover { background: var(--pink-dark); }
 
 /* ─── Selection ───────────────────────────────────────────── */
-/* Dark: pink highlight to show it's there */
 ::selection { background: var(--pink); color: #fff; }
-/* Light: gold highlight */
-[data-theme="light"] ::selection { background: var(--gold); color: #1a0a0e; }
+[data-theme="light"] ::selection { background: var(--pink); color: #fff; }
 
 /* ─── Typography ──────────────────────────────────────────── */
 h1, h2, h3, h4, h5, h6 {
@@ -140,15 +138,15 @@ h1, h2, h3, h4, h5, h6 {
 .font-serif { font-family: var(--font-serif, Georgia, serif); }
 .font-sans  { font-family: var(--font-sans, system-ui, sans-serif); }
 
-/* Dark: pure gold shimmer  |  Light: pink-to-gold-to-pink rose-gold shimmer */
+/* Dark: pink → gold → pink shimmer  |  Light: pink → gold → pink */
 .text-gold-gradient {
-  background: linear-gradient(120deg, var(--gold-dark) 0%, var(--gold-light) 45%, var(--gold-dark) 100%);
+  background: linear-gradient(120deg, var(--pink) 0%, var(--gold-light) 45%, var(--pink-light) 80%, var(--gold) 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
 }
 [data-theme="light"] .text-gold-gradient {
-  background: linear-gradient(120deg, var(--pink-dark) 0%, var(--gold) 40%, var(--pink) 70%, var(--pink-dark) 100%);
+  background: linear-gradient(120deg, var(--pink-dark) 0%, var(--pink) 35%, var(--gold) 65%, var(--pink-dark) 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -181,25 +179,25 @@ h1, h2, h3, h4, h5, h6 {
   z-index: 0 !important;
 }
 
-/* Dark hover: gold border + gold glow with pink undertone */
+/* Dark hover: pink glow primary, gold border flash */
 .card-base:hover {
   border-color: var(--border-hover);
   box-shadow:
     0 0 0 1px var(--border-hover),
-    0 20px 60px rgba(0, 0, 0, 0.45),
-    0 0 32px var(--gold-glow),
-    0 0 16px var(--pink-glow);
+    0 20px 60px rgba(0, 0, 0, 0.55),
+    0 0 40px var(--pink-glow),
+    0 0 20px var(--gold-glow);
   transform: translateY(-3px);
 }
 
-/* Light hover: gold border + gold glow (gold is the "treat" in light mode) */
+/* Light hover: pink glow primary, gold border */
 [data-theme="light"] .card-base:hover {
   border-color: var(--border-hover);
   box-shadow:
     0 0 0 1px var(--border-hover),
-    0 16px 48px rgba(180, 30, 60, 0.13),
-    0 0 32px var(--gold-glow),
-    0 0 16px var(--pink-glow);
+    0 16px 48px rgba(184, 0, 56, 0.13),
+    0 0 36px var(--pink-glow),
+    0 0 18px var(--gold-glow);
   transform: translateY(-3px);
 }
 
@@ -223,9 +221,9 @@ h1, h2, h3, h4, h5, h6 {
   background: linear-gradient(
     90deg,
     transparent 0%,
-    rgba(201,169,110,0.07) 40%,
-    rgba(201,169,110,0.13) 50%,
-    rgba(201,169,110,0.07) 60%,
+    rgba(240,78,120,0.06) 30%,
+    rgba(201,160,80,0.12) 50%,
+    rgba(240,78,120,0.06) 70%,
     transparent 100%
   );
   transform: translateX(-120%) skewX(-12deg);
@@ -241,9 +239,9 @@ h1, h2, h3, h4, h5, h6 {
   background: linear-gradient(
     90deg,
     transparent 0%,
-    rgba(201,169,110,0.10) 40%,
-    rgba(201,169,110,0.18) 50%,
-    rgba(201,169,110,0.10) 60%,
+    rgba(232,32,78,0.08) 30%,
+    rgba(168,120,40,0.16) 50%,
+    rgba(232,32,78,0.08) 70%,
     transparent 100%
   );
 }
@@ -263,15 +261,15 @@ h1, h2, h3, h4, h5, h6 {
 @media (max-width: 768px) { .section-pad { padding: 72px 0; } }
 
 /* ─── Accent line ─────────────────────────────────────────── */
-/* Dark: gold → pink  |  Light: pink → gold */
+/* Both modes: pink → gold */
 .gold-line {
   display: block;
   width: 40px;
   height: 1px;
-  background: linear-gradient(90deg, transparent, var(--gold) 45%, var(--pink) 70%, transparent);
+  background: linear-gradient(90deg, transparent, var(--pink) 35%, var(--gold) 65%, transparent);
 }
 [data-theme="light"] .gold-line {
-  background: linear-gradient(90deg, transparent, var(--pink) 40%, var(--gold) 65%, transparent);
+  background: linear-gradient(90deg, transparent, var(--pink) 35%, var(--gold) 65%, transparent);
 }
 
 /* ─── Inputs ──────────────────────────────────────────────── */
@@ -290,10 +288,10 @@ h1, h2, h3, h4, h5, h6 {
 }
 .input-base::placeholder { color: var(--text-subtle); }
 
-/* Dark focus: gold ring  |  Light focus: pink ring */
+/* Both modes: pink focus ring, gold tint */
 .input-base:focus {
-  border-color: var(--gold);
-  box-shadow: 0 0 0 3px var(--gold-glow);
+  border-color: var(--pink);
+  box-shadow: 0 0 0 3px var(--pink-glow);
 }
 [data-theme="light"] .input-base:focus {
   border-color: var(--pink);
@@ -312,7 +310,7 @@ a { transition: color 0.2s ease; }
   line-height: 0;
 }
 .logo-wrap img { mix-blend-mode: screen; display: block; }
-[data-theme="light"] .logo-wrap { background: #0A0808; box-shadow: 0 2px 12px rgba(0,0,0,0.22); }
+[data-theme="light"] .logo-wrap { background: #080509; box-shadow: 0 2px 12px rgba(0,0,0,0.22); }
 [data-theme="light"] .logo-wrap img { mix-blend-mode: normal; }
 
 .logo-wrap-lg {
@@ -323,7 +321,7 @@ a { transition: color 0.2s ease; }
   line-height: 0;
 }
 .logo-wrap-lg img { mix-blend-mode: screen; display: block; }
-[data-theme="light"] .logo-wrap-lg { background: #0A0808; box-shadow: 0 3px 16px rgba(0,0,0,0.2); }
+[data-theme="light"] .logo-wrap-lg { background: #080509; box-shadow: 0 3px 16px rgba(0,0,0,0.2); }
 [data-theme="light"] .logo-wrap-lg img { mix-blend-mode: normal; }
 
 /* ─── Navbar ──────────────────────────────────────────────── */
@@ -338,17 +336,17 @@ a { transition: color 0.2s ease; }
   .nav-book-btn { display: none !important; }
 }
 
-/* Dark: gold outline button  |  Light: pink outline button */
+/* Both modes: pink outline button — gold fill on hover */
 .nav-book-btn {
   display: inline-flex; align-items: center;
   padding: 9px 22px;
-  border: 1px solid var(--gold);
-  color: var(--gold);
+  border: 1px solid var(--pink);
+  color: var(--pink);
   font-size: 10px; letter-spacing: 0.22em; text-transform: uppercase;
   text-decoration: none; font-weight: 500; border-radius: 2px;
   transition: background 0.3s ease, color 0.3s ease, border-color 0.3s ease;
 }
-.nav-book-btn:hover { background: var(--gold); color: #0A0808; }
+.nav-book-btn:hover { background: var(--pink); color: #fff; border-color: var(--pink); }
 
 [data-theme="light"] .nav-book-btn { border-color: var(--pink); color: var(--pink); }
 [data-theme="light"] .nav-book-btn:hover { background: var(--pink); color: #fff; border-color: var(--pink); }
