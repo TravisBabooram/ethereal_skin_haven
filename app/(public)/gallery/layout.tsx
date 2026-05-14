@@ -4,8 +4,8 @@ import { getSetting } from "@/lib/services/settings";
 export async function generateMetadata(): Promise<Metadata> {
   const [title, desc] = await Promise.all([getSetting("seo_gallery_title"), getSetting("seo_gallery_desc")]);
   return {
-    title: title || "Gallery",
-    description: desc || "Browse our gallery of treatment results and spa atmosphere at Ethereal Skin Haven.",
+    title: title || "Treatment Results Gallery — Before & After",
+    description: desc || "See real results from our luxury spa services — facials, waxing, brow lamination & more at Ethereal Skin Haven in Couva, Trinidad.",
   };
 }
 

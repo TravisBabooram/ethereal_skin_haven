@@ -21,12 +21,12 @@ const inter = Inter({
 
 export const metadata: Metadata = {
   title: {
-    default: "Ethereal Skin Haven — Luxury Spa & Esthetics",
+    default: "Ethereal Skin Haven — Luxury Spa & Esthetics in Trinidad",
     template: "%s | Ethereal Skin Haven",
   },
   description:
-    "Experience the art of radiant skin. Luxury esthetics treatments, premium skincare products, and effortless online booking.",
-  keywords: ["luxury spa", "esthetics", "skincare", "facial", "booking"],
+    "Book luxury facials, waxing, brow lamination & nail services in Couva, Trinidad. Open Tuesday–Saturday, 9am–6pm.",
+  keywords: ["luxury spa Trinidad", "esthetics Trinidad", "facial Couva", "waxing Trinidad", "brow lamination Trinidad", "skincare Trinidad", "Ethereal Skin Haven"],
   icons: {
     icon: "/logo.png",
     shortcut: "/logo.png",
@@ -35,8 +35,8 @@ export const metadata: Metadata = {
   openGraph: {
     type: "website",
     locale: "en_US",
-    title: "Ethereal Skin Haven — Luxury Spa & Esthetics",
-    description: "Experience the art of radiant skin.",
+    title: "Ethereal Skin Haven — Luxury Spa & Esthetics in Trinidad",
+    description: "Book luxury facials, waxing, brow lamination & nail services in Couva, Trinidad. Open Tue–Sat, 9am–6pm.",
     siteName: "Ethereal Skin Haven",
     images: [{ url: "/logo.png", width: 685, height: 685, alt: "Ethereal Skin Haven" }],
   },

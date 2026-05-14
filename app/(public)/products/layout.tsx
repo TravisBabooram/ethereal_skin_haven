@@ -4,8 +4,8 @@ import { getSetting } from "@/lib/services/settings";
 export async function generateMetadata(): Promise<Metadata> {
   const [title, desc] = await Promise.all([getSetting("seo_products_title"), getSetting("seo_products_desc")]);
   return {
-    title: title || "Professional Skincare Products",
-    description: desc || "Shop professional-grade skincare products recommended by our estheticians — Esthemax, Starpil, Bushbalm, and more.",
+    title: title || "Professional Skincare Products — Shop Online",
+    description: desc || "Shop esthetician-recommended skincare: Esthemax, Starpil, Bushbalm & more. Professional-grade products for every skin type, available in Couva, Trinidad.",
   };
 }
 

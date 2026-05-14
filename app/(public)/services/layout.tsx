@@ -5,8 +5,8 @@ import SchemaMarkup from "@/components/seo/SchemaMarkup";
 export async function generateMetadata(): Promise<Metadata> {
   const [title, desc] = await Promise.all([getSetting("seo_services_title"), getSetting("seo_services_desc")]);
   return {
-    title: title || "Our Services",
-    description: desc || "Explore our luxury spa treatments: facials, waxing, intimate care, brow lamination, and nail services — all professionally performed in Trinidad.",
+    title: title || "Spa Services — Facials, Waxing & Brow Lamination",
+    description: desc || "Explore luxury esthetics treatments in Couva, Trinidad — HydraFacials, Brazilian waxing, brow lamination, intimate care & nail services. Book online.",
   };
 }
 

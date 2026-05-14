@@ -5,8 +5,8 @@ import SchemaMarkup, { LOCAL_BUSINESS_SCHEMA } from "@/components/seo/SchemaMark
 export async function generateMetadata(): Promise<Metadata> {
   const [title, desc] = await Promise.all([getSetting("seo_contact_title"), getSetting("seo_contact_desc")]);
   return {
-    title: title || "Contact Us",
-    description: desc || "Get in touch with Ethereal Skin Haven. Find our location, hours, phone number, and social media — or send us a message.",
+    title: title || "Contact Us — Ethereal Skin Haven, Couva Trinidad",
+    description: desc || "Reach Ethereal Skin Haven in Couva, Trinidad. Call, WhatsApp, or message us online. Open Tuesday–Saturday 9am–6pm. Book your treatment today.",
   };
 }
 

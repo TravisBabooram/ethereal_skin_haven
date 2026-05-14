@@ -12,9 +12,9 @@ import InstagramFeed from "@/components/home/InstagramFeed";
 export async function generateMetadata(): Promise<Metadata> {
   const [title, desc] = await Promise.all([getSetting("seo_home_title"), getSetting("seo_home_desc")]);
   return {
-    title: title || "Luxury Spa & Esthetics Treatments",
-    description: desc || "Experience the art of radiant skin. Luxury esthetics treatments, premium skincare products, and effortless online booking in Trinidad.",
-    openGraph: { title: title || "Ethereal Skin Haven", description: desc || "Luxury spa & esthetics treatments." },
+    title: title || "Luxury Spa & Esthetics in Couva, Trinidad",
+    description: desc || "Book luxury facials, waxing, brow lamination & nail services in Couva, Trinidad. Open Tuesday–Saturday, 9am–6pm. Easy online booking.",
+    openGraph: { title: title || "Ethereal Skin Haven — Luxury Spa & Esthetics", description: desc || "Book luxury facials, waxing, brow lamination & nail services in Couva, Trinidad. Open Tue–Sat, 9am–6pm." },
   };
 }
 
