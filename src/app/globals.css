@@ -6,93 +6,87 @@
 }
 
 /* ─── Registered (animatable) CSS custom properties ──────── */
-/* @property makes variables transition just like normal CSS values */
-@property --bg            { syntax: '<color>'; inherits: true; initial-value: #18101E; }
-@property --bg-card       { syntax: '<color>'; inherits: true; initial-value: #221628; }
-@property --bg-elevated   { syntax: '<color>'; inherits: true; initial-value: #2E1C36; }
-@property --text          { syntax: '<color>'; inherits: true; initial-value: #F8EEF3; }
-@property --text-muted    { syntax: '<color>'; inherits: true; initial-value: #D4A8BC; }
-@property --text-subtle   { syntax: '<color>'; inherits: true; initial-value: #9A6880; }
-@property --gold          { syntax: '<color>'; inherits: true; initial-value: #C9A050; }
-@property --gold-light    { syntax: '<color>'; inherits: true; initial-value: #E2C068; }
-@property --gold-dark     { syntax: '<color>'; inherits: true; initial-value: #A07830; }
-@property --pink          { syntax: '<color>'; inherits: true; initial-value: #F04E78; }
-@property --pink-light    { syntax: '<color>'; inherits: true; initial-value: #FF7A9E; }
-@property --pink-dark     { syntax: '<color>'; inherits: true; initial-value: #C42050; }
+@property --bg            { syntax: '<color>'; inherits: true; initial-value: #1C1816; }
+@property --bg-card       { syntax: '<color>'; inherits: true; initial-value: #252019; }
+@property --bg-elevated   { syntax: '<color>'; inherits: true; initial-value: #302820; }
+@property --text          { syntax: '<color>'; inherits: true; initial-value: #EEE4D8; }
+@property --text-muted    { syntax: '<color>'; inherits: true; initial-value: #BA9C88; }
+@property --text-subtle   { syntax: '<color>'; inherits: true; initial-value: #72584A; }
+@property --gold          { syntax: '<color>'; inherits: true; initial-value: #C89260; }
+@property --gold-light    { syntax: '<color>'; inherits: true; initial-value: #DFB07C; }
+@property --gold-dark     { syntax: '<color>'; inherits: true; initial-value: #9E6C3C; }
+@property --pink          { syntax: '<color>'; inherits: true; initial-value: #E0406E; }
+@property --pink-light    { syntax: '<color>'; inherits: true; initial-value: #F06888; }
+@property --pink-dark     { syntax: '<color>'; inherits: true; initial-value: #A82050; }
 
 /* ─── Design Tokens ───────────────────────────────────────── */
 :root {
-  /* ── Dark theme (default) ─────────────────────────────────
-     Deep black base — logo black  |  Hot rose-pink primary
-     Champagne gold secondary accent                          */
-  --bg:           #18101E;
-  --bg-card:      #221628;
-  --bg-elevated:  #2E1C36;
-  --bg-glass:     rgba(24, 16, 30, 0.92);
-  --text:         #F8EEF3;
-  --text-muted:   #D4A8BC;
-  --text-subtle:  #9A6880;
+  /* ── Dark theme — Velvet Dusk ─────────────────────────────
+     Warm charcoal-brown, not aggressive black or purple.
+     Dusty antique rose primary | Warm amber-gold accent.
+     Eyes rest here. Nothing fights. Everything glows.         */
+  --bg:           #1C1816;
+  --bg-card:      #252019;
+  --bg-elevated:  #302820;
+  --bg-glass:     rgba(28, 24, 22, 0.90);
+  --text:         #EEE4D8;
+  --text-muted:   #BA9C88;
+  --text-subtle:  #72584A;
 
-  --gold:         #C9A050;
-  --gold-light:   #E2C068;
-  --gold-dark:    #A07830;
-  --gold-glow:    rgba(201, 160, 80, 0.22);
+  --gold:         #C89260;
+  --gold-light:   #DFB07C;
+  --gold-dark:    #9E6C3C;
+  --gold-glow:    rgba(200, 146, 96, 0.24);
 
-  --pink:         #F04E78;
-  --pink-light:   #FF7A9E;
-  --pink-dark:    #C42050;
-  --pink-glow:    rgba(240, 78, 120, 0.25);
+  --pink:         #E0406E;
+  --pink-light:   #F06888;
+  --pink-dark:    #A82050;
+  --pink-glow:    rgba(224, 64, 110, 0.26);
 
-  /* Border: pink tint, slightly stronger so edges show on dark bg */
-  --border:         rgba(240, 78, 120, 0.22);
-  /* Hover: gold border flash */
-  --border-hover:   rgba(201, 160, 80, 0.60);
-  --shadow-card:    0 8px 40px rgba(0, 0, 0, 0.55);
+  --border:         rgba(224, 64, 110, 0.20);
+  --border-hover:   rgba(200, 146, 96, 0.58);
+  --shadow-card:    0 8px 40px rgba(0, 0, 0, 0.38);
 
-  /* Animate all registered vars when data-theme changes */
   transition:
-    --bg 0.5s ease,
-    --bg-card 0.5s ease,
-    --bg-elevated 0.5s ease,
-    --text 0.5s ease,
-    --text-muted 0.5s ease,
-    --text-subtle 0.5s ease,
-    --gold 0.5s ease,
-    --gold-light 0.5s ease,
-    --gold-dark 0.5s ease,
-    --pink 0.5s ease,
-    --pink-light 0.5s ease,
-    --pink-dark 0.5s ease;
+    --bg           0.65s cubic-bezier(0.4, 0, 0.2, 1),
+    --bg-card      0.65s cubic-bezier(0.4, 0, 0.2, 1),
+    --bg-elevated  0.65s cubic-bezier(0.4, 0, 0.2, 1),
+    --text         0.65s cubic-bezier(0.4, 0, 0.2, 1),
+    --text-muted   0.65s cubic-bezier(0.4, 0, 0.2, 1),
+    --text-subtle  0.65s cubic-bezier(0.4, 0, 0.2, 1),
+    --gold         0.65s cubic-bezier(0.4, 0, 0.2, 1),
+    --gold-light   0.65s cubic-bezier(0.4, 0, 0.2, 1),
+    --gold-dark    0.65s cubic-bezier(0.4, 0, 0.2, 1),
+    --pink         0.65s cubic-bezier(0.4, 0, 0.2, 1),
+    --pink-light   0.65s cubic-bezier(0.4, 0, 0.2, 1),
+    --pink-dark    0.65s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 [data-theme="light"] {
-  /* ── Light theme ──────────────────────────────────────────
-     Crisp white base — clean canvas
-     Bright rose-pink primary, visible everywhere
-     Champagne gold secondary — deeper for contrast on white  */
-  --bg:           #FFFCFE;
-  --bg-card:      #FFFFFF;
-  --bg-elevated:  #FFF0F6;
-  --bg-glass:     rgba(255, 252, 254, 0.94);
-  --text:         #180810;
-  --text-muted:   #6B2840;
-  --text-subtle:  #C080A0;
+  /* ── Light theme — Morning Parchment ─────────────────────
+     Warm cream — never blinding white. The feeling of
+     morning light through linen. Rosy, soft, inviting.       */
+  --bg:           #F5EDE3;
+  --bg-card:      #FCF6EF;
+  --bg-elevated:  #FEEEE3;
+  --bg-glass:     rgba(245, 237, 227, 0.93);
+  --text:         #190F09;
+  --text-muted:   #5C3820;
+  --text-subtle:  #A07858;
 
-  --gold:         #A87828;
-  --gold-light:   #C89840;
-  --gold-dark:    #885018;
-  --gold-glow:    rgba(168, 120, 40, 0.28);
+  --gold:         #9C6C28;
+  --gold-light:   #BA8A40;
+  --gold-dark:    #7A4C18;
+  --gold-glow:    rgba(156, 108, 40, 0.26);
 
-  --pink:         #E8204E;
-  --pink-light:   #F55070;
-  --pink-dark:    #B80038;
-  --pink-glow:    rgba(232, 32, 78, 0.22);
+  --pink:         #D42864;
+  --pink-light:   #E85080;
+  --pink-dark:    #921048;
+  --pink-glow:    rgba(212, 40, 100, 0.22);
 
-  /* Border: strong pink so elements are clearly framed */
-  --border:         rgba(232, 32, 78, 0.20);
-  /* Hover: gold flash — feels premium */
-  --border-hover:   rgba(168, 120, 40, 0.58);
-  --shadow-card:    0 8px 40px rgba(184, 0, 56, 0.12);
+  --border:         rgba(212, 40, 100, 0.18);
+  --border-hover:   rgba(156, 108, 40, 0.52);
+  --shadow-card:    0 8px 40px rgba(90, 40, 18, 0.10);
 }
 
 /* ─── Base ────────────────────────────────────────────────── */
@@ -113,13 +107,16 @@ body {
 }
 
 /* ─── Scrollbar ───────────────────────────────────────────── */
-::-webkit-scrollbar              { width: 5px; }
+::-webkit-scrollbar              { width: 4px; }
 ::-webkit-scrollbar-track        { background: var(--bg); }
-::-webkit-scrollbar-thumb        { background: var(--pink); border-radius: 4px; }
-::-webkit-scrollbar-thumb:hover  { background: var(--pink-light); }
+::-webkit-scrollbar-thumb        {
+  background: linear-gradient(180deg, var(--gold-light), var(--pink));
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover  { background: linear-gradient(180deg, var(--gold), var(--pink-dark)); }
 
-[data-theme="light"] ::-webkit-scrollbar-thumb       { background: var(--pink); }
-[data-theme="light"] ::-webkit-scrollbar-thumb:hover { background: var(--pink-dark); }
+[data-theme="light"] ::-webkit-scrollbar-thumb       { background: linear-gradient(180deg, var(--gold), var(--pink)); }
+[data-theme="light"] ::-webkit-scrollbar-thumb:hover { background: linear-gradient(180deg, var(--gold-dark), var(--pink-dark)); }
 
 /* ─── Selection ───────────────────────────────────────────── */
 ::selection { background: var(--pink); color: #fff; }
@@ -138,25 +135,56 @@ h1, h2, h3, h4, h5, h6 {
 .font-serif { font-family: var(--font-serif, Georgia, serif); }
 .font-sans  { font-family: var(--font-sans, system-ui, sans-serif); }
 
-/* Dark: pink → gold → pink shimmer  |  Light: pink → gold → pink */
+/* ─── Animated gold gradient text ────────────────────────── */
+/* Sweeps rose → gold → rose endlessly — living, not static  */
 .text-gold-gradient {
-  background: linear-gradient(120deg, var(--pink) 0%, var(--gold-light) 45%, var(--pink-light) 80%, var(--gold) 100%);
+  background: linear-gradient(
+    120deg,
+    var(--pink-dark)  0%,
+    var(--gold)       22%,
+    var(--pink)       44%,
+    var(--gold-light) 66%,
+    var(--pink)       88%,
+    var(--gold)       100%
+  );
+  background-size: 200% auto;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
+  animation: gradient-flow 7s linear infinite;
 }
 [data-theme="light"] .text-gold-gradient {
-  background: linear-gradient(120deg, var(--pink-dark) 0%, var(--pink) 35%, var(--gold) 65%, var(--pink-dark) 100%);
+  background: linear-gradient(
+    120deg,
+    var(--pink-dark)  0%,
+    var(--gold-dark)  22%,
+    var(--pink)       44%,
+    var(--gold)       66%,
+    var(--pink-dark)  88%,
+    var(--gold-dark)  100%
+  );
+  background-size: 200% auto;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
+  animation: gradient-flow 7s linear infinite;
 }
 
+/* ─── Glassmorphism ───────────────────────────────────────── */
 .glass {
   background: var(--bg-glass);
-  backdrop-filter: blur(24px);
-  -webkit-backdrop-filter: blur(24px);
-  border: 1px solid var(--border);
+  backdrop-filter: blur(28px) saturate(145%);
+  -webkit-backdrop-filter: blur(28px) saturate(145%);
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  box-shadow:
+    0 8px 32px rgba(0, 0, 0, 0.28),
+    inset 0 1px 0 rgba(255, 255, 255, 0.07);
+}
+[data-theme="light"] .glass {
+  border-color: rgba(170, 88, 112, 0.10);
+  box-shadow:
+    0 8px 32px rgba(90, 40, 18, 0.08),
+    inset 0 1px 0 rgba(255, 255, 255, 0.55);
 }
 
 /* ─── Cards ───────────────────────────────────────────────── */
@@ -164,85 +192,75 @@ h1, h2, h3, h4, h5, h6 {
   position: relative;
   background: var(--bg-card);
   border: 1px solid var(--border);
-  border-radius: 6px;
-  transition: border-color 0.3s ease, box-shadow 0.3s ease, transform 0.35s ease;
+  border-radius: 10px;
+  overflow: hidden;
+  transition:
+    border-color  0.40s cubic-bezier(0.23, 1, 0.32, 1),
+    box-shadow    0.40s cubic-bezier(0.23, 1, 0.32, 1),
+    transform     0.40s cubic-bezier(0.23, 1, 0.32, 1);
 }
 
-/*
- * Applied per-card during theme cascade.
- * !important beats React's inline style={{ background: "var(--bg-card)" }}.
- * z-index: 0 forces a new stacking context so that the z=-1 overlay
- * paints between the card's background and its content (not over it).
- */
 .card-cascade-live {
   background: transparent !important;
   z-index: 0 !important;
 }
 
-/* Dark hover: pink glow primary, gold border flash */
+/* Hover — 4 px lift, layered glow, rim light on top edge */
 .card-base:hover {
   border-color: var(--border-hover);
   box-shadow:
     0 0 0 1px var(--border-hover),
-    0 20px 60px rgba(0, 0, 0, 0.55),
-    0 0 40px var(--pink-glow),
-    0 0 20px var(--gold-glow);
-  transform: translateY(-3px);
+    0 24px 72px rgba(0, 0, 0, 0.42),
+    0 0 56px var(--pink-glow),
+    0 0 28px var(--gold-glow),
+    inset 0 1px 0 rgba(255, 255, 255, 0.06);
+  transform: translateY(-4px);
 }
 
-/* Light hover: pink glow primary, gold border */
 [data-theme="light"] .card-base:hover {
   border-color: var(--border-hover);
   box-shadow:
     0 0 0 1px var(--border-hover),
-    0 16px 48px rgba(184, 0, 56, 0.13),
-    0 0 36px var(--pink-glow),
-    0 0 18px var(--gold-glow);
-  transform: translateY(-3px);
+    0 20px 56px rgba(90, 40, 18, 0.14),
+    0 0 44px var(--pink-glow),
+    0 0 22px var(--gold-glow),
+    inset 0 1px 0 rgba(255, 255, 255, 0.60);
+  transform: translateY(-4px);
 }
 
 /* ─── Card shimmer sweep on hover ────────────────────────── */
-@keyframes card-shimmer {
-  0%   { transform: translateX(-120%) skewX(-12deg); }
-  100% { transform: translateX(240%)  skewX(-12deg); }
-}
-
-.card-base {
-  overflow: hidden;
-}
-
 .card-base::after {
   content: '';
   position: absolute;
   top: 0;
   left: 0;
-  width: 45%;
+  width: 50%;
   height: 100%;
   background: linear-gradient(
     90deg,
-    transparent 0%,
-    rgba(240,78,120,0.06) 30%,
-    rgba(201,160,80,0.12) 50%,
-    rgba(240,78,120,0.06) 70%,
-    transparent 100%
+    transparent              0%,
+    rgba(192, 120, 140, 0.05) 25%,
+    rgba(200, 146, 96, 0.11)  50%,
+    rgba(223, 176, 124, 0.07) 70%,
+    transparent              100%
   );
-  transform: translateX(-120%) skewX(-12deg);
+  transform: translateX(-130%) skewX(-14deg);
   pointer-events: none;
   z-index: 1;
 }
 
 .card-base:hover::after {
-  animation: card-shimmer 0.75s ease forwards;
+  animation: card-shimmer 0.8s cubic-bezier(0.23, 1, 0.32, 1) forwards;
 }
 
 [data-theme="light"] .card-base::after {
   background: linear-gradient(
     90deg,
-    transparent 0%,
-    rgba(232,32,78,0.08) 30%,
-    rgba(168,120,40,0.16) 50%,
-    rgba(232,32,78,0.08) 70%,
-    transparent 100%
+    transparent              0%,
+    rgba(170, 88, 112, 0.06) 25%,
+    rgba(156, 108, 40, 0.14)  50%,
+    rgba(186, 138, 64, 0.08) 70%,
+    transparent              100%
   );
 }
 
@@ -251,7 +269,7 @@ h1, h2, h3, h4, h5, h6 {
   content: '';
   position: absolute;
   inset: 0;
-  opacity: 0.025;
+  opacity: 0.020;
   background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
   pointer-events: none;
 }
@@ -261,12 +279,12 @@ h1, h2, h3, h4, h5, h6 {
 @media (max-width: 768px) { .section-pad { padding: 72px 0; } }
 
 /* ─── Accent line ─────────────────────────────────────────── */
-/* Both modes: pink → gold */
 .gold-line {
   display: block;
   width: 40px;
   height: 1px;
   background: linear-gradient(90deg, transparent, var(--pink) 35%, var(--gold) 65%, transparent);
+  animation: line-extend 0.7s cubic-bezier(0.23, 1, 0.32, 1) both;
 }
 [data-theme="light"] .gold-line {
   background: linear-gradient(90deg, transparent, var(--pink) 35%, var(--gold) 65%, transparent);
@@ -278,28 +296,33 @@ h1, h2, h3, h4, h5, h6 {
   background: var(--bg-elevated);
   border: 1px solid var(--border);
   color: var(--text);
-  border-radius: 4px;
+  border-radius: 6px;
   padding: 14px 16px;
   font-size: 14px;
   font-family: var(--font-sans, system-ui, sans-serif);
-  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  transition:
+    border-color 0.25s cubic-bezier(0.23, 1, 0.32, 1),
+    box-shadow   0.25s cubic-bezier(0.23, 1, 0.32, 1);
   outline: none;
   -webkit-appearance: none;
 }
 .input-base::placeholder { color: var(--text-subtle); }
 
-/* Both modes: pink focus ring, gold tint */
 .input-base:focus {
   border-color: var(--pink);
-  box-shadow: 0 0 0 3px var(--pink-glow);
+  box-shadow:
+    0 0 0 3px var(--pink-glow),
+    0 0 12px var(--pink-glow);
 }
 [data-theme="light"] .input-base:focus {
   border-color: var(--pink);
-  box-shadow: 0 0 0 3px var(--pink-glow);
+  box-shadow:
+    0 0 0 3px var(--pink-glow),
+    0 0 12px var(--pink-glow);
 }
 
 /* ─── Links ───────────────────────────────────────────────── */
-a { transition: color 0.2s ease; }
+a { transition: color 0.22s ease; }
 
 /* ─── Logo blending ───────────────────────────────────────── */
 .logo-wrap {
@@ -309,19 +332,20 @@ a { transition: color 0.2s ease; }
   flex-shrink: 0;
   line-height: 0;
 }
+/* Screen blend lets logo absorb warmth of the bg — never jarring */
 .logo-wrap img { mix-blend-mode: screen; display: block; }
-[data-theme="light"] .logo-wrap { background: #080509; box-shadow: 0 2px 12px rgba(0,0,0,0.22); }
+[data-theme="light"] .logo-wrap { background: #100C0A; box-shadow: 0 2px 12px rgba(0,0,0,0.18); }
 [data-theme="light"] .logo-wrap img { mix-blend-mode: normal; }
 
 .logo-wrap-lg {
   display: inline-flex;
-  border-radius: 8px;
+  border-radius: 10px;
   overflow: hidden;
   flex-shrink: 0;
   line-height: 0;
 }
 .logo-wrap-lg img { mix-blend-mode: screen; display: block; }
-[data-theme="light"] .logo-wrap-lg { background: #080509; box-shadow: 0 3px 16px rgba(0,0,0,0.2); }
+[data-theme="light"] .logo-wrap-lg { background: #100C0A; box-shadow: 0 3px 16px rgba(0,0,0,0.16); }
 [data-theme="light"] .logo-wrap-lg img { mix-blend-mode: normal; }
 
 /* ─── Navbar ──────────────────────────────────────────────── */
@@ -336,26 +360,114 @@ a { transition: color 0.2s ease; }
   .nav-book-btn { display: none !important; }
 }
 
-/* Both modes: pink outline button — gold fill on hover */
+/* Book button — rose outline, fills on hover with silk ease */
 .nav-book-btn {
   display: inline-flex; align-items: center;
   padding: 9px 22px;
   border: 1px solid var(--pink);
   color: var(--pink);
   font-size: 10px; letter-spacing: 0.22em; text-transform: uppercase;
-  text-decoration: none; font-weight: 500; border-radius: 2px;
-  transition: background 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+  text-decoration: none; font-weight: 500; border-radius: 3px;
+  transition:
+    background     0.35s cubic-bezier(0.23, 1, 0.32, 1),
+    color          0.35s cubic-bezier(0.23, 1, 0.32, 1),
+    border-color   0.35s cubic-bezier(0.23, 1, 0.32, 1),
+    box-shadow     0.35s cubic-bezier(0.23, 1, 0.32, 1);
 }
-.nav-book-btn:hover { background: var(--pink); color: #fff; border-color: var(--pink); }
+.nav-book-btn:hover {
+  background: var(--pink);
+  color: #fff;
+  border-color: var(--pink);
+  box-shadow: 0 0 20px var(--pink-glow);
+}
 
 [data-theme="light"] .nav-book-btn { border-color: var(--pink); color: var(--pink); }
-[data-theme="light"] .nav-book-btn:hover { background: var(--pink); color: #fff; border-color: var(--pink); }
+[data-theme="light"] .nav-book-btn:hover {
+  background: var(--pink);
+  color: #fff;
+  border-color: var(--pink);
+  box-shadow: 0 0 20px var(--pink-glow);
+}
 
+/* ─── Keyframes ───────────────────────────────────────────── */
 
-/* ─── Animations ──────────────────────────────────────────── */
+/* Gold gradient text — smooth infinite shimmer sweep */
+@keyframes gradient-flow {
+  0%   { background-position: 0% center; }
+  100% { background-position: 200% center; }
+}
+
+/* Card shimmer — gold sweep on hover */
+@keyframes card-shimmer {
+  0%   { transform: translateX(-130%) skewX(-14deg); }
+  100% { transform: translateX(250%)  skewX(-14deg); }
+}
+
+/* Accent line — extends from center outward */
+@keyframes line-extend {
+  from { width: 0; opacity: 0; }
+  to   { width: 40px; opacity: 1; }
+}
+
+/* Gentle floating — used in hero sections */
+@keyframes float-gentle {
+  0%, 100% { transform: translateY(0px)    rotate(0deg);   }
+  33%       { transform: translateY(-14px)  rotate(1.2deg); }
+  66%       { transform: translateY(-7px)   rotate(-0.8deg);}
+}
+
+/* Deeper float with slight scale for background orbs */
+@keyframes float-deep {
+  0%, 100% { transform: translateY(0px)   scale(1);    }
+  50%       { transform: translateY(-22px) scale(1.04); }
+}
+
+/* Soft glow pulse — breathing glow on decorative elements */
+@keyframes glow-pulse {
+  0%, 100% { opacity: 0.5; transform: scale(1);    }
+  50%       { opacity: 1;   transform: scale(1.06); }
+}
+
+/* Spin — loading spinners */
 @keyframes spin { to { transform: rotate(360deg); } }
 
-/* ─── Page hero sections (services / products / about / contact / etc.) ── */
+/* Fade up — scroll reveal entrance */
+@keyframes fade-up {
+  from { opacity: 0; transform: translateY(28px); }
+  to   { opacity: 1; transform: translateY(0);    }
+}
+
+/* Fade in — simple opacity reveal */
+@keyframes fade-in {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+/* Scale in — card entrance */
+@keyframes scale-in {
+  from { opacity: 0; transform: scale(0.96); }
+  to   { opacity: 1; transform: scale(1);    }
+}
+
+/* Staggered entrance helpers */
+.anim-fade-up   { animation: fade-up   0.65s cubic-bezier(0.23, 1, 0.32, 1) both; }
+.anim-fade-in   { animation: fade-in   0.55s ease both; }
+.anim-scale-in  { animation: scale-in  0.55s cubic-bezier(0.23, 1, 0.32, 1) both; }
+.anim-float     { animation: float-gentle 6s ease-in-out infinite; }
+.anim-float-deep { animation: float-deep  8s ease-in-out infinite; }
+.anim-glow      { animation: glow-pulse   4s ease-in-out infinite; }
+
+/* Delay utilities */
+.delay-100  { animation-delay: 0.10s; }
+.delay-200  { animation-delay: 0.20s; }
+.delay-300  { animation-delay: 0.30s; }
+.delay-400  { animation-delay: 0.40s; }
+.delay-500  { animation-delay: 0.50s; }
+.delay-600  { animation-delay: 0.60s; }
+.delay-700  { animation-delay: 0.70s; }
+.delay-800  { animation-delay: 0.80s; }
+
+/* ─── Page hero sections ─────────────────────────────────── */
 .page-hero {
   padding-top: 160px;
   padding-bottom: 80px;
@@ -367,16 +479,16 @@ a { transition: color 0.2s ease; }
   .page-hero { padding-top: 90px !important; padding-bottom: 40px !important; }
 }
 
-/* ─── Filter bar — hidden scrollbar, touch-friendly ─────── */
+/* ─── Filter bar ─────────────────────────────────────────── */
 .filter-scroll {
   overflow-x: auto;
   -webkit-overflow-scrolling: touch;
-  scrollbar-width: none;        /* Firefox */
-  -ms-overflow-style: none;     /* IE / Edge */
+  scrollbar-width: none;
+  -ms-overflow-style: none;
 }
-.filter-scroll::-webkit-scrollbar { display: none; } /* Chrome / Safari */
+.filter-scroll::-webkit-scrollbar { display: none; }
 
-/* ─── Service card footer — stacks on small screens ──────── */
+/* ─── Service / product card footer ─────────────────────── */
 @media (max-width: 520px) {
   .service-card-footer  { flex-direction: column !important; align-items: flex-start !important; }
   .service-card-actions { justify-content: flex-start !important; }
@@ -384,7 +496,7 @@ a { transition: color 0.2s ease; }
   .product-card-actions { justify-content: flex-start !important; }
 }
 
-/* ─── Responsive helpers ──────────────────────────────────── */
+/* ─── Responsive helpers ─────────────────────────────────── */
 @media (max-width: 640px)  { .stats-grid   { grid-template-columns: repeat(2, 1fr) !important; } }
 @media (max-width: 900px)  { .about-grid   { grid-template-columns: 1fr !important; }
                               .contact-grid { grid-template-columns: 1fr !important; } }
@@ -398,44 +510,26 @@ a { transition: color 0.2s ease; }
 
 .gallery-card:hover .gallery-label { opacity: 1 !important; }
 
-/* ─── Mobile (≤ 480px) ────────────────────────────────────── */
+/* ─── Mobile (≤ 480px) ───────────────────────────────────── */
 @media (max-width: 480px) {
-
-  /* Section spacing */
   .section-pad { padding: 56px 0 !important; }
-
-  /* Hero content — reduce top padding so it doesn't dominate the viewport */
   .hero-content { padding: 90px 16px 60px !important; }
-
-  /* All standard container side padding → 16px */
   .about-grid,
   .contact-grid { padding: 0 16px !important; }
-
-  /* Grids → single column */
   .booking-name-grid      { grid-template-columns: 1fr !important; }
   .booking-summary-grid   { grid-template-columns: 1fr !important; gap: 24px !important; }
   .booking-slot-grid      { grid-template-columns: repeat(2, 1fr) !important; }
   .dashboard-stats-grid   { grid-template-columns: 1fr !important; }
   .cart-layout-grid       { grid-template-columns: 1fr !important; gap: 16px !important; }
-
-  /* Gallery masonry → 2 columns on small screens */
   .gallery-masonry { columns: 2 !important; column-gap: 12px !important; }
-
-  /* Nav drawer font size */
   .nav-drawer-link { font-size: clamp(22px, 6vw, 30px) !important; }
-
-  /* Tighten up about/contact page hero padding */
   .about-grid   { gap: 36px !important; }
   .contact-grid { gap: 28px !important; }
-
-  /* Instagram grid → 2 columns */
   .ig-grid { grid-template-columns: repeat(2, 1fr) !important; }
-
-  /* Step indicator — tighter spacing */
   .booking-step-connector { width: 24px !important; }
 }
 
-/* ─── Mobile (≤ 360px) — very small screens ──────────────── */
+/* ─── Mobile (≤ 360px) ───────────────────────────────────── */
 @media (max-width: 360px) {
   .gallery-masonry { columns: 1 !important; }
   .booking-slot-grid { grid-template-columns: repeat(2, 1fr) !important; }
