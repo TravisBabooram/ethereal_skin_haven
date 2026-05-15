@@ -431,6 +431,14 @@ a { transition: color 0.22s ease; }
 /* Spin — loading spinners */
 @keyframes spin { to { transform: rotate(360deg); } }
 
+/* Tape scroll — background-position drift for ComingSoon tapes */
+@keyframes tape-scroll {
+  from { background-position: 0 0; }
+  to   { background-position: 84px 0; }
+}
+.tape-scroll-fwd { animation: tape-scroll 1.8s linear infinite; }
+.tape-scroll-rev { animation: tape-scroll 2.1s linear infinite reverse; }
+
 /* Fade up — scroll reveal entrance */
 @keyframes fade-up {
   from { opacity: 0; transform: translateY(28px); }

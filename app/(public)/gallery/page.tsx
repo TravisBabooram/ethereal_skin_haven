@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { X, ZoomIn } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import AnimatedSection from "@/components/ui/AnimatedSection";
+import ComingSoon from "@/components/ui/ComingSoon";
 
 interface GalleryImage { id: string; title: string; image: string; category?: string; }
 
@@ -36,20 +37,28 @@ export default function GalleryPage() {
   const [images, setImages] = useState<GalleryImage[]>(placeholders);
   const [cat, setCat] = useState("All");
   const [lightbox, setLightbox] = useState<GalleryImage | null>(null);
+  const [comingSoon, setComingSoon] = useState(false);
 
   useEffect(() => {
+    fetch("/api/coming-soon")
+      .then(r => r.json())
+      .then(d => { if (d.gallery) setComingSoon(true); })
+      .catch(() => {});
+
     fetch("/api/gallery")
       .then(r => r.json())
       .then(data => { if (Array.isArray(data) && data.length) setImages(data); })
       .catch(() => {});
   }, []);
 
-  // Close lightbox on Escape key
+  // Close lightbox on Escape key — must be before any conditional return
   useEffect(() => {
     const handler = (e: KeyboardEvent) => { if (e.key === "Escape") setLightbox(null); };
     window.addEventListener("keydown", handler);
     return () => window.removeEventListener("keydown", handler);
   }, []);
+
+  if (comingSoon) return <ComingSoon page="Gallery" />;
 
   const filtered = cat === "All" ? images : images.filter(img => img.category === cat);
 

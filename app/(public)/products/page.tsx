@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { ShoppingBag, ArrowRight, Loader2, Filter, Check } from "lucide-react";
 import AnimatedSection from "@/components/ui/AnimatedSection";
+import ComingSoon from "@/components/ui/ComingSoon";
 
 interface Product {
   id: string;
@@ -23,6 +24,7 @@ export default function ProductsPage() {
   const [expanded, setExpanded] = useState<string | null>(null);
   const [addingToCart, setAddingToCart] = useState<string | null>(null);
   const [addedToCart, setAddedToCart] = useState<string | null>(null);
+  const [comingSoon, setComingSoon] = useState(false);
 
   const handleAddToCart = async (productId: string) => {
     setAddingToCart(productId);
@@ -39,12 +41,19 @@ export default function ProductsPage() {
   };
 
   useEffect(() => {
+    fetch("/api/coming-soon")
+      .then(r => r.json())
+      .then(d => { if (d.products) { setComingSoon(true); setLoading(false); return; } })
+      .catch(() => {});
+
     fetch("/api/products")
       .then(r => r.json())
       .then(data => { if (Array.isArray(data)) setProducts(data); })
       .catch(() => {})
       .finally(() => setLoading(false));
   }, []);
+
+  if (comingSoon) return <ComingSoon page="Products" />;
 
   const cats = ["All", ...Array.from(new Set(products.map(p => p.category)))];
   const filtered = cat === "All" ? products : products.filter(p => p.category === cat);
