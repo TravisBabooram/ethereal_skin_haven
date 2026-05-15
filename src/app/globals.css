@@ -12,12 +12,12 @@
 @property --text          { syntax: '<color>'; inherits: true; initial-value: #EEE4D8; }
 @property --text-muted    { syntax: '<color>'; inherits: true; initial-value: #BA9C88; }
 @property --text-subtle   { syntax: '<color>'; inherits: true; initial-value: #72584A; }
-@property --gold          { syntax: '<color>'; inherits: true; initial-value: #C89260; }
-@property --gold-light    { syntax: '<color>'; inherits: true; initial-value: #DFB07C; }
-@property --gold-dark     { syntax: '<color>'; inherits: true; initial-value: #9E6C3C; }
-@property --pink          { syntax: '<color>'; inherits: true; initial-value: #E0406E; }
-@property --pink-light    { syntax: '<color>'; inherits: true; initial-value: #F06888; }
-@property --pink-dark     { syntax: '<color>'; inherits: true; initial-value: #A82050; }
+@property --gold          { syntax: '<color>'; inherits: true; initial-value: #D4A82C; }
+@property --gold-light    { syntax: '<color>'; inherits: true; initial-value: #EAC84A; }
+@property --gold-dark     { syntax: '<color>'; inherits: true; initial-value: #A87E18; }
+@property --pink          { syntax: '<color>'; inherits: true; initial-value: #F42870; }
+@property --pink-light    { syntax: '<color>'; inherits: true; initial-value: #FF5C90; }
+@property --pink-dark     { syntax: '<color>'; inherits: true; initial-value: #C00050; }
 
 /* ─── Design Tokens ───────────────────────────────────────── */
 :root {
@@ -33,18 +33,18 @@
   --text-muted:   #BA9C88;
   --text-subtle:  #72584A;
 
-  --gold:         #C89260;
-  --gold-light:   #DFB07C;
-  --gold-dark:    #9E6C3C;
-  --gold-glow:    rgba(200, 146, 96, 0.24);
+  --gold:         #D4A82C;
+  --gold-light:   #EAC84A;
+  --gold-dark:    #A87E18;
+  --gold-glow:    rgba(212, 168, 44, 0.28);
 
-  --pink:         #E0406E;
-  --pink-light:   #F06888;
-  --pink-dark:    #A82050;
-  --pink-glow:    rgba(224, 64, 110, 0.26);
+  --pink:         #F42870;
+  --pink-light:   #FF5C90;
+  --pink-dark:    #C00050;
+  --pink-glow:    rgba(244, 40, 112, 0.28);
 
-  --border:         rgba(224, 64, 110, 0.20);
-  --border-hover:   rgba(200, 146, 96, 0.58);
+  --border:         rgba(244, 40, 112, 0.22);
+  --border-hover:   rgba(212, 168, 44, 0.62);
   --shadow-card:    0 8px 40px rgba(0, 0, 0, 0.38);
 
   transition:
@@ -74,18 +74,18 @@
   --text-muted:   #5C3820;
   --text-subtle:  #A07858;
 
-  --gold:         #9C6C28;
-  --gold-light:   #BA8A40;
-  --gold-dark:    #7A4C18;
-  --gold-glow:    rgba(156, 108, 40, 0.26);
+  --gold:         #C09020;
+  --gold-light:   #D8AE38;
+  --gold-dark:    #906808;
+  --gold-glow:    rgba(192, 144, 32, 0.28);
 
-  --pink:         #D42864;
-  --pink-light:   #E85080;
-  --pink-dark:    #921048;
-  --pink-glow:    rgba(212, 40, 100, 0.22);
+  --pink:         #E80060;
+  --pink-light:   #F83878;
+  --pink-dark:    #A80048;
+  --pink-glow:    rgba(232, 0, 96, 0.22);
 
-  --border:         rgba(212, 40, 100, 0.18);
-  --border-hover:   rgba(156, 108, 40, 0.52);
+  --border:         rgba(232, 0, 96, 0.20);
+  --border-hover:   rgba(192, 144, 32, 0.55);
   --shadow-card:    0 8px 40px rgba(90, 40, 18, 0.10);
 }
 
