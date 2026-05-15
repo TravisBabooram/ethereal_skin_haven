@@ -6,6 +6,7 @@ import NextImage from "next/image";
 import { usePathname, useRouter } from "next/navigation";
 import { BarChart3, Calendar, Users, Package, Image, FileText, HelpCircle, LogOut, Shield, ShoppingBag, UserCog, Layout, Search, Menu, X, Sun, Moon, Settings } from "lucide-react";
 import { useTheme } from "@/components/providers/ThemeProvider";
+import { useAuth } from "@/components/providers/AuthProvider";
 
 const NAV = [
   { href: "/admin",          label: "Overview",        icon: BarChart3 },
@@ -29,9 +30,10 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   const router = useRouter();
   const [open, setOpen] = useState(false);
   const { theme, toggleTheme } = useTheme();
+  const { logout } = useAuth();
 
   const handleLogout = async () => {
-    await fetch("/api/auth/logout", { method: "POST", credentials: "include" });
+    await logout();
     router.push("/");
   };
 
