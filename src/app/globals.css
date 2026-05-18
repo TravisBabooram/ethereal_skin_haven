@@ -95,15 +95,31 @@
 html {
   scroll-behavior: smooth;
   -webkit-tap-highlight-color: transparent;
+  font-size: 16px; /* mobile base */
+}
+
+/* Slightly larger base on desktop — affects rem units and general readability */
+@media (min-width: 1024px) {
+  html { font-size: 17px; }
+}
+@media (min-width: 1440px) {
+  html { font-size: 17.5px; }
 }
 
 body {
   background:  var(--bg);
   color:       var(--text);
   font-family: var(--font-sans, system-ui, sans-serif);
+  font-size: 0.9375rem; /* 15px mobile → 16px desktop → 16.5px large desktop */
   -webkit-font-smoothing:  antialiased;
   -moz-osx-font-smoothing: grayscale;
   overflow-x: hidden;
+}
+
+/* Desktop body text bump */
+@media (min-width: 1024px) {
+  body { font-size: 0.941rem; } /* ~16px */
+  .input-base { font-size: 15px; }
 }
 
 /* ─── Scrollbar ───────────────────────────────────────────── */
