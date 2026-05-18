@@ -3,12 +3,15 @@ import { prisma } from "@/lib/prisma";
 import {
   BookingEmailData,
   ProductReceiptData,
+  LowStockData,
   bookingReceivedTemplate,
   bookingConfirmedTemplate,
   cancellationTemplate,
   rescheduleTemplate,
   reminderTemplate,
   adminNewBookingTemplate,
+  adminBookingConfirmedTemplate,
+  adminLowStockTemplate,
   productReceiptTemplate,
 } from "./templates";
 
@@ -93,6 +96,17 @@ export async function sendReminderEmail(booking: any, type: "24hr" | "sameday") 
 export async function sendAdminNewBookingNotification(booking: any) {
   const data = toEmailData(booking);
   const { subject, html } = adminNewBookingTemplate(data);
+  await send(ADMIN_EMAIL, subject, html);
+}
+
+export async function sendAdminBookingConfirmedNotification(booking: any) {
+  const data = toEmailData(booking);
+  const { subject, html } = adminBookingConfirmedTemplate(data);
+  await send(ADMIN_EMAIL, subject, html);
+}
+
+export async function sendAdminLowStockAlert(product: LowStockData) {
+  const { subject, html } = adminLowStockTemplate(product);
   await send(ADMIN_EMAIL, subject, html);
 }
 

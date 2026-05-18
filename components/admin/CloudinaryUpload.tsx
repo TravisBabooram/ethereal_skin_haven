@@ -13,6 +13,7 @@ export default function CloudinaryUpload({ value, onChange, folder = "ethereal-s
   const inputRef = useRef<HTMLInputElement>(null);
   const [uploading, setUploading] = useState(false);
   const [error, setError] = useState("");
+  const [dragging, setDragging] = useState(false);
 
   const handleFile = async (file: File) => {
     if (!file.type.startsWith("image/")) { setError("Please select an image file."); return; }
@@ -55,6 +56,13 @@ export default function CloudinaryUpload({ value, onChange, folder = "ethereal-s
     }
   };
 
+  const handleDrop = (e: React.DragEvent) => {
+    e.preventDefault();
+    setDragging(false);
+    const file = e.dataTransfer.files[0];
+    if (file) handleFile(file);
+  };
+
   return (
     <div>
       <input ref={inputRef} type="file" accept="image/*" style={{ display: "none" }} onChange={e => { if (e.target.files?.[0]) handleFile(e.target.files[0]); }} />
@@ -73,16 +81,32 @@ export default function CloudinaryUpload({ value, onChange, folder = "ethereal-s
           </button>
         </div>
       ) : (
-        <button type="button" onClick={() => inputRef.current?.click()} disabled={uploading}
-          style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 10, width: 160, height: 120, background: "var(--bg-elevated)", border: `2px dashed ${error ? "#e05555" : "var(--border)"}`, borderRadius: 6, cursor: uploading ? "not-allowed" : "pointer", transition: "border-color 0.2s, background 0.2s" }}
-          onMouseEnter={e => { if (!uploading) e.currentTarget.style.borderColor = "var(--gold)"; }}
-          onMouseLeave={e => { if (!uploading) e.currentTarget.style.borderColor = error ? "#e05555" : "var(--border)"; }}>
+        <button
+          type="button"
+          onClick={() => inputRef.current?.click()}
+          disabled={uploading}
+          onDragOver={e => { e.preventDefault(); setDragging(true); }}
+          onDragLeave={() => setDragging(false)}
+          onDrop={handleDrop}
+          style={{
+            display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 10,
+            width: "100%", minHeight: 120,
+            background: dragging ? "rgba(201,169,110,0.07)" : "var(--bg-elevated)",
+            border: `2px dashed ${error ? "#e05555" : dragging ? "var(--gold)" : "var(--border)"}`,
+            borderRadius: 6, cursor: uploading ? "not-allowed" : "pointer",
+            transition: "border-color 0.2s, background 0.2s",
+          }}
+          onMouseEnter={e => { if (!uploading && !dragging) e.currentTarget.style.borderColor = "var(--gold)"; }}
+          onMouseLeave={e => { if (!uploading && !dragging) e.currentTarget.style.borderColor = error ? "#e05555" : "var(--border)"; }}>
           {uploading
             ? <Loader2 size={20} style={{ animation: "spin 1s linear infinite", color: "var(--gold)" }} />
-            : <ImageIcon size={20} style={{ color: "var(--text-subtle)" }} />}
-          <span style={{ fontSize: 10, letterSpacing: "0.15em", color: "var(--text-subtle)", textTransform: "uppercase" }}>
-            {uploading ? "Uploading…" : "Upload Image"}
+            : <ImageIcon size={20} style={{ color: dragging ? "var(--gold)" : "var(--text-subtle)" }} />}
+          <span style={{ fontSize: 10, letterSpacing: "0.15em", color: dragging ? "var(--gold)" : "var(--text-subtle)", textTransform: "uppercase" }}>
+            {uploading ? "Uploading…" : dragging ? "Drop to upload" : "Click or drag & drop"}
           </span>
+          {!uploading && !dragging && (
+            <span style={{ fontSize: 10, color: "var(--text-subtle)", opacity: 0.6 }}>JPG, PNG, WEBP · max 10 MB</span>
+          )}
         </button>
       )}
       {error && <p style={{ fontSize: 11, color: "#e05555", margin: "6px 0 0" }}>{error}</p>}

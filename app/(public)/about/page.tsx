@@ -1,9 +1,11 @@
 "use client";
 
 import Link from "next/link";
-import { ArrowRight, Award, Heart, Star, Leaf, ShieldCheck } from "lucide-react";
+import { ArrowRight, Award, Heart, Leaf, ShieldCheck } from "lucide-react";
 import AnimatedSection from "@/components/ui/AnimatedSection";
 import SectionHeader from "@/components/ui/SectionHeader";
+
+const ESTHETICIAN_IMAGE = "";
 
 const values = [
   { icon: Award, title: "Results-Driven", desc: "Every treatment is selected and customised to deliver real, visible results — not just a relaxing hour. Your skin's health is always the priority." },
@@ -52,20 +54,33 @@ export default function AboutPage() {
             </AnimatedSection>
 
             <AnimatedSection direction="right">
-              <div style={{ background: "var(--bg-card)", border: "1px solid var(--border)", borderRadius: 8, padding: "clamp(24px, 5vw, 48px)", position: "relative" }}>
-                <div style={{ position: "absolute", top: -1, left: 40, right: 40, height: 1, background: "linear-gradient(90deg, transparent, var(--gold), transparent)" }} />
-                <div style={{ textAlign: "center", marginBottom: 28 }}>
-                  <div style={{ width: 100, height: 100, borderRadius: "50%", background: "linear-gradient(135deg, var(--bg-elevated), rgba(201,169,110,0.12))", border: "1px solid var(--border)", margin: "0 auto 20px", display: "flex", alignItems: "center", justifyContent: "center", overflow: "hidden" }}>
-                    <Star size={32} style={{ color: "var(--gold)", opacity: 0.6 }} />
+              <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+
+                {/* Portrait photo */}
+                <div style={{ position: "relative", borderRadius: 8, overflow: "hidden", border: "1px solid var(--border)", aspectRatio: "3 / 4", background: "var(--bg-card)" }}>
+                  <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: 1, background: "linear-gradient(90deg, transparent, var(--gold), transparent)", zIndex: 1 }} />
+                  {ESTHETICIAN_IMAGE ? (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img src={ESTHETICIAN_IMAGE} alt="Ethereal Skin Haven Esthetician" style={{ width: "100%", height: "100%", objectFit: "cover", objectPosition: "top center", display: "block" }} />
+                  ) : (
+                    <div style={{ width: "100%", height: "100%", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 12, background: "linear-gradient(160deg, var(--bg-elevated), rgba(201,169,110,0.06))" }}>
+                      <div style={{ width: 64, height: 64, borderRadius: "50%", border: "1px solid var(--border)", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                        <ShieldCheck size={24} style={{ color: "var(--gold)", opacity: 0.5 }} />
+                      </div>
+                      <p style={{ fontSize: 10, letterSpacing: "0.2em", color: "var(--text-subtle)", textTransform: "uppercase", margin: 0 }}>Photo Coming Soon</p>
+                    </div>
+                  )}
+                  {/* Name overlay at bottom */}
+                  <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, padding: "clamp(16px, 3vw, 24px)", background: "linear-gradient(to top, rgba(0,0,0,0.75) 0%, transparent 100%)" }}>
+                    <h3 style={{ fontFamily: "var(--font-cormorant, Georgia, serif)", fontSize: "clamp(20px, 3vw, 26px)", fontWeight: 400, color: "#fff", margin: "0 0 4px" }}>The Esthetician</h3>
+                    <p style={{ fontSize: 10, letterSpacing: "0.25em", color: "var(--gold)", textTransform: "uppercase", margin: 0 }}>Founder & Solo Practitioner</p>
                   </div>
-                  <h3 style={{ fontFamily: "var(--font-cormorant, Georgia, serif)", fontSize: "clamp(20px, 3vw, 24px)", fontWeight: 400, color: "var(--text)", margin: "0 0 6px" }}>The Esthetician</h3>
-                  <p style={{ fontSize: 11, letterSpacing: "0.25em", color: "var(--gold)", textTransform: "uppercase", margin: "0 0 4px" }}>Founder & Solo Practitioner</p>
-                  <p style={{ fontSize: 12, color: "var(--text-muted)", margin: 0 }}>Balisier Avenue, Couva · Trinidad 🇹🇹</p>
                 </div>
-                <div style={{ borderTop: "1px solid var(--border)", paddingTop: 24 }}>
-                  <p style={{ fontSize: 9, letterSpacing: "0.3em", color: "var(--gold)", textTransform: "uppercase", fontWeight: 600, marginBottom: 14, fontFamily: "var(--font-sans, system-ui)" }}>
-                    Education & Training
-                  </p>
+
+                {/* Credentials card */}
+                <div style={{ background: "var(--bg-card)", border: "1px solid var(--border)", borderRadius: 8, padding: "clamp(20px, 3vw, 28px)", position: "relative" }}>
+                  <div style={{ position: "absolute", top: -1, left: 40, right: 40, height: 1, background: "linear-gradient(90deg, transparent, var(--gold), transparent)" }} />
+                  <p style={{ fontSize: 9, letterSpacing: "0.3em", color: "var(--gold)", textTransform: "uppercase", fontWeight: 600, marginBottom: 14 }}>Education & Training</p>
                   <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
                     {[
                       "Licensed Esthetician",
@@ -81,7 +96,9 @@ export default function AboutPage() {
                       </div>
                     ))}
                   </div>
+                  <p style={{ fontSize: 11, color: "var(--text-subtle)", margin: "16px 0 0", letterSpacing: "0.05em" }}>Balisier Avenue, Couva · Trinidad 🇹🇹</p>
                 </div>
+
               </div>
             </AnimatedSection>
           </div>

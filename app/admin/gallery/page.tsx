@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { Plus, Trash2, Loader2, X, ImageIcon } from "lucide-react";
+import CloudinaryUpload from "@/components/admin/CloudinaryUpload";
 
 interface GalleryImage {
   id: string;
@@ -64,12 +65,6 @@ export default function AdminGalleryPage() {
         </button>
       </div>
 
-      <div style={{ background: "rgba(201,169,110,0.05)", border: "1px solid rgba(201,169,110,0.2)", borderRadius: 6, padding: "14px 18px", marginBottom: 28, display: "flex", alignItems: "center", gap: 10 }}>
-        <ImageIcon size={14} style={{ color: "var(--gold)", flexShrink: 0 }} />
-        <p style={{ fontSize: 12, color: "var(--text-muted)", margin: 0 }}>
-          Images are stored via <strong style={{ color: "var(--text)" }}>Cloudinary</strong>. Upload your images to Cloudinary and paste the URL here. Photos coming soon.
-        </p>
-      </div>
 
       {loading ? (
         <div style={{ display: "flex", alignItems: "center", gap: 12, color: "var(--text-muted)", padding: "60px 0" }}>
@@ -114,17 +109,15 @@ export default function AdminGalleryPage() {
             </button>
             <h2 style={{ fontFamily: "var(--font-cormorant, Georgia, serif)", fontSize: 26, fontWeight: 400, color: "var(--text)", margin: "0 0 28px" }}>Add Gallery Image</h2>
             <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
-              {[
-                { key: "title" as const, label: "Title" },
-                { key: "image" as const, label: "Cloudinary Image URL" },
-                { key: "order" as const, label: "Display Order", type: "number" },
-              ].map(({ key, label, type }) => (
-                <div key={key} style={{ display: "flex", flexDirection: "column", gap: 6 }}>
-                  <label style={{ fontSize: 9, letterSpacing: "0.2em", color: "var(--gold)", textTransform: "uppercase", fontWeight: 600 }}>{label}</label>
-                  <input type={type ?? "text"} value={String(form[key])} onChange={e => setForm(p => ({ ...p, [key]: e.target.value }))}
-                    style={{ padding: "10px 12px", background: "var(--bg-elevated)", border: "1px solid var(--border)", borderRadius: 4, color: "var(--text)", fontSize: 13, outline: "none" }} />
-                </div>
-              ))}
+              <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+                <label style={{ fontSize: 9, letterSpacing: "0.2em", color: "var(--gold)", textTransform: "uppercase", fontWeight: 600 }}>Title</label>
+                <input type="text" value={form.title} onChange={e => setForm(p => ({ ...p, title: e.target.value }))}
+                  style={{ padding: "10px 12px", background: "var(--bg-elevated)", border: "1px solid var(--border)", borderRadius: 4, color: "var(--text)", fontSize: 13, outline: "none" }} />
+              </div>
+              <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+                <label style={{ fontSize: 9, letterSpacing: "0.2em", color: "var(--gold)", textTransform: "uppercase", fontWeight: 600 }}>Image</label>
+                <CloudinaryUpload value={form.image} onChange={url => setForm(p => ({ ...p, image: url }))} folder="ethereal-skin-haven/gallery" />
+              </div>
               <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
                 <label style={{ fontSize: 9, letterSpacing: "0.2em", color: "var(--gold)", textTransform: "uppercase", fontWeight: 600 }}>Category</label>
                 <select value={form.category} onChange={e => setForm(p => ({ ...p, category: e.target.value }))}
@@ -132,6 +125,11 @@ export default function AdminGalleryPage() {
                   <option value="">— Select —</option>
                   {CATS.map(c => <option key={c} value={c}>{c}</option>)}
                 </select>
+              </div>
+              <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+                <label style={{ fontSize: 9, letterSpacing: "0.2em", color: "var(--gold)", textTransform: "uppercase", fontWeight: 600 }}>Display Order</label>
+                <input type="number" value={form.order} onChange={e => setForm(p => ({ ...p, order: Number(e.target.value) }))}
+                  style={{ padding: "10px 12px", background: "var(--bg-elevated)", border: "1px solid var(--border)", borderRadius: 4, color: "var(--text)", fontSize: 13, outline: "none" }} />
               </div>
             </div>
             <div style={{ display: "flex", gap: 10, marginTop: 28, justifyContent: "flex-end" }}>

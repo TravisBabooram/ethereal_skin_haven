@@ -13,6 +13,7 @@ interface Service {
   category?: string;
   benefits?: string;
   aftercare?: string;
+  image?: string | null;
 }
 
 const CATS = ["All", "Facials", "Waxing", "Intimate Care", "Brows", "Nails"];
@@ -99,7 +100,12 @@ export default function ServicesPage() {
             <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(min(340px, 100%), 1fr))", gap: "clamp(16px, 3vw, 24px)" }}>
               {filtered.map((svc, i) => (
                 <AnimatedSection key={svc.id} delay={i * 0.05}>
-                  <article className="card-base" style={{ padding: "clamp(20px, 4vw, 36px)", height: "100%", display: "flex", flexDirection: "column" }}>
+                  <article className="card-base" style={{ height: "100%", display: "flex", flexDirection: "column", overflow: "hidden" }}>
+                    {svc.image && (
+                      // eslint-disable-next-line @next/next/no-img-element
+                      <img src={svc.image} alt={svc.name} style={{ width: "100%", height: 200, objectFit: "cover", display: "block", flexShrink: 0 }} />
+                    )}
+                    <div style={{ padding: "clamp(20px, 4vw, 36px)", flex: 1, display: "flex", flexDirection: "column" }}>
                     {svc.category && (
                       <span style={{ fontSize: 9, letterSpacing: "0.35em", color: "var(--gold)", textTransform: "uppercase", fontWeight: 600, display: "block", marginBottom: 16 }}>{svc.category}</span>
                     )}
@@ -161,6 +167,7 @@ export default function ServicesPage() {
                           Book <ArrowRight size={11} />
                         </a>
                       </div>
+                    </div>
                     </div>
                   </article>
                 </AnimatedSection>

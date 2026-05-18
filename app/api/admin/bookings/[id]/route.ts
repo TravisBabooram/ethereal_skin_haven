@@ -3,7 +3,7 @@ import { success, handleError, APIError } from "@/lib/utils/error";
 import { withAdmin } from "@/lib/utils/auth";
 import { getBookingById, updateBooking } from "@/lib/services/bookings";
 import { createAuditLog } from "@/lib/services/audit";
-import { sendBookingConfirmedEmail, sendCancellationEmail, sendRescheduleEmail } from "@/lib/email";
+import { sendBookingConfirmedEmail, sendCancellationEmail, sendRescheduleEmail, sendAdminBookingConfirmedNotification } from "@/lib/email";
 import { JWTPayload } from "@/lib/utils/jwt";
 
 async function getHandler(
@@ -56,6 +56,7 @@ async function putHandler(
     if (data.status && data.status !== previousStatus) {
       if (data.status === "Confirmed") {
         await sendBookingConfirmedEmail(updated).catch(() => null);
+        sendAdminBookingConfirmedNotification(updated).catch(() => null);
       } else if (data.status === "Cancelled") {
         await sendCancellationEmail(booking).catch(() => null);
       }

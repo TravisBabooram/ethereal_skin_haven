@@ -396,6 +396,70 @@ export function productReceiptTemplate(data: ProductReceiptData): { subject: str
   };
 }
 
+// ─── ADMIN: BOOKING CONFIRMED NOTIFICATION ───────────────────────────────────
+
+export function adminBookingConfirmedTemplate(data: BookingEmailData): { subject: string; html: string } {
+  const body = `
+    <h2 style="color:${DARK};font-size:22px;font-weight:400;margin:0 0 6px;">Booking Confirmed</h2>
+    <p style="color:#555;font-size:14px;line-height:1.75;margin:0 0 20px;">You confirmed the following appointment. A confirmation email has been sent to the client.</p>
+
+    ${receiptTable([
+      { label: "Client", value: data.userName, bold: true },
+      { label: "Email", value: data.userEmail },
+      { label: "Date", value: formatDate(data.appointmentDate), bold: true },
+      { label: "Time", value: formatTime(data.appointmentTime), bold: true },
+      { label: "Service(s)", value: data.services.map(s => `${s.name}${s.quantity > 1 ? ` ×${s.quantity}` : ""}`).join(", ") },
+      { label: "Total", value: `$${data.totalPrice.toFixed(2)} TTD`, gold: true },
+      { label: "Payment", value: data.paymentMethod },
+      ...(data.notes ? [{ label: "Notes", value: data.notes }] : []),
+    ])}
+
+    <div style="text-align:center;margin-top:28px;">
+      <a href="${SITE_URL}/admin/bookings" style="display:inline-block;padding:14px 32px;background:${GOLD};color:#111;font-size:11px;letter-spacing:3px;text-transform:uppercase;text-decoration:none;border-radius:2px;font-family:'Georgia',serif;">View Bookings →</a>
+    </div>
+  `;
+
+  return {
+    subject: `Confirmed: ${data.userName} — ${formatDate(data.appointmentDate)} at ${formatTime(data.appointmentTime)}`,
+    html: base("Booking Confirmed", body, "This is an automated notification for the Ethereal Skin Haven admin."),
+  };
+}
+
+// ─── ADMIN: LOW STOCK ALERT ───────────────────────────────────────────────────
+
+export interface LowStockData {
+  name: string;
+  category: string;
+  stockQty: number;
+}
+
+export function adminLowStockTemplate(product: LowStockData): { subject: string; html: string } {
+  const isOut = product.stockQty === 0;
+  const body = `
+    <h2 style="color:${DARK};font-size:22px;font-weight:400;margin:0 0 6px;">${isOut ? "Product Out of Stock" : "Low Stock Alert"}</h2>
+    <p style="color:#555;font-size:14px;line-height:1.75;margin:0 0 20px;">
+      ${isOut
+        ? `<strong style="color:${DARK};">${product.name}</strong> is now <strong style="color:#e05555;">out of stock</strong>. It has been hidden from customers automatically.`
+        : `<strong style="color:${DARK};">${product.name}</strong> is running low. Only <strong style="color:${GOLD};">${product.stockQty} unit${product.stockQty === 1 ? "" : "s"}</strong> remaining.`}
+    </p>
+
+    ${receiptTable([
+      { label: "Product", value: product.name, bold: true },
+      { label: "Category", value: product.category },
+      { label: "Units Remaining", value: product.stockQty === 0 ? "None" : String(product.stockQty), gold: product.stockQty > 0 },
+    ])}
+
+    <div style="text-align:center;margin-top:28px;">
+      <a href="${SITE_URL}/admin/products" style="display:inline-block;padding:14px 32px;background:${GOLD};color:#111;font-size:11px;letter-spacing:3px;text-transform:uppercase;text-decoration:none;border-radius:2px;font-family:'Georgia',serif;">Manage Products →</a>
+    </div>
+  `;
+
+  return {
+    subject: isOut ? `Out of Stock: ${product.name}` : `Low Stock Alert: ${product.name} (${product.stockQty} remaining)`,
+    html: base(isOut ? "Out of Stock" : "Low Stock Alert", body, "This is an automated notification for the Ethereal Skin Haven admin."),
+  };
+}
+
 // Legacy export aliases so existing imports don't break
 export type BookingEmailData_Legacy = BookingEmailData;
 export const confirmationTemplate = bookingReceivedTemplate;
