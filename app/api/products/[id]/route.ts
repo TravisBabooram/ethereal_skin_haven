@@ -3,6 +3,7 @@ import { success, handleError, APIError } from "@/lib/utils/error";
 import { withAdmin } from "@/lib/utils/auth";
 import { getProductById, updateProduct, deleteProduct } from "@/lib/services/products";
 import { sendAdminLowStockAlert } from "@/lib/email";
+import { deleteCloudinaryImage } from "@/lib/utils/cloudinary";
 import { JWTPayload } from "@/lib/utils/jwt";
 
 const LOW_STOCK_THRESHOLD = 5;
@@ -47,6 +48,11 @@ async function putHandler(
       }).catch(() => null);
     }
 
+    // Delete old image from Cloudinary if it was replaced
+    if (before?.image && data.image !== undefined && before.image !== data.image) {
+      deleteCloudinaryImage(before.image).catch(() => null);
+    }
+
     return success(updated);
   } catch (error) {
     return handleError(error);
@@ -60,7 +66,9 @@ async function deleteHandler(
 ) {
   try {
     const { id } = await context!.params;
+    const existing = await getProductById(id);
     await deleteProduct(id);
+    if (existing?.image) deleteCloudinaryImage(existing.image).catch(() => null);
     return success({ message: "Product deleted" });
   } catch (error) {
     return handleError(error);

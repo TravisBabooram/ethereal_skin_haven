@@ -2,6 +2,7 @@ import { NextRequest } from "next/server";
 import { success, handleError, APIError } from "@/lib/utils/error";
 import { withAdmin } from "@/lib/utils/auth";
 import { getServiceById, updateService, deleteService } from "@/lib/services/services";
+import { deleteCloudinaryImage } from "@/lib/utils/cloudinary";
 import { JWTPayload } from "@/lib/utils/jwt";
 
 export async function GET(
@@ -26,7 +27,12 @@ async function putHandler(
   try {
     const { id } = await context!.params;
     const data = await req.json();
-    return success(await updateService(id, data));
+    const existing = await getServiceById(id);
+    const updated = await updateService(id, data);
+    if (existing?.image && data.image !== undefined && existing.image !== data.image) {
+      deleteCloudinaryImage(existing.image).catch(() => null);
+    }
+    return success(updated);
   } catch (error) {
     return handleError(error);
   }
@@ -39,7 +45,9 @@ async function deleteHandler(
 ) {
   try {
     const { id } = await context!.params;
+    const existing = await getServiceById(id);
     await deleteService(id);
+    if (existing?.image) deleteCloudinaryImage(existing.image).catch(() => null);
     return success({ message: "Service deleted" });
   } catch (error) {
     return handleError(error);

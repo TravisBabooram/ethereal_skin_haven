@@ -1,5 +1,9 @@
 import { prisma } from "@/lib/prisma";
 
+export async function getGalleryImageById(id: string) {
+  return prisma.galleryImage.findUnique({ where: { id } });
+}
+
 export async function getAllGalleryImages() {
   return prisma.galleryImage.findMany({ orderBy: { order: "asc" } });
 }
