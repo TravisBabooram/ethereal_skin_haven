@@ -8,16 +8,8 @@ import ComingSoon from "@/components/ui/ComingSoon";
 
 interface GalleryImage { id: string; title: string; image: string; category?: string; }
 
-const CATS = ["All", "Facials", "Results", "Studio", "Products"];
+const CATS = ["All", "Facials", "Waxing", "Brows", "Nails", "Before & After", "Studio", "General"];
 
-const placeholders: GalleryImage[] = Array.from({ length: 12 }, (_, i) => ({
-  id: String(i + 1),
-  title: ["Hydrating Facial", "Chemical Peel Result", "Studio Suite", "Product Flatlay", "LED Therapy", "Dermaplaning", "Before & After", "Brow Lamination", "Treatment Room", "Skincare Ritual", "Glow Result", "The Edit"][i],
-  image: "",
-  category: CATS[1 + (i % 4)],
-}));
-
-// Heights use clamp() so cards scale proportionally on any screen size
 const HEIGHTS = [
   "clamp(160px, 42vw, 260px)",
   "clamp(200px, 52vw, 340px)",
@@ -34,7 +26,8 @@ const HEIGHTS = [
 ];
 
 export default function GalleryPage() {
-  const [images, setImages] = useState<GalleryImage[]>(placeholders);
+  const [images, setImages] = useState<GalleryImage[]>([]);
+  const [loading, setLoading] = useState(true);
   const [cat, setCat] = useState("All");
   const [lightbox, setLightbox] = useState<GalleryImage | null>(null);
   const [comingSoon, setComingSoon] = useState(false);
@@ -47,11 +40,11 @@ export default function GalleryPage() {
 
     fetch("/api/gallery")
       .then(r => r.json())
-      .then(data => { if (Array.isArray(data) && data.length) setImages(data); })
-      .catch(() => {});
+      .then(data => { if (Array.isArray(data)) setImages(data); })
+      .catch(() => {})
+      .finally(() => setLoading(false));
   }, []);
 
-  // Close lightbox on Escape key — must be before any conditional return
   useEffect(() => {
     const handler = (e: KeyboardEvent) => { if (e.key === "Escape") setLightbox(null); };
     window.addEventListener("keydown", handler);
@@ -78,7 +71,7 @@ export default function GalleryPage() {
         </AnimatedSection>
       </section>
 
-      {/* Filter — hidden scrollbar via .filter-scroll */}
+      {/* Filter */}
       <div style={{ background: "var(--bg-glass)", backdropFilter: "blur(20px)", borderTop: "1px solid var(--border)", borderBottom: "1px solid var(--border)", position: "sticky", top: 72, zIndex: 30 }}>
         <div className="filter-scroll" style={{ maxWidth: 1280, margin: "0 auto", padding: "0 clamp(16px, 5vw, 32px)", display: "flex", gap: 4, justifyContent: "center" }}>
           {CATS.map(c => (
@@ -90,31 +83,38 @@ export default function GalleryPage() {
         </div>
       </div>
 
-      {/* Masonry grid */}
+      {/* Grid */}
       <section style={{ background: "var(--bg)", padding: "clamp(32px, 6vw, 60px) 0" }}>
         <div style={{ maxWidth: 1280, margin: "0 auto", padding: "0 clamp(16px, 5vw, 32px)" }}>
-          <div className="gallery-masonry" style={{ columns: "3 260px", columnGap: "clamp(12px, 2vw, 20px)" }}>
-            {filtered.map((img, i) => (
-              <AnimatedSection key={img.id} delay={i * 0.04} style={{ breakInside: "avoid", marginBottom: "clamp(12px, 2vw, 20px)", display: "block" }}>
-                <div
-                  className="card-base gallery-card"
-                  onClick={() => setLightbox(img)}
-                  style={{ height: HEIGHTS[i % HEIGHTS.length], background: "linear-gradient(135deg, var(--bg-elevated) 0%, rgba(201,169,110,0.08) 100%)", borderRadius: 6, overflow: "hidden", cursor: "zoom-in", position: "relative", display: "flex", alignItems: "center", justifyContent: "center", transition: "transform 0.35s ease, box-shadow 0.35s ease" }}
-                >
-                  {img.image ? (
-                    // eslint-disable-next-line @next/next/no-img-element
+          {loading ? (
+            <div style={{ textAlign: "center", padding: "80px 0", color: "var(--text-muted)", fontSize: 13 }}>Loading…</div>
+          ) : filtered.length === 0 ? (
+            <div style={{ textAlign: "center", padding: "80px 0" }}>
+              <ZoomIn size={32} style={{ color: "var(--gold)", opacity: 0.3, marginBottom: 16 }} />
+              <p style={{ fontSize: 15, color: "var(--text-muted)", margin: 0 }}>
+                {cat === "All" ? "No photos yet — check back soon." : `No photos in ${cat} yet.`}
+              </p>
+            </div>
+          ) : (
+            <div className="gallery-masonry" style={{ columns: "3 260px", columnGap: "clamp(12px, 2vw, 20px)" }}>
+              {filtered.map((img, i) => (
+                <AnimatedSection key={img.id} delay={i * 0.04} style={{ breakInside: "avoid", marginBottom: "clamp(12px, 2vw, 20px)", display: "block" }}>
+                  <div
+                    className="card-base gallery-card"
+                    onClick={() => setLightbox(img)}
+                    style={{ height: HEIGHTS[i % HEIGHTS.length], borderRadius: 6, overflow: "hidden", cursor: "zoom-in", position: "relative", transition: "transform 0.35s ease, box-shadow 0.35s ease" }}
+                  >
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
                     <img src={img.image} alt={img.title} style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover" }} />
-                  ) : (
-                    <ZoomIn size={18} style={{ color: "var(--gold)", opacity: 0.35 }} />
-                  )}
-                  <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, padding: "14px 16px", background: "linear-gradient(180deg, transparent, rgba(0,0,0,0.72))", opacity: 0, transition: "opacity 0.3s" }} className="gallery-label">
-                    <p style={{ margin: 0, fontSize: 12, color: "#fff", letterSpacing: "0.05em" }}>{img.title}</p>
-                    {img.category && <p style={{ margin: "2px 0 0", fontSize: 9, color: "var(--gold)", letterSpacing: "0.25em", textTransform: "uppercase" }}>{img.category}</p>}
+                    <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, padding: "14px 16px", background: "linear-gradient(180deg, transparent, rgba(0,0,0,0.72))", opacity: 0, transition: "opacity 0.3s" }} className="gallery-label">
+                      <p style={{ margin: 0, fontSize: 12, color: "#fff", letterSpacing: "0.05em" }}>{img.title}</p>
+                      {img.category && <p style={{ margin: "2px 0 0", fontSize: 9, color: "var(--gold)", letterSpacing: "0.25em", textTransform: "uppercase" }}>{img.category}</p>}
+                    </div>
                   </div>
-                </div>
-              </AnimatedSection>
-            ))}
-          </div>
+                </AnimatedSection>
+              ))}
+            </div>
+          )}
         </div>
       </section>
 
@@ -138,17 +138,10 @@ export default function GalleryPage() {
               >
                 <X size={16} />
               </button>
-
-              {/* Image area — scales with viewport */}
-              <div style={{ height: "clamp(220px, 50vw, 420px)", background: "linear-gradient(135deg, var(--bg-elevated), rgba(201,169,110,0.1))", display: "flex", alignItems: "center", justifyContent: "center", position: "relative", overflow: "hidden" }}>
-                {lightbox.image ? (
-                  // eslint-disable-next-line @next/next/no-img-element
-                  <img src={lightbox.image} alt={lightbox.title} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
-                ) : (
-                  <ZoomIn size={36} style={{ color: "var(--gold)", opacity: 0.3 }} />
-                )}
+              <div style={{ height: "clamp(220px, 50vw, 420px)", position: "relative", overflow: "hidden" }}>
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src={lightbox.image} alt={lightbox.title} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
               </div>
-
               <div style={{ padding: "clamp(16px, 4vw, 20px) clamp(16px, 4vw, 24px)" }}>
                 <p style={{ fontFamily: "var(--font-cormorant, Georgia, serif)", fontSize: "clamp(17px, 3vw, 20px)", color: "var(--text)", margin: "0 0 4px" }}>{lightbox.title}</p>
                 {lightbox.category && <p style={{ fontSize: 10, letterSpacing: "0.25em", color: "var(--gold)", textTransform: "uppercase", margin: 0 }}>{lightbox.category}</p>}
