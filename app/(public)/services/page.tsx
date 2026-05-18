@@ -101,9 +101,10 @@ export default function ServicesPage() {
               {filtered.map((svc, i) => (
                 <AnimatedSection key={svc.id} delay={i * 0.05}>
                   <article className="card-base" style={{ height: "100%", display: "flex", flexDirection: "column", overflow: "hidden" }}>
-                    {svc.image && (
+                    {svc.image && svc.image.startsWith("http") && (
                       // eslint-disable-next-line @next/next/no-img-element
-                      <img src={svc.image} alt={svc.name} style={{ width: "100%", height: 200, objectFit: "cover", display: "block", flexShrink: 0 }} />
+                      <img src={svc.image} alt={svc.name} style={{ width: "100%", height: 200, objectFit: "cover", display: "block", flexShrink: 0 }}
+                        onError={e => { e.currentTarget.style.display = "none"; }} />
                     )}
                     <div style={{ padding: "clamp(20px, 4vw, 36px)", flex: 1, display: "flex", flexDirection: "column" }}>
                     {svc.category && (
