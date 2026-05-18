@@ -1,7 +1,7 @@
 import { prisma } from "@/lib/prisma";
 
-const BUSINESS_START = 8 * 60;  // 8:00 AM in minutes
-const BUSINESS_END = 18 * 60;   // 6:00 PM in minutes
+const DEFAULT_START = 9 * 60;   // 9:00 AM in minutes (fallback)
+const DEFAULT_END = 18 * 60;    // 6:00 PM in minutes (fallback)
 const SLOT_INTERVAL = 30;       // minutes between slot options
 const BUFFER_MINUTES = 15;      // buffer between appointments
 
@@ -71,7 +71,12 @@ function calcBookingDuration(booking: Awaited<ReturnType<typeof getActiveBooking
   );
 }
 
-export async function getAvailableTimeSlots(date: Date, durationMinutes: number): Promise<string[]> {
+export async function getAvailableTimeSlots(
+  date: Date,
+  durationMinutes: number,
+  businessStart = DEFAULT_START,
+  businessEnd = DEFAULT_END
+): Promise<string[]> {
   const booked = await getActiveBookingsForDate(date);
 
   const occupied = booked.map((b) => {
@@ -81,7 +86,7 @@ export async function getAvailableTimeSlots(date: Date, durationMinutes: number)
   });
 
   const slots: string[] = [];
-  for (let slot = BUSINESS_START; slot + durationMinutes <= BUSINESS_END; slot += SLOT_INTERVAL) {
+  for (let slot = businessStart; slot + durationMinutes <= businessEnd; slot += SLOT_INTERVAL) {
     const slotEnd = slot + durationMinutes + BUFFER_MINUTES;
     const free = !occupied.some((o) => slot < o.end && slotEnd > o.start);
     if (free) slots.push(minutesToTime(slot));

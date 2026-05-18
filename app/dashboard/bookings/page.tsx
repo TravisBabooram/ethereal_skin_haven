@@ -1,11 +1,12 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Calendar, Clock, Loader2, CheckCircle, XCircle, AlertCircle, Package, Ban } from "lucide-react";
+import Link from "next/link";
+import { Calendar, Clock, Loader2, CheckCircle, XCircle, AlertCircle, Package, Ban, RefreshCw } from "lucide-react";
 
 interface BookingItem {
   id: string;
-  service?: { name: string; price: number; duration: number } | null;
+  service?: { id: string; name: string; price: number; duration: number } | null;
   quantity: number;
   price: number;
 }
@@ -153,6 +154,17 @@ export default function CustomerBookingsPage() {
                         {cancelling === booking.id ? "Cancelling…" : "Cancel"}
                       </button>
                     )}
+                    {(booking.status === "Completed" || booking.status === "Cancelled") && (() => {
+                      const ids = booking.bookingItems.map(i => i.service?.id).filter(Boolean).join(",");
+                      return ids ? (
+                        <Link href={`/booking?services=${ids}`}
+                          style={{ display: "inline-flex", alignItems: "center", gap: 5, padding: "4px 10px", borderRadius: 20, background: "rgba(201,169,110,0.06)", border: "1px solid rgba(201,169,110,0.25)", color: "var(--gold)", fontSize: 10, letterSpacing: "0.12em", textTransform: "uppercase", fontWeight: 500, textDecoration: "none", transition: "background 0.2s, border-color 0.2s" }}
+                          onMouseEnter={e => { e.currentTarget.style.background = "rgba(201,169,110,0.12)"; e.currentTarget.style.borderColor = "var(--gold)"; }}
+                          onMouseLeave={e => { e.currentTarget.style.background = "rgba(201,169,110,0.06)"; e.currentTarget.style.borderColor = "rgba(201,169,110,0.25)"; }}>
+                          <RefreshCw size={11} /> Book Again
+                        </Link>
+                      ) : null;
+                    })()}
                   </div>
                 </div>
 

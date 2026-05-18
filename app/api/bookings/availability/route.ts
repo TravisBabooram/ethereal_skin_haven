@@ -37,7 +37,30 @@ export async function GET(req: NextRequest) {
       return success({ date: dateParam, duration, slots: [] });
     }
 
-    const slots = await getAvailableTimeSlots(date, duration);
+    // Check business hours config
+    const hoursRaw = await getSetting("business_hours").catch(() => null);
+    const dayOfWeek = String(date.getDay()); // "0" = Sun, "6" = Sat
+
+    let businessStart = 9 * 60;  // 9:00 AM default
+    let businessEnd = 18 * 60;   // 6:00 PM default
+
+    if (hoursRaw) {
+      try {
+        const hoursConfig = JSON.parse(hoursRaw);
+        const dayConfig = hoursConfig[dayOfWeek];
+        if (dayConfig) {
+          if (!dayConfig.open) {
+            return success({ date: dateParam, duration, slots: [] });
+          }
+          const [sh, sm] = dayConfig.start.split(":").map(Number);
+          const [eh, em] = dayConfig.end.split(":").map(Number);
+          businessStart = sh * 60 + sm;
+          businessEnd = eh * 60 + em;
+        }
+      } catch { /* use defaults */ }
+    }
+
+    const slots = await getAvailableTimeSlots(date, duration, businessStart, businessEnd);
     return success({ date: dateParam, duration, slots });
   } catch (error) {
     return handleError(error);

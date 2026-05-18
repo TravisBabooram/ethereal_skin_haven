@@ -67,6 +67,7 @@ export default function BookingPage() {
   const [payment, setPayment] = useState<"Cash" | "Bank Transfer">("Cash");
 
   const [captchaToken, setCaptchaToken] = useState("");
+  const [closedDays, setClosedDays] = useState<number[]>([]);
   const captchaRef = useRef<HCaptcha>(null);
   const preselectedRef = useRef(false);
   const STORAGE_KEY = "ethereal_booking_progress";
@@ -130,8 +131,16 @@ export default function BookingPage() {
     fetch("/api/services")
       .then(r => r.json())
       .then(data => { if (Array.isArray(data) && data.length) setServices(data); })
-      .catch(() => {})
-      .finally(() => {});
+      .catch(() => {});
+    fetch("/api/business-hours")
+      .then(r => r.json())
+      .then(data => {
+        const closed = Object.entries(data)
+          .filter(([, v]: [string, any]) => !v.open)
+          .map(([k]) => Number(k));
+        setClosedDays(closed);
+      })
+      .catch(() => {});
   }, []);
 
   useEffect(() => {
@@ -300,7 +309,7 @@ export default function BookingPage() {
               {step === 1 && (
                 <div>
                   <h2 style={{ fontFamily: "var(--font-cormorant, Georgia, serif)", fontSize: 28, color: "var(--text)", margin: "0 0 8px", fontWeight: 400 }}>Choose a Date</h2>
-                  <p style={{ fontSize: 13, color: "var(--text-muted)", margin: "0 0 28px" }}>Select your preferred appointment date. We&apos;re open every day, 8am–6pm.</p>
+                  <p style={{ fontSize: 13, color: "var(--text-muted)", margin: "0 0 28px" }}>Select your preferred appointment date. Greyed-out days are unavailable.</p>
                   <div className="card-base" style={{ padding: "32px", maxWidth: 420 }}>
                     {/* Calendar nav */}
                     <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 24 }}>
@@ -323,7 +332,8 @@ export default function BookingPage() {
                         const date = new Date(calYear, calMonth, day);
                         const dateStr = `${calYear}-${String(calMonth + 1).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
                         const isPast = date < new Date(today.getFullYear(), today.getMonth(), today.getDate());
-                        const isDisabled = isPast;
+                        const isClosed = closedDays.includes(date.getDay());
+                        const isDisabled = isPast || isClosed;
                         const isSel = dateStr === selectedDate;
                         return (
                           <button
