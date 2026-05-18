@@ -2,13 +2,15 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { Users, Calendar, TrendingUp, Clock, ArrowRight, Loader2, Package, AlertTriangle } from "lucide-react";
+import { Users, Calendar, TrendingUp, Clock, ArrowRight, Loader2, Package, AlertTriangle, ToggleLeft, ToggleRight, Wrench } from "lucide-react";
 
 interface Stats {
   totalUsers: number;
   totalBookings: number;
   todayBookings: number;
   totalRevenue: number;
+  weekRevenue: number;
+  monthRevenue: number;
   upcomingBookings: Array<{
     id: string;
     appointmentDate: string;
@@ -32,6 +34,10 @@ const STATUS_COLORS: Record<string, string> = {
 export default function AdminOverview() {
   const [stats, setStats] = useState<Stats | null>(null);
   const [loading, setLoading] = useState(true);
+  const [maintenance, setMaintenance] = useState(false);
+  const [comingSoonGallery, setComingSoonGallery] = useState(false);
+  const [comingSoonProducts, setComingSoonProducts] = useState(false);
+  const [toggling, setToggling] = useState<string | null>(null);
 
   useEffect(() => {
     fetch("/api/admin/stats", { credentials: "include" })
@@ -39,7 +45,40 @@ export default function AdminOverview() {
       .then(d => setStats(d))
       .catch(() => {})
       .finally(() => setLoading(false));
+
+    fetch("/api/admin/maintenance", { credentials: "include" })
+      .then(r => r.json())
+      .then(d => setMaintenance(!!d.maintenance))
+      .catch(() => {});
+
+    fetch("/api/admin/coming-soon", { credentials: "include" })
+      .then(r => r.json())
+      .then(d => { setComingSoonGallery(!!d.gallery); setComingSoonProducts(!!d.products); })
+      .catch(() => {});
   }, []);
+
+  const toggleMaintenance = async () => {
+    setToggling("maintenance");
+    const next = !maintenance;
+    await fetch("/api/admin/maintenance", {
+      method: "PUT", headers: { "Content-Type": "application/json" }, credentials: "include",
+      body: JSON.stringify({ maintenance: next }),
+    });
+    setMaintenance(next);
+    setToggling(null);
+  };
+
+  const toggleComingSoon = async (key: "gallery" | "products") => {
+    setToggling(key);
+    const next = key === "gallery" ? !comingSoonGallery : !comingSoonProducts;
+    await fetch("/api/admin/coming-soon", {
+      method: "PUT", headers: { "Content-Type": "application/json" }, credentials: "include",
+      body: JSON.stringify({ [key]: next }),
+    });
+    if (key === "gallery") setComingSoonGallery(next);
+    else setComingSoonProducts(next);
+    setToggling(null);
+  };
 
   if (loading) return (
     <div style={{ display: "flex", alignItems: "center", gap: 12, color: "var(--text-muted)", padding: "80px 0" }}>
@@ -56,7 +95,7 @@ export default function AdminOverview() {
       </div>
 
       {/* Stats grid */}
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(200px, 1fr))", gap: 16, marginBottom: 48 }}>
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(180px, 1fr))", gap: 16, marginBottom: 32 }}>
         {[
           { icon: Users, label: "Total Clients", value: stats?.totalUsers ?? 0, color: "var(--gold)" },
           { icon: Calendar, label: "Total Bookings", value: stats?.totalBookings ?? 0, color: "var(--gold)" },
@@ -71,6 +110,44 @@ export default function AdminOverview() {
             <p style={{ fontFamily: "var(--font-cormorant, Georgia, serif)", fontSize: 36, color, margin: 0, fontWeight: 300, lineHeight: 1 }}>{value}</p>
           </div>
         ))}
+      </div>
+
+      {/* Revenue breakdown */}
+      <div style={{ background: "var(--bg-card)", border: "1px solid var(--border)", borderRadius: 6, padding: "18px 24px", marginBottom: 40, display: "flex", gap: 32, flexWrap: "wrap" }}>
+        <p style={{ fontSize: 10, letterSpacing: "0.2em", color: "var(--text-subtle)", textTransform: "uppercase", margin: 0, display: "flex", alignItems: "center" }}>Revenue:</p>
+        {[
+          { label: "This Week", value: stats?.weekRevenue ?? 0 },
+          { label: "This Month", value: stats?.monthRevenue ?? 0 },
+          { label: "All Time", value: stats?.totalRevenue ?? 0 },
+        ].map(({ label, value }) => (
+          <div key={label}>
+            <p style={{ fontSize: 9, letterSpacing: "0.15em", color: "var(--text-subtle)", textTransform: "uppercase", margin: "0 0 4px" }}>{label}</p>
+            <p style={{ fontFamily: "var(--font-cormorant, Georgia, serif)", fontSize: 22, color: "var(--gold)", margin: 0, fontWeight: 300 }}>${value.toFixed(0)} TTD</p>
+          </div>
+        ))}
+      </div>
+
+      {/* Site toggles */}
+      <div style={{ background: "var(--bg-card)", border: "1px solid var(--border)", borderRadius: 6, padding: "18px 24px", marginBottom: 40 }}>
+        <p style={{ fontSize: 10, letterSpacing: "0.2em", color: "var(--text-subtle)", textTransform: "uppercase", margin: "0 0 16px", fontWeight: 600 }}>Site Controls</p>
+        <div style={{ display: "flex", gap: 12, flexWrap: "wrap" }}>
+          {[
+            { key: "maintenance", label: "Maintenance Mode", desc: "Takes entire site offline", active: maintenance, color: "#e05555", icon: Wrench, onToggle: toggleMaintenance },
+            { key: "gallery", label: "Gallery Coming Soon", desc: "Hides gallery from clients", active: comingSoonGallery, color: "#f59e0b", icon: ToggleLeft, onToggle: () => toggleComingSoon("gallery") },
+            { key: "products", label: "Products Coming Soon", desc: "Hides products from clients", active: comingSoonProducts, color: "#f59e0b", icon: ToggleLeft, onToggle: () => toggleComingSoon("products") },
+          ].map(({ key, label, desc, active, color, icon: Icon, onToggle }) => (
+            <button key={key} onClick={onToggle} disabled={toggling === key}
+              style={{ display: "flex", alignItems: "center", gap: 12, padding: "12px 18px", background: active ? `${color}12` : "var(--bg-elevated)", border: `1px solid ${active ? color : "var(--border)"}`, borderRadius: 6, cursor: "pointer", transition: "all 0.2s", textAlign: "left" }}>
+              {toggling === key
+                ? <Loader2 size={16} style={{ animation: "spin 1s linear infinite", color }} />
+                : active ? <ToggleRight size={18} style={{ color }} /> : <ToggleLeft size={18} style={{ color: "var(--text-subtle)" }} />}
+              <div>
+                <p style={{ fontSize: 12, color: active ? color : "var(--text)", margin: "0 0 2px", fontWeight: 500 }}>{label}</p>
+                <p style={{ fontSize: 10, color: "var(--text-subtle)", margin: 0 }}>{active ? "ON — " : ""}{desc}</p>
+              </div>
+            </button>
+          ))}
+        </div>
       </div>
 
       <div style={{ display: "grid", gridTemplateColumns: "1.4fr 1fr", gap: 24 }}>

@@ -4,25 +4,27 @@ import { useState } from "react";
 import Link from "next/link";
 import NextImage from "next/image";
 import { usePathname, useRouter } from "next/navigation";
-import { BarChart3, Calendar, Users, Package, Image, FileText, HelpCircle, LogOut, Shield, ShoppingBag, UserCog, Layout, Search, Menu, X, Sun, Moon, Settings } from "lucide-react";
+import { BarChart3, Calendar, Users, Package, Image, FileText, HelpCircle, LogOut, Shield, ShoppingBag, UserCog, Layout, Search, Menu, X, Sun, Moon, Settings, Star, CalendarOff } from "lucide-react";
 import { useTheme } from "@/components/providers/ThemeProvider";
 import { useAuth } from "@/components/providers/AuthProvider";
 
 const NAV = [
-  { href: "/admin",          label: "Overview",        icon: BarChart3 },
-  { href: "/admin/calendar", label: "Calendar",        icon: Calendar },
-  { href: "/admin/bookings", label: "Bookings",        icon: FileText },
-  { href: "/admin/services", label: "Services",        icon: Package },
-  { href: "/admin/products", label: "Products",        icon: Package },
-  { href: "/admin/users",    label: "Clients",         icon: Users },
-  { href: "/admin/cart",     label: "Customer Carts",  icon: ShoppingBag },
-  { href: "/admin/homepage", label: "Homepage",        icon: Layout },
-  { href: "/admin/seo",      label: "SEO",             icon: Search },
-  { href: "/admin/gallery",  label: "Gallery",         icon: Image },
-  { href: "/admin/faq",      label: "FAQ",             icon: HelpCircle },
-  { href: "/admin/policies", label: "Policies",        icon: FileText },
-  { href: "/admin/settings", label: "Settings",         icon: Settings },
-  { href: "/admin/profile",  label: "My Profile",      icon: UserCog },
+  { href: "/admin",               label: "Overview",       icon: BarChart3 },
+  { href: "/admin/calendar",      label: "Calendar",       icon: Calendar },
+  { href: "/admin/bookings",      label: "Bookings",       icon: FileText },
+  { href: "/admin/blocked-dates", label: "Blocked Dates",  icon: CalendarOff },
+  { href: "/admin/services",      label: "Services",       icon: Package },
+  { href: "/admin/products",      label: "Products",       icon: Package },
+  { href: "/admin/users",         label: "Clients",        icon: Users },
+  { href: "/admin/cart",          label: "Customer Carts", icon: ShoppingBag },
+  { href: "/admin/reviews",       label: "Reviews",        icon: Star },
+  { href: "/admin/homepage",      label: "Homepage",       icon: Layout },
+  { href: "/admin/seo",           label: "SEO",            icon: Search },
+  { href: "/admin/gallery",       label: "Gallery",        icon: Image },
+  { href: "/admin/faq",           label: "FAQ",            icon: HelpCircle },
+  { href: "/admin/policies",      label: "Policies",       icon: FileText },
+  { href: "/admin/settings",      label: "Settings",       icon: Settings },
+  { href: "/admin/profile",       label: "My Profile",     icon: UserCog },
 ];
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {

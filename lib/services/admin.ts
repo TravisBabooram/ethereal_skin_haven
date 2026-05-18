@@ -46,16 +46,25 @@ export async function getDashboardStats() {
     bookingCount: r._count.serviceId,
   }));
 
-  const totalRevenue = await prisma.booking.aggregate({
-    where: { status: { not: "Cancelled" } },
-    _sum: { totalPrice: true },
-  });
+  const weekStart = new Date(now);
+  weekStart.setDate(weekStart.getDate() - 7);
+  weekStart.setHours(0, 0, 0, 0);
+
+  const monthStart = new Date(now.getFullYear(), now.getMonth(), 1);
+
+  const [totalRevenue, weekRevenue, monthRevenue] = await Promise.all([
+    prisma.booking.aggregate({ where: { status: { not: "Cancelled" } }, _sum: { totalPrice: true } }),
+    prisma.booking.aggregate({ where: { status: { not: "Cancelled" }, createdAt: { gte: weekStart } }, _sum: { totalPrice: true } }),
+    prisma.booking.aggregate({ where: { status: { not: "Cancelled" }, createdAt: { gte: monthStart } }, _sum: { totalPrice: true } }),
+  ]);
 
   return {
     totalUsers,
     totalBookings,
     todayBookings,
     totalRevenue: totalRevenue._sum.totalPrice ?? 0,
+    weekRevenue: weekRevenue._sum.totalPrice ?? 0,
+    monthRevenue: monthRevenue._sum.totalPrice ?? 0,
     upcomingBookings,
     recentUsers,
     popularServices,

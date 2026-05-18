@@ -1,6 +1,7 @@
 import { NextRequest } from "next/server";
 import { success, handleError, APIError } from "@/lib/utils/error";
 import { getAvailableTimeSlots } from "@/lib/services/bookings";
+import { getSetting } from "@/lib/services/settings";
 
 export async function GET(req: NextRequest) {
   try {
@@ -27,6 +28,13 @@ export async function GET(req: NextRequest) {
     today.setHours(0, 0, 0, 0);
     if (date < today) {
       throw new APIError(400, "Cannot book appointments in the past");
+    }
+
+    // Check blocked dates
+    const blockedRaw = await getSetting("blocked_dates").catch(() => "[]");
+    const blockedDates: string[] = JSON.parse(blockedRaw ?? "[]");
+    if (blockedDates.includes(dateParam)) {
+      return success({ date: dateParam, duration, slots: [] });
     }
 
     const slots = await getAvailableTimeSlots(date, duration);
