@@ -2,7 +2,8 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { Users, Calendar, TrendingUp, Clock, ArrowRight, Loader2, Package, AlertTriangle, ToggleLeft, ToggleRight, Wrench } from "lucide-react";
+import { Users, Calendar, TrendingUp, Clock, ArrowRight, Loader2, Package, AlertTriangle, ToggleLeft, ToggleRight, Wrench, BookOpen } from "lucide-react";
+import AdminGuide from "@/components/admin/AdminGuide";
 
 interface Stats {
   totalUsers: number;
@@ -34,6 +35,7 @@ const STATUS_COLORS: Record<string, string> = {
 export default function AdminOverview() {
   const [stats, setStats] = useState<Stats | null>(null);
   const [loading, setLoading] = useState(true);
+  const [guideOpen, setGuideOpen] = useState(false);
   const [maintenance, setMaintenance] = useState(false);
   const [comingSoonGallery, setComingSoonGallery] = useState(false);
   const [comingSoonProducts, setComingSoonProducts] = useState(false);
@@ -89,10 +91,22 @@ export default function AdminOverview() {
 
   return (
     <div>
-      <div style={{ marginBottom: 40 }}>
-        <p style={{ fontSize: 9, letterSpacing: "0.35em", color: "var(--gold)", textTransform: "uppercase", fontWeight: 600, marginBottom: 6 }}>Admin</p>
-        <h1 style={{ fontFamily: "var(--font-cormorant, Georgia, serif)", fontSize: 40, fontWeight: 300, color: "var(--text)", margin: 0 }}>Dashboard Overview</h1>
+      <div style={{ marginBottom: 40, display: "flex", justifyContent: "space-between", alignItems: "flex-end" }}>
+        <div>
+          <p style={{ fontSize: 9, letterSpacing: "0.35em", color: "var(--gold)", textTransform: "uppercase", fontWeight: 600, marginBottom: 6 }}>Admin</p>
+          <h1 style={{ fontFamily: "var(--font-cormorant, Georgia, serif)", fontSize: 40, fontWeight: 300, color: "var(--text)", margin: 0 }}>Dashboard Overview</h1>
+        </div>
+        <button
+          onClick={() => setGuideOpen(true)}
+          style={{ display: "flex", alignItems: "center", gap: 8, padding: "10px 18px", background: "none", border: "1px solid var(--border)", borderRadius: 4, color: "var(--text-muted)", fontSize: 11, letterSpacing: "0.15em", textTransform: "uppercase", cursor: "pointer", transition: "all 0.2s" }}
+          onMouseEnter={e => { e.currentTarget.style.borderColor = "var(--gold)"; e.currentTarget.style.color = "var(--gold)"; }}
+          onMouseLeave={e => { e.currentTarget.style.borderColor = "var(--border)"; e.currentTarget.style.color = "var(--text-muted)"; }}
+        >
+          <BookOpen size={13} /> How to Use This Panel
+        </button>
       </div>
+
+      {guideOpen && <AdminGuide onClose={() => setGuideOpen(false)} />}
 
       {/* Stats grid */}
       <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(180px, 1fr))", gap: 16, marginBottom: 32 }}>
