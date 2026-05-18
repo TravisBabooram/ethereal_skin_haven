@@ -2,6 +2,9 @@ import type { Metadata } from "next";
 import { getSetting } from "@/lib/services/settings";
 import Hero from "@/components/home/Hero";
 import StatsBar from "@/components/home/StatsBar";
+import BusinessInfoBar from "@/components/home/BusinessInfoBar";
+import CredentialsBar from "@/components/home/CredentialsBar";
+import QuoteBar from "@/components/home/QuoteBar";
 import FeaturedServices from "@/components/home/FeaturedServices";
 import FeaturedProducts from "@/components/home/FeaturedProducts";
 import Testimonials from "@/components/home/Testimonials";
@@ -27,8 +30,11 @@ export default function HomePage() {
       <Hero />
       <StatsBar />
       <FeaturedServices />
+      <BusinessInfoBar />
       <FeaturedProducts />
+      <CredentialsBar />
       <Testimonials />
+      <QuoteBar />
       <InstagramFeed />
       <HomeCTA />
     </>
