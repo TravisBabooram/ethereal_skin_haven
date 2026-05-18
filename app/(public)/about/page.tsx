@@ -5,7 +5,7 @@ import { ArrowRight, Award, Heart, Leaf, ShieldCheck } from "lucide-react";
 import AnimatedSection from "@/components/ui/AnimatedSection";
 import SectionHeader from "@/components/ui/SectionHeader";
 
-const ESTHETICIAN_IMAGE = "";
+const ESTHETICIAN_IMAGE = "https://res.cloudinary.com/dp5zkgtje/image/upload/v1779074709/about_us_qqtquy.png";
 
 const values = [
   { icon: Award, title: "Results-Driven", desc: "Every treatment is selected and customised to deliver real, visible results — not just a relaxing hour. Your skin's health is always the priority." },
