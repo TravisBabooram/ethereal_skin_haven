@@ -8,7 +8,9 @@ async function getMaintenanceMode(): Promise<boolean> {
   // Use the configured app URL — never the request's Host header (SSRF prevention)
   const base = process.env.NEXT_PUBLIC_APP_URL || "https://etherealskinhaven.com";
   try {
-    const res = await fetch(`${base}/api/public/maintenance`);
+    const res = await fetch(`${base}/api/public/maintenance`, {
+      signal: AbortSignal.timeout(2000),
+    });
     if (!res.ok) return false;
     const data = await res.json();
     return data.maintenance === true;
