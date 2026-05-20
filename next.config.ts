@@ -28,6 +28,16 @@ const securityHeaders = [
 ];
 
 const nextConfig: NextConfig = {
+  // Tell Next.js NOT to bundle these — they must be required natively at runtime.
+  // pg is a native Node.js module and breaks silently when webpack bundles it.
+  // Without this, every database call and RSC page navigation fails on Netlify.
+  serverExternalPackages: [
+    "pg",
+    "@prisma/adapter-pg",
+    "bcrypt",
+    "@prisma/client",
+  ],
+
   async headers() {
     return [
       {
