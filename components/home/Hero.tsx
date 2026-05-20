@@ -1,17 +1,11 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
-import dynamic from "next/dynamic";
+import { useEffect, useRef } from "react";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import { ArrowRight, ChevronDown } from "lucide-react";
 import { useTheme } from "@/components/providers/ThemeProvider";
 import HeroCanvas from "./HeroCanvas";
-
-const HeroScene = dynamic(() => import("./HeroSceneInner"), {
-  ssr: false,
-  loading: () => null,
-});
 
 const WORDS = ["Radiant", "Luminous", "Elevated", "Ethereal"];
 
@@ -19,7 +13,6 @@ export default function Hero() {
   const { theme } = useTheme();
   const isDark = theme === "dark";
   const wordRef = useRef<HTMLSpanElement>(null);
-  const [showScene, setShowScene] = useState(false);
 
   // DOM refs for parallax — direct style mutation, zero React re-renders
   const contentRef = useRef<HTMLDivElement>(null);
@@ -31,14 +24,6 @@ export default function Hero() {
   const mouseTarget = useRef({ x: 0, y: 0 });
   const mouseCurrent = useRef({ x: 0, y: 0 });
   const rafRef = useRef<number>(0);
-
-  useEffect(() => {
-    const mobile = window.innerWidth < 768;
-    if (!mobile) {
-      const t = setTimeout(() => setShowScene(true), 400);
-      return () => clearTimeout(t);
-    }
-  }, []);
 
   // Cycling word animation
   useEffect(() => {
@@ -119,19 +104,7 @@ export default function Hero() {
       {/* Layer 1 — Canvas gold dust particles (immediate, zero deps) */}
       <HeroCanvas isDark={isDark} />
 
-      {/* Layer 2 — Three.js 3D orbs (lazy, desktop only) */}
-      {showScene && (
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 1.8, ease: "easeOut" }}
-          style={{ position: "absolute", inset: 0, pointerEvents: "none", zIndex: 2 }}
-        >
-          <HeroScene isDark={isDark} />
-        </motion.div>
-      )}
-
-      {/* Layer 3 — Floating soft orbs with parallax (refs, no re-renders) */}
+      {/* Layer 2 — Floating soft orbs with parallax (refs, no re-renders) */}
       <motion.div ref={orb1Ref}
         style={{
           position: "absolute", top: "14%", left: "8%",
