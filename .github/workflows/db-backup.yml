@@ -1,0 +1,37 @@
+name: Database Backup
+
+on:
+  schedule:
+    - cron: "0 */6 * * *"   # every 6 hours
+  workflow_dispatch:          # manual trigger anytime
+
+jobs:
+  backup:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Install PostgreSQL client
+        run: sudo apt-get install -y postgresql-client
+
+      - name: Dump database
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+        run: |
+          TIMESTAMP=$(date +%Y-%m-%d_%H-%M-UTC)
+          FILENAME="ethereal-skin-haven-backup-${TIMESTAMP}.sql"
+          pg_dump "$DATABASE_URL" \
+            --no-password \
+            --format=plain \
+            --no-owner \
+            --no-acl \
+            --file="$FILENAME"
+          echo "BACKUP_FILE=$FILENAME" >> $GITHUB_ENV
+          echo "Backup created: $FILENAME ($(du -sh $FILENAME | cut -f1))"
+
+      - name: Upload backup
+        uses: actions/upload-artifact@v4
+        with:
+          name: db-backup-${{ github.run_number }}-${{ github.run_attempt }}
+          path: "*.sql"
+          retention-days: 90
+          if-no-files-found: error
