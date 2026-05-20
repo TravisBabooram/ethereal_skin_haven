@@ -6,6 +6,7 @@ import { JWTPayload } from "@/lib/utils/jwt";
 
 const ALL_KEYS = [
   "hero_title", "hero_subtitle", "hero_tagline",
+  "hide_images",
   "seo_home_title", "seo_home_desc",
   "seo_services_title", "seo_services_desc",
   "seo_products_title", "seo_products_desc",

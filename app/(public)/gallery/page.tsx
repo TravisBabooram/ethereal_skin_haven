@@ -31,16 +31,19 @@ export default function GalleryPage() {
   const [cat, setCat] = useState("All");
   const [lightbox, setLightbox] = useState<GalleryImage | null>(null);
   const [comingSoon, setComingSoon] = useState(false);
+  const [hideImages, setHideImages] = useState(false);
 
   useEffect(() => {
-    fetch("/api/coming-soon")
-      .then(r => r.json())
-      .then(d => { if (d.gallery) setComingSoon(true); })
-      .catch(() => {});
-
-    fetch("/api/gallery")
-      .then(r => r.json())
-      .then(data => { if (Array.isArray(data)) setImages(data); })
+    Promise.all([
+      fetch("/api/coming-soon").then(r => r.json()),
+      fetch("/api/gallery").then(r => r.json()),
+      fetch("/api/public/display").then(r => r.json()),
+    ])
+      .then(([cs, data, display]) => {
+        if (cs.gallery) setComingSoon(true);
+        if (Array.isArray(data)) setImages(data);
+        setHideImages(display.hideImages === true);
+      })
       .catch(() => {})
       .finally(() => setLoading(false));
   }, []);
@@ -86,7 +89,12 @@ export default function GalleryPage() {
       {/* Grid */}
       <section style={{ background: "var(--bg)", padding: "clamp(32px, 6vw, 60px) 0" }}>
         <div style={{ maxWidth: 1280, margin: "0 auto", padding: "0 clamp(16px, 5vw, 32px)" }}>
-          {loading ? (
+          {hideImages ? (
+            <div style={{ textAlign: "center", padding: "80px 0" }}>
+              <ZoomIn size={32} style={{ color: "var(--gold)", opacity: 0.3, marginBottom: 16 }} />
+              <p style={{ fontSize: 15, color: "var(--text-muted)", margin: 0 }}>Gallery images are temporarily unavailable.</p>
+            </div>
+          ) : loading ? (
             <div style={{ textAlign: "center", padding: "80px 0", color: "var(--text-muted)", fontSize: 13 }}>Loading…</div>
           ) : filtered.length === 0 ? (
             <div style={{ textAlign: "center", padding: "80px 0" }}>

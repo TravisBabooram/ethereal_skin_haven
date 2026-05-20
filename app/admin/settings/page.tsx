@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Loader2, Power, ShoppingBag, ImageIcon } from "lucide-react";
+import { Loader2, Power, ShoppingBag, ImageIcon, EyeOff } from "lucide-react";
 
 type Toggle = { value: boolean; saving: boolean; saved: boolean };
 const off: Toggle = { value: false, saving: false, saved: false };
@@ -10,16 +10,19 @@ export default function AdminSettingsPage() {
   const [maintenance, setMaintenance] = useState<Toggle>(off);
   const [products,    setProducts]    = useState<Toggle>(off);
   const [gallery,     setGallery]     = useState<Toggle>(off);
+  const [hideImages,  setHideImages]  = useState<Toggle>(off);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     Promise.all([
       fetch("/api/admin/maintenance",   { credentials: "include" }).then(r => r.json()),
       fetch("/api/admin/coming-soon",   { credentials: "include" }).then(r => r.json()),
-    ]).then(([m, cs]) => {
+      fetch("/api/admin/settings",      { credentials: "include" }).then(r => r.json()),
+    ]).then(([m, cs, cfg]) => {
       setMaintenance(t => ({ ...t, value: m.maintenance ?? false }));
       setProducts(t    => ({ ...t, value: cs.products ?? false }));
       setGallery(t     => ({ ...t, value: cs.gallery  ?? false }));
+      setHideImages(t  => ({ ...t, value: cfg.hide_images === "true" }));
     }).finally(() => setLoading(false));
   }, []);
 
@@ -33,6 +36,18 @@ export default function AdminSettingsPage() {
     });
     setMaintenance({ value: next, saving: false, saved: true });
     setTimeout(() => setMaintenance(t => ({ ...t, saved: false })), 2500);
+  };
+
+  const toggleHideImages = async (next: boolean) => {
+    setHideImages(t => ({ ...t, saving: true, saved: false }));
+    await fetch("/api/admin/settings", {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      credentials: "include",
+      body: JSON.stringify({ hide_images: String(next) }),
+    });
+    setHideImages({ value: next, saving: false, saved: true });
+    setTimeout(() => setHideImages(t => ({ ...t, saved: false })), 2500);
   };
 
   const toggleComingSoon = async (field: "products" | "gallery", next: boolean) => {
@@ -104,6 +119,20 @@ export default function AdminSettingsPage() {
           activeCardBorder="rgba(244,40,112,0.30)"
           onToggle={next => toggleComingSoon("gallery", next)}
           warningText="Gallery page is currently showing the Coming Soon screen."
+        />
+
+        {/* ── Hide All Images ──────────────────────────────── */}
+        <ToggleCard
+          icon={<EyeOff size={16} style={{ color: hideImages.value ? "var(--gold)" : "var(--text-muted)" }} />}
+          title="Hide All Images"
+          description="Hides all service, product, and gallery images across the public site. Text content, descriptions, and booking remain fully visible. Useful while uploading or replacing images."
+          state={hideImages}
+          activeColor="var(--gold)"
+          activeBg="rgba(201,169,110,0.10)"
+          activeBorder="rgba(201,169,110,0.28)"
+          activeCardBorder="rgba(201,169,110,0.30)"
+          onToggle={toggleHideImages}
+          warningText="All images are currently hidden from visitors."
         />
 
       </div>

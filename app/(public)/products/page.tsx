@@ -25,6 +25,7 @@ export default function ProductsPage() {
   const [addingToCart, setAddingToCart] = useState<string | null>(null);
   const [addedToCart, setAddedToCart] = useState<string | null>(null);
   const [comingSoon, setComingSoon] = useState(false);
+  const [hideImages, setHideImages] = useState(false);
 
   const handleAddToCart = async (productId: string) => {
     setAddingToCart(productId);
@@ -41,14 +42,16 @@ export default function ProductsPage() {
   };
 
   useEffect(() => {
-    fetch("/api/coming-soon")
-      .then(r => r.json())
-      .then(d => { if (d.products) { setComingSoon(true); setLoading(false); return; } })
-      .catch(() => {});
-
-    fetch("/api/products")
-      .then(r => r.json())
-      .then(data => { if (Array.isArray(data)) setProducts(data); })
+    Promise.all([
+      fetch("/api/coming-soon").then(r => r.json()),
+      fetch("/api/products").then(r => r.json()),
+      fetch("/api/public/display").then(r => r.json()),
+    ])
+      .then(([cs, data, display]) => {
+        if (cs.products) { setComingSoon(true); return; }
+        if (Array.isArray(data)) setProducts(data);
+        setHideImages(display.hideImages === true);
+      })
       .catch(() => {})
       .finally(() => setLoading(false));
   }, []);
@@ -105,7 +108,7 @@ export default function ProductsPage() {
                   <article className="card-base" style={{ overflow: "hidden", display: "flex", flexDirection: "column" }}>
                     {/* Image area */}
                     <div style={{ height: "clamp(200px, 30vw, 260px)", background: "linear-gradient(135deg, var(--bg-elevated) 0%, rgba(201,169,110,0.1) 100%)", display: "flex", alignItems: "center", justifyContent: "center", position: "relative", overflow: "hidden" }}>
-                      {p.image ? (
+                      {!hideImages && p.image ? (
                         // eslint-disable-next-line @next/next/no-img-element
                         <img src={p.image} alt={p.name} style={{ width: "100%", height: "100%", objectFit: "cover", position: "absolute", inset: 0 }} />
                       ) : (

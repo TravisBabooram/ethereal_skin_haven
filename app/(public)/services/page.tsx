@@ -25,6 +25,7 @@ export default function ServicesPage() {
   const [expanded, setExpanded] = useState<string | null>(null);
   const [addingToCart, setAddingToCart] = useState<string | null>(null);
   const [addedToCart, setAddedToCart] = useState<string | null>(null);
+  const [hideImages, setHideImages] = useState(false);
 
   const handleAddToCart = async (serviceId: string) => {
     setAddingToCart(serviceId);
@@ -41,9 +42,14 @@ export default function ServicesPage() {
   };
 
   useEffect(() => {
-    fetch("/api/services")
-      .then(r => r.json())
-      .then(data => { if (Array.isArray(data)) setServices(data); })
+    Promise.all([
+      fetch("/api/services").then(r => r.json()),
+      fetch("/api/public/display").then(r => r.json()),
+    ])
+      .then(([data, display]) => {
+        if (Array.isArray(data)) setServices(data);
+        setHideImages(display.hideImages === true);
+      })
       .catch(() => {})
       .finally(() => setLoading(false));
   }, []);
@@ -101,7 +107,7 @@ export default function ServicesPage() {
               {filtered.map((svc, i) => (
                 <AnimatedSection key={svc.id} delay={i * 0.05}>
                   <article className="card-base" style={{ height: "100%", display: "flex", flexDirection: "column", overflow: "hidden" }}>
-                    {svc.image && svc.image.startsWith("http") && (
+                    {!hideImages && svc.image && svc.image.startsWith("http") && (
                       // eslint-disable-next-line @next/next/no-img-element
                       <img src={svc.image} alt={svc.name} style={{ width: "100%", height: 200, objectFit: "cover", display: "block", flexShrink: 0 }}
                         onError={e => { e.currentTarget.style.display = "none"; }} />
