@@ -8,7 +8,6 @@ import { ArrowRight, ChevronDown } from "lucide-react";
 import { useTheme } from "@/components/providers/ThemeProvider";
 import HeroCanvas from "./HeroCanvas";
 
-// Three.js scene — lazy loaded after page is interactive (no SSR, no blocking)
 const HeroScene = dynamic(() => import("./HeroSceneInner"), {
   ssr: false,
   loading: () => null,
@@ -20,24 +19,25 @@ export default function Hero() {
   const { theme } = useTheme();
   const isDark = theme === "dark";
   const wordRef = useRef<HTMLSpanElement>(null);
+  const [showScene, setShowScene] = useState(false);
 
-  // Mouse parallax state (desktop only)
-  const [mouse, setMouse] = useState({ x: 0, y: 0 });
+  // DOM refs for parallax — direct style mutation, zero React re-renders
+  const contentRef = useRef<HTMLDivElement>(null);
+  const headingRef = useRef<HTMLDivElement>(null);
+  const orb1Ref = useRef<HTMLDivElement>(null);
+  const orb2Ref = useRef<HTMLDivElement>(null);
+  const orb3Ref = useRef<HTMLDivElement>(null);
+
   const mouseTarget = useRef({ x: 0, y: 0 });
   const mouseCurrent = useRef({ x: 0, y: 0 });
   const rafRef = useRef<number>(0);
-  const isMobile = useRef(false);
-
-  // Whether to show Three.js (skip on mobile for performance)
-  const [showScene, setShowScene] = useState(false);
 
   useEffect(() => {
-    isMobile.current = window.innerWidth < 768;
-    // Show Three.js scene 400ms after mount so it never delays LCP
-    const t = setTimeout(() => {
-      if (!isMobile.current) setShowScene(true);
-    }, 400);
-    return () => clearTimeout(t);
+    const mobile = window.innerWidth < 768;
+    if (!mobile) {
+      const t = setTimeout(() => setShowScene(true), 400);
+      return () => clearTimeout(t);
+    }
   }, []);
 
   // Cycling word animation
@@ -61,7 +61,7 @@ export default function Hero() {
     return () => clearInterval(id);
   }, []);
 
-  // Smooth mouse parallax (desktop only, respects reduced-motion)
+  // Parallax — mutates DOM directly, never touches React state
   useEffect(() => {
     const prefersReduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     if (prefersReduced || window.innerWidth < 768) return;
@@ -76,12 +76,24 @@ export default function Hero() {
 
     const lerp = (a: number, b: number, t: number) => a + (b - a) * t;
     const tick = () => {
-      const cx = lerp(mouseCurrent.current.x, mouseTarget.current.x, 0.06);
-      const cy = lerp(mouseCurrent.current.y, mouseTarget.current.y, 0.06);
-      if (Math.abs(cx - mouseCurrent.current.x) > 0.0001 || Math.abs(cy - mouseCurrent.current.y) > 0.0001) {
-        mouseCurrent.current = { x: cx, y: cy };
-        setMouse({ x: cx, y: cy });
-      }
+      const tx = mouseTarget.current.x;
+      const ty = mouseTarget.current.y;
+      const cx = lerp(mouseCurrent.current.x, tx, 0.055);
+      const cy = lerp(mouseCurrent.current.y, ty, 0.055);
+      mouseCurrent.current = { x: cx, y: cy };
+
+      // Apply transforms directly — no setState, no re-render
+      if (contentRef.current)
+        contentRef.current.style.transform = `translate(${cx * -6}px, ${cy * -4}px)`;
+      if (headingRef.current)
+        headingRef.current.style.transform = `translate(${cx * -10}px, ${cy * -7}px)`;
+      if (orb1Ref.current)
+        orb1Ref.current.style.transform = `translate(${cx * -18}px, ${cy * -14}px)`;
+      if (orb2Ref.current)
+        orb2Ref.current.style.transform = `translate(${cx * 14}px, ${cy * 18}px)`;
+      if (orb3Ref.current)
+        orb3Ref.current.style.transform = `translate(${cx * -10}px, ${cy * -22}px)`;
+
       rafRef.current = requestAnimationFrame(tick);
     };
     rafRef.current = requestAnimationFrame(tick);
@@ -119,8 +131,8 @@ export default function Hero() {
         </motion.div>
       )}
 
-      {/* Layer 3 — Floating soft orbs with parallax (CSS, Framer Motion) */}
-      <motion.div
+      {/* Layer 3 — Floating soft orbs with parallax (refs, no re-renders) */}
+      <motion.div ref={orb1Ref}
         style={{
           position: "absolute", top: "14%", left: "8%",
           width: "clamp(220px, 30vw, 380px)", height: "clamp(220px, 30vw, 380px)",
@@ -129,13 +141,11 @@ export default function Hero() {
             ? "radial-gradient(circle, rgba(212,168,44,0.09) 0%, transparent 70%)"
             : "radial-gradient(circle, rgba(192,144,32,0.07) 0%, transparent 70%)",
           filter: "blur(48px)", pointerEvents: "none", zIndex: 1,
-          transform: `translate(${mouse.x * -18}px, ${mouse.y * -14}px)`,
-          transition: "transform 0.1s linear",
         }}
         animate={{ y: [0, -22, 0], x: [0, 10, 0] }}
         transition={{ duration: 11, repeat: Infinity, ease: "easeInOut" }}
       />
-      <motion.div
+      <motion.div ref={orb2Ref}
         style={{
           position: "absolute", bottom: "18%", right: "6%",
           width: "clamp(180px, 25vw, 320px)", height: "clamp(180px, 25vw, 320px)",
@@ -144,13 +154,11 @@ export default function Hero() {
             ? "radial-gradient(circle, rgba(244,40,112,0.06) 0%, transparent 70%)"
             : "radial-gradient(circle, rgba(232,0,96,0.05) 0%, transparent 70%)",
           filter: "blur(56px)", pointerEvents: "none", zIndex: 1,
-          transform: `translate(${mouse.x * 14}px, ${mouse.y * 18}px)`,
-          transition: "transform 0.1s linear",
         }}
         animate={{ y: [0, 18, 0], x: [0, -8, 0] }}
         transition={{ duration: 9, repeat: Infinity, ease: "easeInOut", delay: 2 }}
       />
-      <motion.div
+      <motion.div ref={orb3Ref}
         style={{
           position: "absolute", top: "50%", left: "55%",
           width: "clamp(140px, 18vw, 240px)", height: "clamp(140px, 18vw, 240px)",
@@ -159,8 +167,6 @@ export default function Hero() {
             ? "radial-gradient(circle, rgba(212,168,44,0.05) 0%, transparent 70%)"
             : "radial-gradient(circle, rgba(192,144,32,0.04) 0%, transparent 70%)",
           filter: "blur(64px)", pointerEvents: "none", zIndex: 1,
-          transform: `translate(${mouse.x * -10}px, ${mouse.y * -22}px)`,
-          transition: "transform 0.1s linear",
         }}
         animate={{ y: [0, -12, 0] }}
         transition={{ duration: 7, repeat: Infinity, ease: "easeInOut", delay: 1 }}
@@ -170,16 +176,11 @@ export default function Hero() {
       <div style={{ position: "absolute", left: "5%", top: "20%", bottom: "20%", width: 1, background: "linear-gradient(180deg, transparent, var(--gold), transparent)", opacity: 0.18, zIndex: 1 }} />
       <div style={{ position: "absolute", right: "5%", top: "30%", bottom: "30%", width: 1, background: "linear-gradient(180deg, transparent, var(--pink), transparent)", opacity: 0.12, zIndex: 1 }} />
 
-      {/* Layer 4 — Hero content with parallax */}
+      {/* Layer 4 — Hero content with parallax (ref-driven, no re-renders) */}
       <div
+        ref={contentRef}
         className="hero-content"
-        style={{
-          position: "relative", zIndex: 10,
-          textAlign: "center", padding: "140px 24px 80px",
-          maxWidth: 900, width: "100%",
-          transform: `translate(${mouse.x * -6}px, ${mouse.y * -4}px)`,
-          transition: "transform 0.12s linear",
-        }}
+        style={{ position: "relative", zIndex: 10, textAlign: "center", padding: "140px 24px 80px", maxWidth: 900, width: "100%" }}
       >
         {/* Eyebrow */}
         <motion.div
@@ -195,15 +196,12 @@ export default function Hero() {
           <span style={{ height: 1, width: 50, background: "linear-gradient(90deg, var(--gold), transparent)", display: "block" }} />
         </motion.div>
 
-        {/* Main heading — deeper parallax depth */}
+        {/* Main heading — deeper parallax depth (ref-driven) */}
         <motion.div
+          ref={headingRef}
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 1, delay: 0.4, ease: [0.22, 1, 0.36, 1] }}
-          style={{
-            transform: `translate(${mouse.x * -10}px, ${mouse.y * -7}px)`,
-            transition: "transform 0.12s linear",
-          }}
         >
           <h1 style={{
             fontFamily: "var(--font-cormorant, Georgia, serif)",
