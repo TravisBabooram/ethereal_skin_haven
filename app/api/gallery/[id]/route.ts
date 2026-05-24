@@ -15,7 +15,7 @@ async function putHandler(
     const existing = await getGalleryImageById(id);
     const updated = await updateGalleryImage(id, data);
     // If the image URL changed, delete the old one from Cloudinary
-    if (existing?.image && data.image && existing.image !== data.image) {
+    if (existing?.image && data.image && existing.image !== data.image && !data._noDelete) {
       deleteCloudinaryImage(existing.image).catch(() => null);
     }
     return success(updated);

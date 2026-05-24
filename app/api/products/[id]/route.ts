@@ -49,7 +49,7 @@ async function putHandler(
     }
 
     // Delete old image from Cloudinary if it was replaced
-    if (before?.image && data.image !== undefined && before.image !== data.image) {
+    if (before?.image && data.image !== undefined && before.image !== data.image && !data._noDelete) {
       deleteCloudinaryImage(before.image).catch(() => null);
     }
 

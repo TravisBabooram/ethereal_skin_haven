@@ -1,8 +1,9 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Plus, Pencil, Trash2, Star, Loader2, X, Eye, EyeOff, Package } from "lucide-react";
+import { Plus, Pencil, Trash2, Star, Loader2, X, Eye, EyeOff, Package, Images } from "lucide-react";
 import CloudinaryUpload from "@/components/admin/CloudinaryUpload";
+import ImagePicker from "@/components/admin/ImagePicker";
 
 interface Product {
   id: string;
@@ -53,6 +54,8 @@ export default function AdminProductsPage() {
   const [saving, setSaving] = useState(false);
   const [deleting, setDeleting] = useState<string | null>(null);
   const [adjusting, setAdjusting] = useState<string | null>(null);
+  const [pickerForId, setPickerForId] = useState<string | null>(null);
+  const [reassigning, setReassigning] = useState<string | null>(null);
 
   const fetchProducts = () => {
     setLoading(true);
@@ -125,7 +128,6 @@ export default function AdminProductsPage() {
   const adjustStock = async (p: Product, delta: number) => {
     const next = Math.max(0, p.stockQty + delta);
     setAdjusting(p.id);
-    // Send only stockQty — service layer auto-derives status
     await fetch(`/api/products/${p.id}`, {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
@@ -133,6 +135,19 @@ export default function AdminProductsPage() {
       body: JSON.stringify({ stockQty: next }),
     });
     setAdjusting(null);
+    fetchProducts();
+  };
+
+  const handleReassign = async (productId: string, imageUrl: string) => {
+    setReassigning(productId);
+    setPickerForId(null);
+    await fetch(`/api/products/${productId}`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      credentials: "include",
+      body: JSON.stringify({ image: imageUrl, _noDelete: true }),
+    });
+    setReassigning(null);
     fetchProducts();
   };
 
@@ -170,6 +185,14 @@ export default function AdminProductsPage() {
         </button>
       </div>
 
+      {/* Reassign hint */}
+      <div style={{ display: "flex", alignItems: "center", gap: 10, padding: "10px 14px", background: "rgba(201,169,110,0.06)", border: "1px solid rgba(201,169,110,0.2)", borderRadius: 4, marginBottom: 20 }}>
+        <Images size={13} style={{ color: "var(--gold)", flexShrink: 0 }} />
+        <p style={{ fontSize: 11, color: "var(--text-muted)", margin: 0 }}>
+          To fix misplaced images — click the <strong style={{ color: "var(--text)" }}>photo icon</strong> on any row to pick an existing image without re-uploading.
+        </p>
+      </div>
+
       {/* Stock summary pills */}
       {!loading && (outOfStock > 0 || lowStock > 0) && (
         <div style={{ display: "flex", gap: 10, marginBottom: 24, flexWrap: "wrap" }}>
@@ -197,7 +220,7 @@ export default function AdminProductsPage() {
           <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 13 }}>
             <thead>
               <tr style={{ borderBottom: "1px solid var(--border)" }}>
-                {["Name", "Category", "Price", "Stock", "Status", "Display", "Featured", "Actions"].map(h => (
+                {["Image", "Name", "Category", "Price", "Stock", "Status", "Display", "Featured", "Actions"].map(h => (
                   <th key={h} style={{ padding: "12px 16px", textAlign: "left", fontSize: 9, letterSpacing: "0.18em", color: "var(--text-subtle)", textTransform: "uppercase", fontWeight: 600 }}>{h}</th>
                 ))}
               </tr>
@@ -209,10 +232,22 @@ export default function AdminProductsPage() {
                   onMouseEnter={e => (e.currentTarget.style.background = "var(--bg-elevated)")}
                   onMouseLeave={e => (e.currentTarget.style.background = "transparent")}>
 
+                  {/* Thumbnail */}
+                  <td style={{ padding: "10px 16px" }}>
+                    <div style={{ width: 48, height: 48, borderRadius: 4, overflow: "hidden", border: "1px solid var(--border)", background: "var(--bg-elevated)", flexShrink: 0 }}>
+                      {p.image
+                        ? <img src={p.image} alt={p.name} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+                        : <div style={{ width: "100%", height: "100%", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                            <Images size={16} style={{ color: "var(--border)" }} />
+                          </div>
+                      }
+                    </div>
+                  </td>
+
                   {/* Name */}
                   <td style={{ padding: "14px 16px" }}>
                     <p style={{ margin: "0 0 2px", color: "var(--text)", fontWeight: 500 }}>{p.name}</p>
-                    <p style={{ margin: 0, fontSize: 11, color: "var(--text-subtle)", maxWidth: 200, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{p.description}</p>
+                    <p style={{ margin: 0, fontSize: 11, color: "var(--text-subtle)", maxWidth: 180, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{p.description}</p>
                   </td>
 
                   {/* Category */}
@@ -224,24 +259,14 @@ export default function AdminProductsPage() {
                   {/* Stock inline +/- */}
                   <td style={{ padding: "14px 16px" }}>
                     <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-                      <button
-                        onClick={() => adjustStock(p, -1)}
-                        disabled={adjusting === p.id || p.stockQty === 0}
+                      <button onClick={() => adjustStock(p, -1)} disabled={adjusting === p.id || p.stockQty === 0}
                         style={{ width: 22, height: 22, borderRadius: 3, border: "1px solid var(--border)", background: "none", color: "var(--text-muted)", cursor: p.stockQty === 0 ? "not-allowed" : "pointer", fontSize: 14, lineHeight: 1, display: "flex", alignItems: "center", justifyContent: "center", opacity: p.stockQty === 0 ? 0.4 : 1 }}>
                         −
                       </button>
-                      <span style={{
-                        minWidth: 28,
-                        textAlign: "center",
-                        fontWeight: 600,
-                        fontSize: 13,
-                        color: p.stockQty === 0 ? "#e05555" : p.stockQty <= LOW_STOCK_THRESHOLD ? "#f59e0b" : "var(--text)",
-                      }}>
+                      <span style={{ minWidth: 28, textAlign: "center", fontWeight: 600, fontSize: 13, color: p.stockQty === 0 ? "#e05555" : p.stockQty <= LOW_STOCK_THRESHOLD ? "#f59e0b" : "var(--text)" }}>
                         {adjusting === p.id ? <Loader2 size={12} style={{ animation: "spin 1s linear infinite" }} /> : p.stockQty}
                       </span>
-                      <button
-                        onClick={() => adjustStock(p, 1)}
-                        disabled={adjusting === p.id}
+                      <button onClick={() => adjustStock(p, 1)} disabled={adjusting === p.id}
                         style={{ width: 22, height: 22, borderRadius: 3, border: "1px solid var(--border)", background: "none", color: "var(--text-muted)", cursor: "pointer", fontSize: 14, lineHeight: 1, display: "flex", alignItems: "center", justifyContent: "center" }}>
                         +
                       </button>
@@ -255,11 +280,10 @@ export default function AdminProductsPage() {
                     </span>
                   </td>
 
-                  {/* Display for purchase toggle */}
+                  {/* Display toggle */}
                   <td style={{ padding: "14px 16px" }}>
-                    <button
-                      onClick={() => toggleDisplay(p)}
-                      title={p.availabilityStatus === "out_of_stock" ? "Hidden from customers — click to show" : "Visible to customers — click to hide"}
+                    <button onClick={() => toggleDisplay(p)}
+                      title={p.availabilityStatus === "out_of_stock" ? "Hidden — click to show" : "Visible — click to hide"}
                       style={{ background: "none", border: "none", cursor: "pointer", padding: 4, display: "flex", alignItems: "center" }}>
                       {p.availabilityStatus === "out_of_stock"
                         ? <EyeOff size={15} color="#e05555" />
@@ -276,7 +300,19 @@ export default function AdminProductsPage() {
 
                   {/* Actions */}
                   <td style={{ padding: "14px 16px" }}>
-                    <div style={{ display: "flex", gap: 8 }}>
+                    <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
+                      {/* Change image button */}
+                      <button
+                        onClick={() => setPickerForId(p.id)}
+                        disabled={reassigning === p.id}
+                        title="Pick existing image"
+                        style={{ padding: "6px 10px", background: "none", border: "1px solid var(--border)", borderRadius: 3, cursor: "pointer", color: "var(--text-muted)", fontSize: 11, display: "flex", alignItems: "center", gap: 5, transition: "all 0.2s" }}
+                        onMouseEnter={e => { e.currentTarget.style.borderColor = "var(--gold)"; e.currentTarget.style.color = "var(--gold)"; }}
+                        onMouseLeave={e => { e.currentTarget.style.borderColor = "var(--border)"; e.currentTarget.style.color = "var(--text-muted)"; }}>
+                        {reassigning === p.id
+                          ? <Loader2 size={11} style={{ animation: "spin 1s linear infinite" }} />
+                          : <Images size={11} />}
+                      </button>
                       <button onClick={() => openEdit(p)}
                         style={{ padding: "6px 10px", background: "none", border: "1px solid var(--border)", borderRadius: 3, cursor: "pointer", color: "var(--text-muted)", fontSize: 11, display: "flex", alignItems: "center", gap: 5, transition: "all 0.2s" }}
                         onMouseEnter={e => { e.currentTarget.style.borderColor = "var(--gold)"; e.currentTarget.style.color = "var(--gold)"; }}
@@ -295,7 +331,7 @@ export default function AdminProductsPage() {
               ))}
               {products.length === 0 && (
                 <tr>
-                  <td colSpan={8} style={{ padding: "48px 16px", textAlign: "center", color: "var(--text-muted)", fontSize: 13 }}>No products yet</td>
+                  <td colSpan={9} style={{ padding: "48px 16px", textAlign: "center", color: "var(--text-muted)", fontSize: 13 }}>No products yet</td>
                 </tr>
               )}
             </tbody>
@@ -347,6 +383,15 @@ export default function AdminProductsPage() {
           </div>
         </div>
       )}
+
+      {/* Image picker overlay */}
+      {pickerForId && (
+        <ImagePicker
+          onSelect={url => handleReassign(pickerForId, url)}
+          onClose={() => setPickerForId(null)}
+        />
+      )}
+
       <style>{`@keyframes spin{to{transform:rotate(360deg)}}`}</style>
     </div>
   );

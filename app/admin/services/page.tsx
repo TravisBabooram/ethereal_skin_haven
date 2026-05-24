@@ -1,8 +1,9 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Plus, Pencil, Trash2, Star, Loader2, X } from "lucide-react";
+import { Plus, Pencil, Trash2, Star, Loader2, X, Images } from "lucide-react";
 import CloudinaryUpload from "@/components/admin/CloudinaryUpload";
+import ImagePicker from "@/components/admin/ImagePicker";
 
 interface Service {
   id: string;
@@ -28,6 +29,8 @@ export default function AdminServicesPage() {
   const [editId, setEditId] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
   const [deleting, setDeleting] = useState<string | null>(null);
+  const [pickerForId, setPickerForId] = useState<string | null>(null);
+  const [reassigning, setReassigning] = useState<string | null>(null);
 
   const fetchServices = () => {
     setLoading(true);
@@ -71,6 +74,19 @@ export default function AdminServicesPage() {
     fetchServices();
   };
 
+  const handleReassign = async (serviceId: string, imageUrl: string) => {
+    setReassigning(serviceId);
+    setPickerForId(null);
+    await fetch(`/api/services/${serviceId}`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      credentials: "include",
+      body: JSON.stringify({ image: imageUrl, _noDelete: true }),
+    });
+    setReassigning(null);
+    fetchServices();
+  };
+
   const field = (key: keyof typeof form, label: string, opts?: { type?: string; textarea?: boolean; options?: string[] }) => (
     <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
       <label style={{ fontSize: 9, letterSpacing: "0.2em", color: "var(--gold)", textTransform: "uppercase", fontWeight: 600 }}>{label}</label>
@@ -103,6 +119,14 @@ export default function AdminServicesPage() {
         </button>
       </div>
 
+      {/* Reassign hint banner */}
+      <div style={{ display: "flex", alignItems: "center", gap: 10, padding: "10px 14px", background: "rgba(201,169,110,0.06)", border: "1px solid rgba(201,169,110,0.2)", borderRadius: 4, marginBottom: 20 }}>
+        <Images size={13} style={{ color: "var(--gold)", flexShrink: 0 }} />
+        <p style={{ fontSize: 11, color: "var(--text-muted)", margin: 0 }}>
+          To fix misplaced images — click the <strong style={{ color: "var(--text)" }}>photo icon</strong> on any row to pick an existing image without re-uploading.
+        </p>
+      </div>
+
       {loading ? (
         <div style={{ display: "flex", alignItems: "center", gap: 12, color: "var(--text-muted)", padding: "60px 0" }}>
           <Loader2 size={18} style={{ animation: "spin 1s linear infinite" }} /><span style={{ fontSize: 13 }}>Loading…</span>
@@ -112,7 +136,7 @@ export default function AdminServicesPage() {
           <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 13 }}>
             <thead>
               <tr style={{ borderBottom: "1px solid var(--border)" }}>
-                {["Name", "Category", "Price", "Duration", "Featured", "Actions"].map(h => (
+                {["Image", "Name", "Category", "Price", "Duration", "Featured", "Actions"].map(h => (
                   <th key={h} style={{ padding: "12px 16px", textAlign: "left", fontSize: 9, letterSpacing: "0.18em", color: "var(--text-subtle)", textTransform: "uppercase", fontWeight: 600 }}>{h}</th>
                 ))}
               </tr>
@@ -122,21 +146,45 @@ export default function AdminServicesPage() {
                 <tr key={s.id} style={{ borderBottom: i < services.length - 1 ? "1px solid var(--border)" : "none", transition: "background 0.15s" }}
                   onMouseEnter={e => (e.currentTarget.style.background = "var(--bg-elevated)")}
                   onMouseLeave={e => (e.currentTarget.style.background = "transparent")}>
+
+                  {/* Thumbnail */}
+                  <td style={{ padding: "10px 16px" }}>
+                    <div style={{ width: 48, height: 48, borderRadius: 4, overflow: "hidden", border: "1px solid var(--border)", background: "var(--bg-elevated)", flexShrink: 0 }}>
+                      {s.image
+                        ? <img src={s.image} alt={s.name} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+                        : <div style={{ width: "100%", height: "100%", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                            <Images size={16} style={{ color: "var(--border)" }} />
+                          </div>
+                      }
+                    </div>
+                  </td>
+
                   <td style={{ padding: "14px 16px" }}>
                     <p style={{ margin: "0 0 2px", color: "var(--text)", fontWeight: 500 }}>{s.name}</p>
-                    <p style={{ margin: 0, fontSize: 11, color: "var(--text-subtle)", maxWidth: 260, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{s.description}</p>
+                    <p style={{ margin: 0, fontSize: 11, color: "var(--text-subtle)", maxWidth: 220, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{s.description}</p>
                   </td>
                   <td style={{ padding: "14px 16px", color: "var(--text-muted)" }}>{s.category || "—"}</td>
                   <td style={{ padding: "14px 16px", color: "var(--gold)", fontFamily: "var(--font-cormorant, Georgia, serif)", fontSize: 16 }}>{s.price > 0 ? `$${s.price}` : "TBD"}</td>
                   <td style={{ padding: "14px 16px", color: "var(--text-muted)" }}>{s.duration}min</td>
                   <td style={{ padding: "14px 16px" }}>
-                    <button onClick={() => toggleFeatured(s)}
-                      style={{ background: "none", border: "none", cursor: "pointer", padding: 4 }}>
+                    <button onClick={() => toggleFeatured(s)} style={{ background: "none", border: "none", cursor: "pointer", padding: 4 }}>
                       <Star size={16} fill={s.featured ? "var(--gold)" : "none"} color={s.featured ? "var(--gold)" : "var(--text-subtle)"} />
                     </button>
                   </td>
                   <td style={{ padding: "14px 16px" }}>
-                    <div style={{ display: "flex", gap: 8 }}>
+                    <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
+                      {/* Change image button */}
+                      <button
+                        onClick={() => setPickerForId(s.id)}
+                        disabled={reassigning === s.id}
+                        title="Pick existing image"
+                        style={{ padding: "6px 10px", background: "none", border: "1px solid var(--border)", borderRadius: 3, cursor: "pointer", color: "var(--text-muted)", fontSize: 11, display: "flex", alignItems: "center", gap: 5, transition: "all 0.2s" }}
+                        onMouseEnter={e => { e.currentTarget.style.borderColor = "var(--gold)"; e.currentTarget.style.color = "var(--gold)"; }}
+                        onMouseLeave={e => { e.currentTarget.style.borderColor = "var(--border)"; e.currentTarget.style.color = "var(--text-muted)"; }}>
+                        {reassigning === s.id
+                          ? <Loader2 size={11} style={{ animation: "spin 1s linear infinite" }} />
+                          : <Images size={11} />}
+                      </button>
                       <button onClick={() => openEdit(s)}
                         style={{ padding: "6px 10px", background: "none", border: "1px solid var(--border)", borderRadius: 3, cursor: "pointer", color: "var(--text-muted)", fontSize: 11, display: "flex", alignItems: "center", gap: 5, transition: "all 0.2s" }}
                         onMouseEnter={e => { e.currentTarget.style.borderColor = "var(--gold)"; e.currentTarget.style.color = "var(--gold)"; }}
@@ -153,11 +201,17 @@ export default function AdminServicesPage() {
                   </td>
                 </tr>
               ))}
+              {services.length === 0 && (
+                <tr>
+                  <td colSpan={7} style={{ padding: "48px 16px", textAlign: "center", color: "var(--text-muted)", fontSize: 13 }}>No services yet</td>
+                </tr>
+              )}
             </tbody>
           </table>
         </div>
       )}
 
+      {/* Add / Edit modal */}
       {modal && (
         <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.7)", zIndex: 100, display: "flex", alignItems: "center", justifyContent: "center", padding: 24 }}>
           <div style={{ background: "var(--bg-card)", border: "1px solid var(--border)", borderRadius: 8, padding: "36px", width: "100%", maxWidth: 560, maxHeight: "90vh", overflowY: "auto", position: "relative" }}>
@@ -195,6 +249,15 @@ export default function AdminServicesPage() {
           </div>
         </div>
       )}
+
+      {/* Image picker overlay */}
+      {pickerForId && (
+        <ImagePicker
+          onSelect={url => handleReassign(pickerForId, url)}
+          onClose={() => setPickerForId(null)}
+        />
+      )}
+
       <style>{`@keyframes spin{to{transform:rotate(360deg)}}`}</style>
     </div>
   );
