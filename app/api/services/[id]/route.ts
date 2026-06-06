@@ -26,10 +26,10 @@ async function putHandler(
 ) {
   try {
     const { id } = await context!.params;
-    const data = await req.json();
+    const { _noDelete, ...data } = await req.json();
     const existing = await getServiceById(id);
     const updated = await updateService(id, data);
-    if (existing?.image && data.image !== undefined && existing.image !== data.image && !data._noDelete) {
+    if (existing?.image && data.image !== undefined && existing.image !== data.image && !_noDelete) {
       deleteCloudinaryImage(existing.image).catch(() => null);
     }
     return success(updated);

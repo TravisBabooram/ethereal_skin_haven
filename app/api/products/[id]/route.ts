@@ -29,7 +29,7 @@ async function putHandler(
 ) {
   try {
     const { id } = await context!.params;
-    const data = await req.json();
+    const { _noDelete, ...data } = await req.json();
 
     const before = await getProductById(id);
     const updated = await updateProduct(id, data);
@@ -49,7 +49,7 @@ async function putHandler(
     }
 
     // Delete old image from Cloudinary if it was replaced
-    if (before?.image && data.image !== undefined && before.image !== data.image && !data._noDelete) {
+    if (before?.image && data.image !== undefined && before.image !== data.image && !_noDelete) {
       deleteCloudinaryImage(before.image).catch(() => null);
     }
 
