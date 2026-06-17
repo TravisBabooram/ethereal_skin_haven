@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { getSetting } from "@/lib/services/settings";
-import SchemaMarkup, { LOCAL_BUSINESS_SCHEMA } from "@/components/seo/SchemaMarkup";
+import SchemaMarkup, { getLocalBusinessSchema } from "@/components/seo/SchemaMarkup";
 
 export async function generateMetadata(): Promise<Metadata> {
   const [title, desc] = await Promise.all([getSetting("seo_contact_title"), getSetting("seo_contact_desc")]);
@@ -13,10 +13,11 @@ export async function generateMetadata(): Promise<Metadata> {
   };
 }
 
-export default function ContactLayout({ children }: { children: React.ReactNode }) {
+export default async function ContactLayout({ children }: { children: React.ReactNode }) {
+  const schema = await getLocalBusinessSchema();
   return (
     <>
-      <SchemaMarkup schema={LOCAL_BUSINESS_SCHEMA} />
+      <SchemaMarkup schema={schema} />
       {children}
     </>
   );

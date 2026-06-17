@@ -1,3 +1,5 @@
+import { getSetting } from "@/lib/services/settings";
+
 interface SchemaMarkupProps {
   schema: Record<string, unknown>;
 }
@@ -11,7 +13,34 @@ export default function SchemaMarkup({ schema }: SchemaMarkupProps) {
   );
 }
 
-export const LOCAL_BUSINESS_SCHEMA = {
+const SCHEMA_DAY_NAMES = ["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];
+
+const DEFAULT_HOURS: Record<string, { open: boolean; start: string; end: string }> = {
+  "0": { open: false, start: "09:00", end: "18:00" },
+  "1": { open: false, start: "09:00", end: "18:00" },
+  "2": { open: true,  start: "09:00", end: "18:00" },
+  "3": { open: true,  start: "09:00", end: "18:00" },
+  "4": { open: true,  start: "09:00", end: "18:00" },
+  "5": { open: true,  start: "09:00", end: "18:00" },
+  "6": { open: true,  start: "09:00", end: "18:00" },
+};
+
+function buildOpeningHoursSpec(hours: typeof DEFAULT_HOURS) {
+  const groups: Record<string, string[]> = {};
+  for (let i = 0; i <= 6; i++) {
+    const cfg = hours[String(i)];
+    if (!cfg?.open) continue;
+    const key = `${cfg.start}|${cfg.end}`;
+    if (!groups[key]) groups[key] = [];
+    groups[key].push(SCHEMA_DAY_NAMES[i]);
+  }
+  return Object.entries(groups).map(([key, days]) => {
+    const [opens, closes] = key.split("|");
+    return { "@type": "OpeningHoursSpecification", dayOfWeek: days, opens, closes };
+  });
+}
+
+const BASE_SCHEMA = {
   "@context": "https://schema.org",
   "@type": "BeautySalon",
   "name": "Ethereal Skin Haven",
@@ -29,9 +58,6 @@ export const LOCAL_BUSINESS_SCHEMA = {
     "latitude": 10.4278,
     "longitude": -61.4699,
   },
-  "openingHoursSpecification": [
-    { "@type": "OpeningHoursSpecification", "dayOfWeek": ["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday"], "opens": "08:00", "closes": "18:00" },
-  ],
   "priceRange": "$$",
   "email": "etherealskinhaven@gmail.com",
   "sameAs": [
@@ -45,4 +71,19 @@ export const LOCAL_BUSINESS_SCHEMA = {
     "contactType": "reservations",
     "availableLanguage": "English",
   },
+};
+
+export async function getLocalBusinessSchema() {
+  try {
+    const raw = await getSetting("business_hours").catch(() => null);
+    const hours = raw ? { ...DEFAULT_HOURS, ...JSON.parse(raw) } : DEFAULT_HOURS;
+    return { ...BASE_SCHEMA, openingHoursSpecification: buildOpeningHoursSpec(hours) };
+  } catch {
+    return { ...BASE_SCHEMA, openingHoursSpecification: buildOpeningHoursSpec(DEFAULT_HOURS) };
+  }
+}
+
+export const LOCAL_BUSINESS_SCHEMA = {
+  ...BASE_SCHEMA,
+  openingHoursSpecification: buildOpeningHoursSpec(DEFAULT_HOURS),
 };

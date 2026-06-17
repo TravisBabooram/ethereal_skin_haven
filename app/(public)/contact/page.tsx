@@ -1,9 +1,22 @@
 "use client";
 
-import { Phone, MapPin, MessageCircle, Share2, Mail } from "lucide-react";
+import { useEffect, useState } from "react";
+import { Phone, MapPin, MessageCircle, Share2, Mail, Clock } from "lucide-react";
 import AnimatedSection from "@/components/ui/AnimatedSection";
 
 const MAPS_URL = "https://maps.google.com/?q=Balisier+Avenue,+Couva,+Trinidad";
+
+const DAY_NAMES = ["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];
+
+type DayConfig = { open: boolean; start: string; end: string };
+type WeekConfig = Record<string, DayConfig>;
+
+function fmt12(time: string) {
+  const [h, m] = time.split(":").map(Number);
+  const ampm = h >= 12 ? "PM" : "AM";
+  const hour = h % 12 || 12;
+  return m === 0 ? `${hour} ${ampm}` : `${hour}:${m.toString().padStart(2, "0")} ${ampm}`;
+}
 
 function InstagramIcon({ size = 16 }: { size?: number }) {
   return (
@@ -29,11 +42,25 @@ function TikTokIcon({ size = 16 }: { size?: number }) {
   );
 }
 
-const hours = [
-  { day: "Monday – Sunday", time: "8:00 AM – 6:00 PM" },
-];
+const DEFAULT_HOURS: WeekConfig = {
+  "0": { open: false, start: "09:00", end: "18:00" },
+  "1": { open: false, start: "09:00", end: "18:00" },
+  "2": { open: true,  start: "09:00", end: "18:00" },
+  "3": { open: true,  start: "09:00", end: "18:00" },
+  "4": { open: true,  start: "09:00", end: "18:00" },
+  "5": { open: true,  start: "09:00", end: "18:00" },
+  "6": { open: true,  start: "09:00", end: "18:00" },
+};
 
 export default function ContactPage() {
+  const [bizHours, setBizHours] = useState<WeekConfig>(DEFAULT_HOURS);
+
+  useEffect(() => {
+    fetch("/api/business-hours")
+      .then(r => r.json())
+      .then((d: WeekConfig) => setBizHours({ ...DEFAULT_HOURS, ...d }))
+      .catch(() => {});
+  }, []);
   return (
     <>
       {/* Hero */}
@@ -113,6 +140,31 @@ export default function ContactPage() {
                       onMouseLeave={e => (e.currentTarget.style.color = "var(--text)")}
                     >etherealskinhaven@gmail.com</a>
                     <p style={{ fontSize: 12, color: "var(--text-muted)", margin: "4px 0 0" }}>For general enquiries</p>
+                  </div>
+                </div>
+
+                {/* Business Hours */}
+                <div style={{ display: "flex", gap: 20 }}>
+                  <div style={{ width: 48, height: 48, borderRadius: "50%", border: "1px solid var(--border)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+                    <Clock size={16} style={{ color: "var(--gold)" }} />
+                  </div>
+                  <div>
+                    <p style={{ fontSize: 9, letterSpacing: "0.3em", color: "var(--gold)", textTransform: "uppercase", margin: "0 0 10px", fontWeight: 600 }}>Business Hours</p>
+                    <div style={{ display: "flex", flexDirection: "column", gap: 5 }}>
+                      {[0,1,2,3,4,5,6].map(i => {
+                        const cfg = bizHours[String(i)];
+                        return (
+                          <div key={i} style={{ display: "flex", justifyContent: "space-between", gap: 24, minWidth: 220 }}>
+                            <span style={{ fontSize: 13, color: cfg?.open ? "var(--text)" : "var(--text-subtle)", fontWeight: cfg?.open ? 500 : 400 }}>
+                              {DAY_NAMES[i]}
+                            </span>
+                            <span style={{ fontSize: 13, color: cfg?.open ? "var(--text-muted)" : "var(--text-subtle)", fontStyle: cfg?.open ? "normal" : "italic" }}>
+                              {cfg?.open ? `${fmt12(cfg.start)} – ${fmt12(cfg.end)}` : "Closed"}
+                            </span>
+                          </div>
+                        );
+                      })}
+                    </div>
                   </div>
                 </div>
 

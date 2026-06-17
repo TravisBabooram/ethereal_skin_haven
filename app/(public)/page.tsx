@@ -9,7 +9,7 @@ import FeaturedServices from "@/components/home/FeaturedServices";
 import FeaturedProducts from "@/components/home/FeaturedProducts";
 import Testimonials from "@/components/home/Testimonials";
 import HomeCTA from "@/components/home/HomeCTA";
-import SchemaMarkup, { LOCAL_BUSINESS_SCHEMA } from "@/components/seo/SchemaMarkup";
+import SchemaMarkup, { getLocalBusinessSchema } from "@/components/seo/SchemaMarkup";
 import InstagramFeed from "@/components/home/InstagramFeed";
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -23,10 +23,11 @@ export async function generateMetadata(): Promise<Metadata> {
   };
 }
 
-export default function HomePage() {
+export default async function HomePage() {
+  const schema = await getLocalBusinessSchema();
   return (
     <>
-      <SchemaMarkup schema={LOCAL_BUSINESS_SCHEMA} />
+      <SchemaMarkup schema={schema} />
       <Hero />
       <StatsBar />
       <FeaturedServices />
