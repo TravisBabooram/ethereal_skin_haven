@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server";
 import { getSetting } from "@/lib/services/settings";
 
+export const dynamic = "force-dynamic";
+
 const DEFAULT = {
   "0": { open: false, start: "09:00", end: "18:00" },
   "1": { open: false, start: "09:00", end: "18:00" },
