@@ -18,6 +18,7 @@ model User {
   name          String
   phone         String?
   passwordHash  String
+  isManualEntry Boolean    @default(false)
   createdAt     DateTime   @default(now())
   updatedAt     DateTime   @updatedAt
 
@@ -87,17 +88,19 @@ model Product {
 }
 
 model Booking {
-  id            String     @id @default(cuid())
-  userId        String
-  user          User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id              String     @id @default(cuid())
+  userId          String?
+  user            User?      @relation(fields: [userId], references: [id], onDelete: SetNull)
+  guestName       String?
+  guestPhone      String?
   appointmentDate DateTime
   appointmentTime String
-  status        String     @default("Pending")
-  notes         String?
-  paymentMethod String
-  totalPrice    Float
-  createdAt     DateTime   @default(now())
-  updatedAt     DateTime   @updatedAt
+  status          String     @default("Pending")
+  notes           String?
+  paymentMethod   String
+  totalPrice      Float
+  createdAt       DateTime   @default(now())
+  updatedAt       DateTime   @updatedAt
 
   bookingItems          BookingItem[]
   emailNotifications    EmailNotification[]
@@ -106,16 +109,19 @@ model Booking {
 }
 
 model BookingItem {
-  id            String     @id @default(cuid())
-  bookingId     String
-  booking       Booking    @relation(fields: [bookingId], references: [id], onDelete: Cascade)
-  serviceId     String
-  service       Service    @relation(fields: [serviceId], references: [id])
-  userId        String
-  user          User       @relation(fields: [userId], references: [id])
-  quantity      Int        @default(1)
-  price         Float
-  createdAt     DateTime   @default(now())
+  id                    String     @id @default(cuid())
+  bookingId             String
+  booking               Booking    @relation(fields: [bookingId], references: [id], onDelete: Cascade)
+  serviceId             String?
+  service               Service?   @relation(fields: [serviceId], references: [id])
+  customServiceName     String?
+  customServicePrice    Float?
+  customServiceDuration Int?
+  userId                String?
+  user                  User?      @relation(fields: [userId], references: [id])
+  quantity              Int        @default(1)
+  price                 Float
+  createdAt             DateTime   @default(now())
 
   @@map("booking_items")
 }

@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { Loader2, Search, ChevronDown, X, Phone, Mail, MessageCircle, Calendar, Plus, Clock } from "lucide-react";
 
 interface Service { id: string; name: string; price: number; duration: number; category?: string; }
-interface UserOption { id: string; name: string; email: string; phone?: string; }
+interface UserOption { id: string; name: string; email: string; phone?: string; isManualEntry?: boolean; }
 interface Booking {
   id: string;
   appointmentDate: string;
@@ -13,8 +13,17 @@ interface Booking {
   paymentMethod: string;
   totalPrice: number;
   notes?: string;
-  user: { name: string; email: string; phone?: string };
-  bookingItems: { service?: { name: string; duration: number; price: number }; price: number; quantity: number }[];
+  guestName?: string;
+  guestPhone?: string;
+  user?: { name: string; email: string; phone?: string } | null;
+  bookingItems: {
+    service?: { name: string; duration: number; price: number } | null;
+    customServiceName?: string | null;
+    customServicePrice?: number | null;
+    customServiceDuration?: number | null;
+    price: number;
+    quantity: number;
+  }[];
   createdAt: string;
 }
 
@@ -30,9 +39,49 @@ function fmtTime(t: string) {
   const [h, m] = t.split(":").map(Number);
   return `${h % 12 || 12}:${m.toString().padStart(2, "0")} ${h >= 12 ? "PM" : "AM"}`;
 }
+function clientName(b: Booking) { return b.guestName ?? b.user?.name ?? "Unknown"; }
+function clientEmail(b: Booking) { return b.guestName ? (b.guestPhone ?? "Walk-in") : (b.user?.email ?? ""); }
+function itemLabel(item: Booking["bookingItems"][number]) {
+  return item.customServiceName ?? item.service?.name ?? "Treatment";
+}
 
 const inputStyle = { padding: "10px 12px", background: "var(--bg-elevated)", border: "1px solid var(--border)", borderRadius: 4, color: "var(--text)", fontSize: 13, outline: "none", width: "100%", boxSizing: "border-box" as const };
 const labelStyle = { fontSize: 9, letterSpacing: "0.2em", color: "var(--gold)", textTransform: "uppercase" as const, fontWeight: 600 };
+
+type ClientMode = "select" | "manual";
+type ServiceMode = "select" | "custom";
+
+interface NewForm {
+  clientMode: ClientMode;
+  userId: string;
+  guestName: string;
+  guestPhone: string;
+  serviceMode: ServiceMode;
+  serviceId: string;
+  customServiceName: string;
+  customServicePrice: string;
+  customServiceDuration: string;
+  date: string;
+  time: string;
+  paymentMethod: string;
+  notes: string;
+}
+
+const defaultForm: NewForm = {
+  clientMode: "select",
+  userId: "",
+  guestName: "",
+  guestPhone: "",
+  serviceMode: "select",
+  serviceId: "",
+  customServiceName: "",
+  customServicePrice: "",
+  customServiceDuration: "",
+  date: "",
+  time: "",
+  paymentMethod: "Cash",
+  notes: "",
+};
 
 export default function AdminBookingsPage() {
   const [bookings, setBookings] = useState<Booking[]>([]);
@@ -54,7 +103,7 @@ export default function AdminBookingsPage() {
   const [newOpen, setNewOpen] = useState(false);
   const [users, setUsers] = useState<UserOption[]>([]);
   const [services, setServices] = useState<Service[]>([]);
-  const [newForm, setNewForm] = useState({ userId: "", serviceId: "", date: "", time: "", paymentMethod: "Cash", notes: "" });
+  const [newForm, setNewForm] = useState<NewForm>(defaultForm);
   const [newSlots, setNewSlots] = useState<string[]>([]);
   const [newSlotsLoading, setNewSlotsLoading] = useState(false);
   const [newSaving, setNewSaving] = useState(false);
@@ -79,7 +128,10 @@ export default function AdminBookingsPage() {
   useEffect(() => {
     if (!rDate || !selected) return;
     setRLoading(true);
-    const dur = selected.bookingItems.reduce((s, i) => s + (i.service?.duration ?? 60) * (i.quantity ?? 1), 0) || 60;
+    const dur = selected.bookingItems.reduce((s, i) => {
+      const d = i.service?.duration ?? i.customServiceDuration ?? 60;
+      return s + d * (i.quantity ?? 1);
+    }, 0) || 60;
     fetch(`/api/bookings/availability?date=${rDate}&duration=${dur}`)
       .then(r => r.json())
       .then(d => { setRSlots(d.slots ?? []); setRTime(""); })
@@ -89,15 +141,25 @@ export default function AdminBookingsPage() {
 
   // Fetch slots for new booking
   useEffect(() => {
-    if (!newForm.date || !newForm.serviceId) return;
+    const hasDateAndDuration =
+      newForm.date &&
+      ((newForm.serviceMode === "select" && newForm.serviceId) ||
+       (newForm.serviceMode === "custom" && newForm.customServiceDuration));
+
+    if (!hasDateAndDuration) return;
+
     setNewSlotsLoading(true);
-    const svc = services.find(s => s.id === newForm.serviceId);
-    fetch(`/api/bookings/availability?date=${newForm.date}&duration=${svc?.duration ?? 60}`)
+    const duration =
+      newForm.serviceMode === "select"
+        ? (services.find(s => s.id === newForm.serviceId)?.duration ?? 60)
+        : (parseInt(newForm.customServiceDuration) || 60);
+
+    fetch(`/api/bookings/availability?date=${newForm.date}&duration=${duration}`)
       .then(r => r.json())
       .then(d => { setNewSlots(d.slots ?? []); setNewForm(p => ({ ...p, time: "" })); })
       .catch(() => {})
       .finally(() => setNewSlotsLoading(false));
-  }, [newForm.date, newForm.serviceId, services]);
+  }, [newForm.date, newForm.serviceId, newForm.serviceMode, newForm.customServiceDuration, services]);
 
   const updateStatus = async (id: string, status: string) => {
     setUpdating(id);
@@ -131,37 +193,77 @@ export default function AdminBookingsPage() {
       if (Array.isArray(u.users)) setUsers(u.users); else if (Array.isArray(u)) setUsers(u);
       if (Array.isArray(s)) setServices(s);
     });
-    setNewForm({ userId: "", serviceId: "", date: "", time: "", paymentMethod: "Cash", notes: "" });
+    setNewForm(defaultForm);
     setNewSlots([]);
     setNewOpen(true);
   };
 
+  const isNewFormValid = () => {
+    if (!newForm.date || !newForm.time) return false;
+    if (newForm.clientMode === "select" && !newForm.userId) return false;
+    if (newForm.clientMode === "manual" && !newForm.guestName.trim()) return false;
+    if (newForm.serviceMode === "select" && !newForm.serviceId) return false;
+    if (newForm.serviceMode === "custom" && !newForm.customServiceName.trim()) return false;
+    return true;
+  };
+
   const handleNewBooking = async () => {
-    if (!newForm.userId || !newForm.serviceId || !newForm.date || !newForm.time) return;
+    if (!isNewFormValid()) return;
     setNewSaving(true);
-    const svc = services.find(s => s.id === newForm.serviceId);
+
+    const servicePayload =
+      newForm.serviceMode === "select"
+        ? [{ serviceId: newForm.serviceId, quantity: 1 }]
+        : [{
+            customServiceName: newForm.customServiceName,
+            customServicePrice: parseFloat(newForm.customServicePrice) || 0,
+            customServiceDuration: parseInt(newForm.customServiceDuration) || 60,
+            quantity: 1,
+          }];
+
+    const body: Record<string, unknown> = {
+      appointmentDate: newForm.date,
+      appointmentTime: newForm.time,
+      paymentMethod: newForm.paymentMethod,
+      notes: newForm.notes,
+      services: servicePayload,
+    };
+
+    if (newForm.clientMode === "select") {
+      body.userId = newForm.userId;
+    } else {
+      body.guestName = newForm.guestName;
+      body.guestPhone = newForm.guestPhone || undefined;
+    }
+
     await fetch("/api/admin/bookings", {
       method: "POST", headers: { "Content-Type": "application/json" }, credentials: "include",
-      body: JSON.stringify({
-        userId: newForm.userId,
-        services: [{ serviceId: newForm.serviceId, quantity: 1 }],
-        appointmentDate: newForm.date,
-        appointmentTime: newForm.time,
-        paymentMethod: newForm.paymentMethod,
-        notes: newForm.notes,
-        totalPrice: svc?.price ?? 0,
-      }),
+      body: JSON.stringify(body),
     });
     setNewSaving(false);
     setNewOpen(false);
     fetchBookings(filter);
   };
 
-  const filtered = bookings.filter(b =>
-    search === "" ||
-    b.user?.name?.toLowerCase().includes(search.toLowerCase()) ||
-    b.user?.email?.toLowerCase().includes(search.toLowerCase()) ||
-    b.bookingItems?.[0]?.service?.name?.toLowerCase().includes(search.toLowerCase())
+  const filtered = bookings.filter(b => {
+    if (search === "") return true;
+    const q = search.toLowerCase();
+    return (
+      clientName(b).toLowerCase().includes(q) ||
+      (b.user?.email ?? "").toLowerCase().includes(q) ||
+      b.bookingItems?.some(i => itemLabel(i).toLowerCase().includes(q))
+    );
+  });
+
+  const ModeToggle = ({ value, onChange, options }: { value: string; onChange: (v: string) => void; options: [string, string][] }) => (
+    <div style={{ display: "flex", gap: 0, border: "1px solid var(--border)", borderRadius: 4, overflow: "hidden" }}>
+      {options.map(([val, label]) => (
+        <button key={val} type="button" onClick={() => onChange(val)}
+          style={{ flex: 1, padding: "7px 12px", background: value === val ? "var(--gold)" : "var(--bg-elevated)", border: "none", color: value === val ? "#080808" : "var(--text-muted)", fontSize: 10, letterSpacing: "0.15em", textTransform: "uppercase", fontWeight: value === val ? 600 : 400, cursor: "pointer" }}>
+          {label}
+        </button>
+      ))}
+    </div>
   );
 
   const SlotPicker = ({ slots, value, onChange, loading: l }: { slots: string[]; value: string; onChange: (v: string) => void; loading: boolean }) => (
@@ -244,12 +346,15 @@ export default function AdminBookingsPage() {
                       onMouseLeave={e => { if (selected?.id !== b.id) e.currentTarget.style.background = "transparent"; }}
                     >
                       <td style={{ padding: "14px 16px" }}>
-                        <p style={{ margin: "0 0 2px", color: "var(--text)", fontWeight: 500 }}>{b.user?.name}</p>
-                        <p style={{ margin: 0, fontSize: 11, color: "var(--text-subtle)" }}>{b.user?.email}</p>
+                        <p style={{ margin: "0 0 2px", color: "var(--text)", fontWeight: 500 }}>
+                          {clientName(b)}
+                          {b.guestName && <span style={{ marginLeft: 6, fontSize: 9, letterSpacing: "0.1em", color: "var(--text-subtle)", background: "var(--bg-elevated)", border: "1px solid var(--border)", borderRadius: 2, padding: "1px 5px", verticalAlign: "middle" }}>WALK-IN</span>}
+                        </p>
+                        <p style={{ margin: 0, fontSize: 11, color: "var(--text-subtle)" }}>{clientEmail(b)}</p>
                       </td>
                       <td style={{ padding: "14px 16px", color: "var(--text-muted)", maxWidth: 160 }}>
                         <span style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", display: "block" }}>
-                          {b.bookingItems?.map(i => i.service?.name).filter(Boolean).join(", ") || "—"}
+                          {b.bookingItems?.map(i => itemLabel(i)).filter(Boolean).join(", ") || "—"}
                         </span>
                       </td>
                       <td style={{ padding: "14px 16px", whiteSpace: "nowrap" }}>
@@ -286,7 +391,10 @@ export default function AdminBookingsPage() {
           <div style={{ height: 2, background: "linear-gradient(90deg, transparent, var(--gold), transparent)" }} />
           <div style={{ padding: "16px 20px", borderBottom: "1px solid var(--border)", display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
             <div>
-              <p style={{ fontFamily: "var(--font-cormorant, Georgia, serif)", fontSize: 17, color: "var(--text)", margin: "0 0 4px", fontWeight: 500 }}>{selected.user?.name}</p>
+              <p style={{ fontFamily: "var(--font-cormorant, Georgia, serif)", fontSize: 17, color: "var(--text)", margin: "0 0 4px", fontWeight: 500 }}>
+                {clientName(selected)}
+                {selected.guestName && <span style={{ marginLeft: 8, fontSize: 9, letterSpacing: "0.1em", color: "var(--text-subtle)", background: "var(--bg-elevated)", border: "1px solid var(--border)", borderRadius: 2, padding: "2px 5px" }}>WALK-IN</span>}
+              </p>
               <span style={{ fontSize: 9, letterSpacing: "0.15em", textTransform: "uppercase", fontWeight: 600, color: STATUS_COLORS[selected.status] ?? "var(--text-muted)" }}>{selected.status}</span>
             </div>
             <button onClick={() => setSelected(null)} style={{ background: "none", border: "none", cursor: "pointer", color: "var(--text-muted)", padding: 4 }}>
@@ -297,28 +405,49 @@ export default function AdminBookingsPage() {
           <div style={{ padding: "16px 20px", maxHeight: "calc(100vh - 160px)", overflowY: "auto" }}>
             {/* Contact */}
             <div style={{ display: "flex", flexDirection: "column", gap: 7, marginBottom: 16 }}>
-              <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                <Mail size={12} style={{ color: "var(--text-subtle)", flexShrink: 0 }} />
-                <span style={{ fontSize: 12, color: "var(--text-muted)" }}>{selected.user?.email}</span>
-              </div>
-              {selected.user?.phone && (
-                <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                  <Phone size={12} style={{ color: "var(--text-subtle)", flexShrink: 0 }} />
-                  <span style={{ fontSize: 12, color: "var(--text-muted)" }}>{selected.user.phone}</span>
-                </div>
+              {selected.guestName ? (
+                <>
+                  {selected.guestPhone && (
+                    <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                      <Phone size={12} style={{ color: "var(--text-subtle)", flexShrink: 0 }} />
+                      <span style={{ fontSize: 12, color: "var(--text-muted)" }}>{selected.guestPhone}</span>
+                    </div>
+                  )}
+                  <div style={{ display: "flex", gap: 8, marginTop: 4 }}>
+                    {selected.guestPhone && (
+                      <a href={`https://wa.me/${selected.guestPhone.replace(/\D/g, "")}`} target="_blank" rel="noopener noreferrer"
+                        style={{ display: "flex", alignItems: "center", gap: 5, padding: "6px 12px", background: "rgba(37,211,102,0.08)", border: "1px solid rgba(37,211,102,0.3)", borderRadius: 2, color: "#25d366", fontSize: 10, letterSpacing: "0.12em", textTransform: "uppercase", textDecoration: "none" }}>
+                        <MessageCircle size={10} /> WhatsApp
+                      </a>
+                    )}
+                  </div>
+                </>
+              ) : (
+                <>
+                  <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                    <Mail size={12} style={{ color: "var(--text-subtle)", flexShrink: 0 }} />
+                    <span style={{ fontSize: 12, color: "var(--text-muted)" }}>{selected.user?.email}</span>
+                  </div>
+                  {selected.user?.phone && (
+                    <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                      <Phone size={12} style={{ color: "var(--text-subtle)", flexShrink: 0 }} />
+                      <span style={{ fontSize: 12, color: "var(--text-muted)" }}>{selected.user.phone}</span>
+                    </div>
+                  )}
+                  <div style={{ display: "flex", gap: 8, marginTop: 4 }}>
+                    <a href={`mailto:${selected.user?.email}`}
+                      style={{ display: "flex", alignItems: "center", gap: 5, padding: "6px 12px", background: "rgba(201,169,110,0.08)", border: "1px solid var(--border)", borderRadius: 2, color: "var(--gold)", fontSize: 10, letterSpacing: "0.12em", textTransform: "uppercase", textDecoration: "none" }}>
+                      <Mail size={10} /> Email
+                    </a>
+                    {selected.user?.phone && (
+                      <a href={`https://wa.me/${selected.user.phone.replace(/\D/g, "")}`} target="_blank" rel="noopener noreferrer"
+                        style={{ display: "flex", alignItems: "center", gap: 5, padding: "6px 12px", background: "rgba(37,211,102,0.08)", border: "1px solid rgba(37,211,102,0.3)", borderRadius: 2, color: "#25d366", fontSize: 10, letterSpacing: "0.12em", textTransform: "uppercase", textDecoration: "none" }}>
+                        <MessageCircle size={10} /> WhatsApp
+                      </a>
+                    )}
+                  </div>
+                </>
               )}
-              <div style={{ display: "flex", gap: 8, marginTop: 4 }}>
-                <a href={`mailto:${selected.user?.email}`}
-                  style={{ display: "flex", alignItems: "center", gap: 5, padding: "6px 12px", background: "rgba(201,169,110,0.08)", border: "1px solid var(--border)", borderRadius: 2, color: "var(--gold)", fontSize: 10, letterSpacing: "0.12em", textTransform: "uppercase", textDecoration: "none" }}>
-                  <Mail size={10} /> Email
-                </a>
-                {selected.user?.phone && (
-                  <a href={`https://wa.me/${selected.user.phone.replace(/\D/g, "")}`} target="_blank" rel="noopener noreferrer"
-                    style={{ display: "flex", alignItems: "center", gap: 5, padding: "6px 12px", background: "rgba(37,211,102,0.08)", border: "1px solid rgba(37,211,102,0.3)", borderRadius: 2, color: "#25d366", fontSize: 10, letterSpacing: "0.12em", textTransform: "uppercase", textDecoration: "none" }}>
-                    <MessageCircle size={10} /> WhatsApp
-                  </a>
-                )}
-              </div>
             </div>
 
             {/* Appointment */}
@@ -343,8 +472,15 @@ export default function AdminBookingsPage() {
               {selected.bookingItems?.map((item, idx) => (
                 <div key={idx} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "8px 12px", background: "var(--bg-elevated)", borderRadius: 4, marginBottom: 6 }}>
                   <div>
-                    <p style={{ margin: "0 0 1px", fontSize: 12, color: "var(--text)" }}>{item.service?.name || "Treatment"}{(item.quantity ?? 1) > 1 ? ` ×${item.quantity}` : ""}</p>
-                    {item.service?.duration && <p style={{ margin: 0, fontSize: 10, color: "var(--text-subtle)" }}>{item.service.duration * (item.quantity ?? 1)} min</p>}
+                    <p style={{ margin: "0 0 1px", fontSize: 12, color: "var(--text)" }}>
+                      {itemLabel(item)}{(item.quantity ?? 1) > 1 ? ` ×${item.quantity}` : ""}
+                      {item.customServiceName && <span style={{ marginLeft: 6, fontSize: 9, color: "var(--text-subtle)", background: "var(--bg-card)", border: "1px solid var(--border)", borderRadius: 2, padding: "1px 4px" }}>CUSTOM</span>}
+                    </p>
+                    {(item.service?.duration || item.customServiceDuration) && (
+                      <p style={{ margin: 0, fontSize: 10, color: "var(--text-subtle)" }}>
+                        {(item.service?.duration ?? item.customServiceDuration ?? 0) * (item.quantity ?? 1)} min
+                      </p>
+                    )}
                   </div>
                   <span style={{ fontSize: 12, color: "var(--gold)" }}>${(item.price * (item.quantity ?? 1)).toFixed(0)}</span>
                 </div>
@@ -378,7 +514,7 @@ export default function AdminBookingsPage() {
               <X size={18} />
             </button>
             <h2 style={{ fontFamily: "var(--font-cormorant, Georgia, serif)", fontSize: 26, fontWeight: 400, color: "var(--text)", margin: "0 0 4px" }}>Reschedule</h2>
-            <p style={{ fontSize: 12, color: "var(--text-muted)", margin: "0 0 24px" }}>{selected.user?.name} — {selected.bookingItems?.[0]?.service?.name || "Treatment"}</p>
+            <p style={{ fontSize: 12, color: "var(--text-muted)", margin: "0 0 24px" }}>{clientName(selected)} — {itemLabel(selected.bookingItems?.[0])}</p>
             <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
               <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
                 <label style={labelStyle}>New Date</label>
@@ -408,37 +544,114 @@ export default function AdminBookingsPage() {
       {/* New Booking modal */}
       {newOpen && (
         <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.7)", zIndex: 100, display: "flex", alignItems: "center", justifyContent: "center", padding: 24 }}>
-          <div style={{ background: "var(--bg-card)", border: "1px solid var(--border)", borderRadius: 8, padding: "36px", width: "100%", maxWidth: 500, maxHeight: "90vh", overflowY: "auto", position: "relative" }}>
+          <div style={{ background: "var(--bg-card)", border: "1px solid var(--border)", borderRadius: 8, padding: "36px", width: "100%", maxWidth: 520, maxHeight: "90vh", overflowY: "auto", position: "relative" }}>
             <button onClick={() => setNewOpen(false)} style={{ position: "absolute", top: 16, right: 16, background: "none", border: "none", cursor: "pointer", color: "var(--text-muted)", padding: 4 }}>
               <X size={18} />
             </button>
             <h2 style={{ fontFamily: "var(--font-cormorant, Georgia, serif)", fontSize: 26, fontWeight: 400, color: "var(--text)", margin: "0 0 4px" }}>New Booking</h2>
-            <p style={{ fontSize: 12, color: "var(--text-muted)", margin: "0 0 24px" }}>Create a booking on behalf of a client</p>
-            <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
-              <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+            <p style={{ fontSize: 12, color: "var(--text-muted)", margin: "0 0 28px" }}>Create a booking on behalf of a client</p>
+
+            <div style={{ display: "flex", flexDirection: "column", gap: 18 }}>
+
+              {/* CLIENT */}
+              <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
                 <label style={labelStyle}>Client</label>
-                <select value={newForm.userId} onChange={e => setNewForm(p => ({ ...p, userId: e.target.value }))} style={inputStyle}>
-                  <option value="">— Select Client —</option>
-                  {users.map(u => <option key={u.id} value={u.id}>{u.name} ({u.email})</option>)}
-                </select>
+                <ModeToggle
+                  value={newForm.clientMode}
+                  onChange={v => setNewForm(p => ({ ...p, clientMode: v as ClientMode, userId: "", guestName: "", guestPhone: "" }))}
+                  options={[["select", "Select Client"], ["manual", "Walk-in / Type Name"]]}
+                />
+                {newForm.clientMode === "select" ? (
+                  <select value={newForm.userId} onChange={e => setNewForm(p => ({ ...p, userId: e.target.value }))} style={inputStyle}>
+                    <option value="">— Select Client —</option>
+                    {users.map(u => (
+                      <option key={u.id} value={u.id}>
+                        {u.name}{u.isManualEntry ? " (Manual)" : ` (${u.email})`}
+                      </option>
+                    ))}
+                  </select>
+                ) : (
+                  <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+                    <input
+                      placeholder="Client name *"
+                      value={newForm.guestName}
+                      onChange={e => setNewForm(p => ({ ...p, guestName: e.target.value }))}
+                      style={inputStyle}
+                    />
+                    <input
+                      placeholder="Phone number (optional)"
+                      value={newForm.guestPhone}
+                      onChange={e => setNewForm(p => ({ ...p, guestPhone: e.target.value }))}
+                      style={inputStyle}
+                    />
+                    <p style={{ fontSize: 10, color: "var(--text-subtle)", margin: 0, lineHeight: 1.5 }}>
+                      This name will be stored with the booking only — no new client account will be created.
+                    </p>
+                  </div>
+                )}
               </div>
-              <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+
+              {/* SERVICE */}
+              <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
                 <label style={labelStyle}>Service</label>
-                <select value={newForm.serviceId} onChange={e => setNewForm(p => ({ ...p, serviceId: e.target.value, time: "" }))} style={inputStyle}>
-                  <option value="">— Select Service —</option>
-                  {services.map(s => <option key={s.id} value={s.id}>{s.name} — ${s.price} TTD ({s.duration} min)</option>)}
-                </select>
+                <ModeToggle
+                  value={newForm.serviceMode}
+                  onChange={v => setNewForm(p => ({ ...p, serviceMode: v as ServiceMode, serviceId: "", customServiceName: "", customServicePrice: "", customServiceDuration: "", time: "" }))}
+                  options={[["select", "Select Service"], ["custom", "Custom / Special Request"]]}
+                />
+                {newForm.serviceMode === "select" ? (
+                  <select value={newForm.serviceId} onChange={e => setNewForm(p => ({ ...p, serviceId: e.target.value, time: "" }))} style={inputStyle}>
+                    <option value="">— Select Service —</option>
+                    {services.map(s => <option key={s.id} value={s.id}>{s.name} — ${s.price} TTD ({s.duration} min)</option>)}
+                  </select>
+                ) : (
+                  <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+                    <input
+                      placeholder="Service name *"
+                      value={newForm.customServiceName}
+                      onChange={e => setNewForm(p => ({ ...p, customServiceName: e.target.value }))}
+                      style={inputStyle}
+                    />
+                    <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8 }}>
+                      <input
+                        type="number"
+                        placeholder="Price (TTD)"
+                        value={newForm.customServicePrice}
+                        onChange={e => setNewForm(p => ({ ...p, customServicePrice: e.target.value }))}
+                        style={inputStyle}
+                        min={0}
+                      />
+                      <input
+                        type="number"
+                        placeholder="Duration (minutes) *"
+                        value={newForm.customServiceDuration}
+                        onChange={e => setNewForm(p => ({ ...p, customServiceDuration: e.target.value, time: "" }))}
+                        style={inputStyle}
+                        min={15}
+                      />
+                    </div>
+                    <p style={{ fontSize: 10, color: "var(--text-subtle)", margin: 0, lineHeight: 1.5 }}>
+                      This service will be stored with the booking only — no new service will be created in the catalogue.
+                    </p>
+                  </div>
+                )}
               </div>
+
+              {/* DATE */}
               <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
                 <label style={labelStyle}>Date</label>
                 <input type="date" min={minDate} value={newForm.date} onChange={e => setNewForm(p => ({ ...p, date: e.target.value, time: "" }))} style={inputStyle} />
               </div>
-              {newForm.date && newForm.serviceId && (
+
+              {/* TIME SLOTS */}
+              {newForm.date && (newForm.serviceMode === "select" ? newForm.serviceId : newForm.customServiceDuration) && (
                 <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
                   <label style={labelStyle}>Time</label>
                   <SlotPicker slots={newSlots} value={newForm.time} onChange={v => setNewForm(p => ({ ...p, time: v }))} loading={newSlotsLoading} />
                 </div>
               )}
+
+              {/* PAYMENT */}
               <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
                 <label style={labelStyle}>Payment Method</label>
                 <select value={newForm.paymentMethod} onChange={e => setNewForm(p => ({ ...p, paymentMethod: e.target.value }))} style={inputStyle}>
@@ -446,19 +659,23 @@ export default function AdminBookingsPage() {
                   <option value="Bank Transfer">Bank Transfer</option>
                 </select>
               </div>
+
+              {/* NOTES */}
               <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
                 <label style={labelStyle}>Notes (optional)</label>
                 <textarea rows={2} value={newForm.notes} onChange={e => setNewForm(p => ({ ...p, notes: e.target.value }))} placeholder="Any special requests…"
                   style={{ ...inputStyle, resize: "vertical", fontFamily: "inherit" }} />
               </div>
+
             </div>
+
             <div style={{ display: "flex", gap: 10, marginTop: 28, justifyContent: "flex-end" }}>
               <button onClick={() => setNewOpen(false)}
                 style={{ padding: "10px 20px", background: "none", border: "1px solid var(--border)", borderRadius: 2, color: "var(--text-muted)", fontSize: 11, letterSpacing: "0.15em", textTransform: "uppercase", cursor: "pointer" }}>
                 Cancel
               </button>
-              <button onClick={handleNewBooking} disabled={newSaving || !newForm.userId || !newForm.serviceId || !newForm.date || !newForm.time}
-                style={{ padding: "10px 24px", background: "linear-gradient(135deg, var(--gold-dark), var(--gold))", border: "none", borderRadius: 2, color: "#080808", fontSize: 11, letterSpacing: "0.15em", textTransform: "uppercase", fontWeight: 600, cursor: "pointer", opacity: !newForm.userId || !newForm.serviceId || !newForm.date || !newForm.time ? 0.5 : 1 }}>
+              <button onClick={handleNewBooking} disabled={newSaving || !isNewFormValid()}
+                style={{ padding: "10px 24px", background: "linear-gradient(135deg, var(--gold-dark), var(--gold))", border: "none", borderRadius: 2, color: "#080808", fontSize: 11, letterSpacing: "0.15em", textTransform: "uppercase", fontWeight: 600, cursor: !isNewFormValid() ? "not-allowed" : "pointer", opacity: !isNewFormValid() ? 0.5 : 1 }}>
                 {newSaving ? "Creating…" : "Create Booking"}
               </button>
             </div>

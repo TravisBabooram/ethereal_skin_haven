@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { Users, Calendar, TrendingUp, Clock, ArrowRight, Loader2, Package, AlertTriangle, ToggleLeft, ToggleRight, Wrench, BookOpen } from "lucide-react";
+import CountUp from "@/components/animations/CountUp";
 import AdminGuide from "@/components/admin/AdminGuide";
 
 interface Stats {
@@ -111,17 +112,19 @@ export default function AdminOverview() {
       {/* Stats grid */}
       <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(180px, 1fr))", gap: 16, marginBottom: 32 }}>
         {[
-          { icon: Users, label: "Total Clients", value: stats?.totalUsers ?? 0, color: "var(--gold)" },
-          { icon: Calendar, label: "Total Bookings", value: stats?.totalBookings ?? 0, color: "var(--gold)" },
-          { icon: Clock, label: "Today's Bookings", value: stats?.todayBookings ?? 0, color: "#4caf50" },
-          { icon: TrendingUp, label: "Total Revenue", value: `$${(stats?.totalRevenue ?? 0).toFixed(0)}`, color: "var(--gold)" },
-        ].map(({ icon: Icon, label, value, color }) => (
+          { icon: Users, label: "Total Clients", value: stats?.totalUsers ?? 0, color: "var(--gold)", prefix: "", suffix: "" },
+          { icon: Calendar, label: "Total Bookings", value: stats?.totalBookings ?? 0, color: "var(--gold)", prefix: "", suffix: "" },
+          { icon: Clock, label: "Today's Bookings", value: stats?.todayBookings ?? 0, color: "#4caf50", prefix: "", suffix: "" },
+          { icon: TrendingUp, label: "Total Revenue", value: stats?.totalRevenue ?? 0, color: "var(--gold)", prefix: "$", suffix: "" },
+        ].map(({ icon: Icon, label, value, color, prefix, suffix }) => (
           <div key={label} style={{ background: "var(--bg-card)", border: "1px solid var(--border)", borderRadius: 6, padding: "22px 24px" }}>
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 12 }}>
               <p style={{ fontSize: 9, letterSpacing: "0.2em", color: "var(--text-subtle)", textTransform: "uppercase", margin: 0 }}>{label}</p>
               <Icon size={14} style={{ color: "var(--text-subtle)" }} />
             </div>
-            <p style={{ fontFamily: "var(--font-cormorant, Georgia, serif)", fontSize: 36, color, margin: 0, fontWeight: 300, lineHeight: 1 }}>{value}</p>
+            <p style={{ fontFamily: "var(--font-cormorant, Georgia, serif)", fontSize: 36, color, margin: 0, fontWeight: 300, lineHeight: 1 }}>
+              <CountUp to={value} duration={1.4} prefix={prefix} suffix={suffix} />
+            </p>
           </div>
         ))}
       </div>
@@ -136,7 +139,9 @@ export default function AdminOverview() {
         ].map(({ label, value }) => (
           <div key={label}>
             <p style={{ fontSize: 9, letterSpacing: "0.15em", color: "var(--text-subtle)", textTransform: "uppercase", margin: "0 0 4px" }}>{label}</p>
-            <p style={{ fontFamily: "var(--font-cormorant, Georgia, serif)", fontSize: 22, color: "var(--gold)", margin: 0, fontWeight: 300 }}>${value.toFixed(0)} TTD</p>
+            <p style={{ fontFamily: "var(--font-cormorant, Georgia, serif)", fontSize: 22, color: "var(--gold)", margin: 0, fontWeight: 300 }}>
+              <CountUp to={value} duration={1.2} prefix="$" suffix=" TTD" />
+            </p>
           </div>
         ))}
       </div>

@@ -1,6 +1,7 @@
 "use client";
 
 import AnimatedSection from "./AnimatedSection";
+import SplitHeading from "@/components/animations/SplitHeading";
 
 interface Props {
   eyebrow?: string;
@@ -22,8 +23,11 @@ export default function SectionHeader({ eyebrow, title, subtitle, align = "cente
           </div>
         </AnimatedSection>
       )}
-      <AnimatedSection delay={0.1}>
-        <h2 style={{
+      <SplitHeading
+        text={title}
+        as="h2"
+        delay={0.08}
+        style={{
           fontFamily: "var(--font-cormorant, Georgia, serif)",
           fontSize: "clamp(36px, 5vw, 58px)",
           fontWeight: 300,
@@ -31,10 +35,8 @@ export default function SectionHeader({ eyebrow, title, subtitle, align = "cente
           color: "var(--text)",
           margin: 0,
           letterSpacing: "-0.01em",
-        }}>
-          {title}
-        </h2>
-      </AnimatedSection>
+        }}
+      />
       {subtitle && (
         <AnimatedSection delay={0.2}>
           <p style={{ fontSize: 15, lineHeight: 1.75, color: "var(--text-muted)", maxWidth: 560, margin: isCenter ? "20px auto 0" : "20px 0 0" }}>

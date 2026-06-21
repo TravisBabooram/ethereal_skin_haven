@@ -93,7 +93,7 @@
 *, *::before, *::after { box-sizing: border-box; }
 
 html {
-  scroll-behavior: smooth;
+  scroll-behavior: auto; /* Lenis handles smooth scrolling */
   -webkit-tap-highlight-color: transparent;
   font-size: 16px; /* mobile base */
 }
@@ -558,4 +558,35 @@ a { transition: color 0.22s ease; }
   .gallery-masonry { columns: 1 !important; }
   .booking-slot-grid { grid-template-columns: repeat(2, 1fr) !important; }
   .hero-content { padding: 80px 12px 48px !important; }
+}
+
+/* ─── Animation Keyframes ────────────────────────────────── */
+@keyframes gold-sweep {
+  0%, 100% { background-position: 150% center; }
+  50%       { background-position: -50% center; }
+}
+.gold-shimmer-text {
+  background: linear-gradient(
+    90deg,
+    var(--gold-dark) 0%,
+    var(--gold-light) 35%,
+    #fffde7 50%,
+    var(--gold-light) 65%,
+    var(--gold-dark) 100%
+  );
+  background-size: 300% 100%;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation: gold-sweep 3.5s ease-in-out infinite;
+  animation-delay: 1s;
+}
+
+@keyframes curtain-pulse {
+  0%, 100% { opacity: 0.15; }
+  50%       { opacity: 0.25; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .gold-shimmer-text { animation: none; }
 }

@@ -29,6 +29,7 @@ export async function getDashboardStats() {
       }),
       prisma.bookingItem.groupBy({
         by: ["serviceId"],
+        where: { serviceId: { not: null } },
         _count: { serviceId: true },
         orderBy: { _count: { serviceId: "desc" } },
         take: 5,
@@ -37,7 +38,7 @@ export async function getDashboardStats() {
     ]);
 
   const serviceDetails = await prisma.service.findMany({
-    where: { id: { in: popularRaw.map((r) => r.serviceId) } },
+    where: { id: { in: popularRaw.map((r) => r.serviceId).filter((id): id is string => id !== null) } },
     select: { id: true, name: true, price: true },
   });
 
@@ -110,7 +111,15 @@ export async function getAllBookingsAdmin(opts: {
 export async function getAllUsersAdmin(page = 1, limit = 20) {
   const [users, total] = await Promise.all([
     prisma.user.findMany({
-      select: { id: true, name: true, email: true, phone: true, createdAt: true },
+      select: {
+        id: true,
+        name: true,
+        email: true,
+        phone: true,
+        isManualEntry: true,
+        createdAt: true,
+        _count: { select: { bookings: true } },
+      },
       orderBy: { createdAt: "desc" },
       skip: (page - 1) * limit,
       take: limit,

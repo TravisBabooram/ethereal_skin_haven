@@ -5,6 +5,9 @@ import { X, ZoomIn } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import AnimatedSection from "@/components/ui/AnimatedSection";
 import ComingSoon from "@/components/ui/ComingSoon";
+import CurtainReveal from "@/components/animations/CurtainReveal";
+import BeforeAfterSlider from "@/components/animations/BeforeAfterSlider";
+import SplitHeading from "@/components/animations/SplitHeading";
 
 interface GalleryImage { id: string; title: string; image: string; category?: string; }
 
@@ -57,6 +60,17 @@ export default function GalleryPage() {
   if (comingSoon) return <ComingSoon page="Gallery" />;
 
   const filtered = cat === "All" ? images : images.filter(img => img.category === cat);
+  const isBeforeAfter = cat === "Before & After";
+
+  // Pair before/after images: [0,1], [2,3], etc.
+  const pairs: [GalleryImage, GalleryImage][] = [];
+  const soloImages: GalleryImage[] = [];
+  if (isBeforeAfter) {
+    for (let i = 0; i < filtered.length; i += 2) {
+      if (filtered[i + 1]) pairs.push([filtered[i], filtered[i + 1]]);
+      else soloImages.push(filtered[i]);
+    }
+  }
 
   return (
     <>
@@ -65,9 +79,12 @@ export default function GalleryPage() {
         <div style={{ position: "absolute", inset: 0, background: "radial-gradient(ellipse 60% 40% at 50% 0%, rgba(201,169,110,0.04) 0%, transparent 60%)", pointerEvents: "none" }} />
         <AnimatedSection style={{ position: "relative", maxWidth: 600, margin: "0 auto", padding: "0 clamp(16px, 5vw, 32px)" }}>
           <p style={{ fontSize: 9, letterSpacing: "0.45em", color: "var(--gold)", textTransform: "uppercase", fontWeight: 600, marginBottom: 20 }}>Visual Diary</p>
-          <h1 style={{ fontFamily: "var(--font-cormorant, Georgia, serif)", fontSize: "clamp(38px, 6vw, 72px)", fontWeight: 300, color: "var(--text)", margin: "0 0 20px", lineHeight: 1.1 }}>
-            The Gallery
-          </h1>
+          <SplitHeading
+            text="The Gallery"
+            as="h1"
+            delay={0.1}
+            style={{ fontFamily: "var(--font-cormorant, Georgia, serif)", fontSize: "clamp(38px, 6vw, 72px)", fontWeight: 300, color: "var(--text)", margin: "0 0 20px", lineHeight: 1.1 }}
+          />
           <p style={{ fontSize: "clamp(13px, 1.8vw, 15px)", lineHeight: 1.75, color: "var(--text-muted)" }}>
             A curated window into transformations, rituals, and the art of exceptional skincare.
           </p>
@@ -103,23 +120,60 @@ export default function GalleryPage() {
                 {cat === "All" ? "No photos yet — check back soon." : `No photos in ${cat} yet.`}
               </p>
             </div>
+          ) : isBeforeAfter && pairs.length > 0 ? (
+            /* Before & After — slider grid */
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(min(100%, 420px), 1fr))", gap: "clamp(16px, 3vw, 28px)" }}>
+              {pairs.map(([before, after], i) => (
+                <AnimatedSection key={before.id} delay={i * 0.08}>
+                  <BeforeAfterSlider
+                    beforeSrc={before.image}
+                    afterSrc={after.image}
+                    beforeLabel={before.title || "Before"}
+                    afterLabel={after.title || "After"}
+                    alt={before.title}
+                    style={{ height: "clamp(240px, 40vw, 380px)" }}
+                  />
+                </AnimatedSection>
+              ))}
+              {/* Odd-one-out image shown normally */}
+              {soloImages.map((img, i) => (
+                <AnimatedSection key={img.id} delay={(pairs.length + i) * 0.08}>
+                  <CurtainReveal
+                    style={{ height: "clamp(240px, 40vw, 380px)", borderRadius: 8, cursor: "zoom-in" }}
+                    delay={(pairs.length + i) * 0.06}
+                  >
+                    <div onClick={() => setLightbox(img)} style={{ position: "absolute", inset: 0 }}>
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img src={img.image} alt={img.title} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+                    </div>
+                  </CurtainReveal>
+                </AnimatedSection>
+              ))}
+            </div>
           ) : (
+            /* Standard masonry grid with curtain reveals */
             <div className="gallery-masonry" style={{ columns: "3 260px", columnGap: "clamp(12px, 2vw, 20px)" }}>
               {filtered.map((img, i) => (
-                <AnimatedSection key={img.id} delay={i * 0.04} style={{ breakInside: "avoid", marginBottom: "clamp(12px, 2vw, 20px)", display: "block" }}>
-                  <div
+                <div key={img.id} style={{ breakInside: "avoid", marginBottom: "clamp(12px, 2vw, 20px)", display: "block" }}>
+                  <CurtainReveal
+                    delay={Math.min(i * 0.05, 0.4)}
+                    direction={i % 2 === 0 ? "right" : "left"}
+                    style={{ height: HEIGHTS[i % HEIGHTS.length], borderRadius: 6, cursor: "zoom-in" }}
                     className="card-base gallery-card"
-                    onClick={() => setLightbox(img)}
-                    style={{ height: HEIGHTS[i % HEIGHTS.length], borderRadius: 6, overflow: "hidden", cursor: "zoom-in", position: "relative", transition: "transform 0.35s ease, box-shadow 0.35s ease" }}
                   >
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img src={img.image} alt={img.title} style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover" }} />
-                    <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, padding: "14px 16px", background: "linear-gradient(180deg, transparent, rgba(0,0,0,0.72))", opacity: 0, transition: "opacity 0.3s" }} className="gallery-label">
-                      <p style={{ margin: 0, fontSize: 12, color: "#fff", letterSpacing: "0.05em" }}>{img.title}</p>
-                      {img.category && <p style={{ margin: "2px 0 0", fontSize: 9, color: "var(--gold)", letterSpacing: "0.25em", textTransform: "uppercase" }}>{img.category}</p>}
+                    <div
+                      onClick={() => setLightbox(img)}
+                      style={{ position: "absolute", inset: 0 }}
+                    >
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img src={img.image} alt={img.title} style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover" }} />
+                      <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, padding: "14px 16px", background: "linear-gradient(180deg, transparent, rgba(0,0,0,0.72))", opacity: 0, transition: "opacity 0.3s" }} className="gallery-label">
+                        <p style={{ margin: 0, fontSize: 12, color: "#fff", letterSpacing: "0.05em" }}>{img.title}</p>
+                        {img.category && <p style={{ margin: "2px 0 0", fontSize: 9, color: "var(--gold)", letterSpacing: "0.25em", textTransform: "uppercase" }}>{img.category}</p>}
+                      </div>
                     </div>
-                  </div>
-                </AnimatedSection>
+                  </CurtainReveal>
+                </div>
               ))}
             </div>
           )}

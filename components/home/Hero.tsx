@@ -6,6 +6,8 @@ import { motion } from "framer-motion";
 import { ArrowRight, ChevronDown } from "lucide-react";
 import { useTheme } from "@/components/providers/ThemeProvider";
 import HeroCanvas from "./HeroCanvas";
+import MagneticButton from "@/components/animations/MagneticButton";
+import GoldShimmer from "@/components/animations/GoldShimmer";
 
 const WORDS = ["Radiant", "Luminous", "Elevated", "Ethereal"];
 
@@ -163,9 +165,9 @@ export default function Hero() {
           style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 16, marginBottom: 36 }}
         >
           <span style={{ height: 1, width: 50, background: "linear-gradient(90deg, transparent, var(--gold))", display: "block" }} />
-          <span style={{ fontSize: 9, letterSpacing: "0.5em", color: "var(--gold)", textTransform: "uppercase", fontFamily: "var(--font-sans, system-ui)", fontWeight: 600 }}>
+          <GoldShimmer style={{ fontSize: 9, letterSpacing: "0.5em", textTransform: "uppercase", fontFamily: "var(--font-sans, system-ui)", fontWeight: 600 }}>
             Balisier Avenue, Couva · Trinidad
-          </span>
+          </GoldShimmer>
           <span style={{ height: 1, width: 50, background: "linear-gradient(90deg, var(--gold), transparent)", display: "block" }} />
         </motion.div>
 
@@ -233,37 +235,41 @@ export default function Hero() {
           transition={{ duration: 0.8, delay: 1.2 }}
           style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 20, flexWrap: "wrap" }}
         >
-          <Link
-            href="/booking"
-            style={{
-              display: "inline-flex", alignItems: "center", gap: 10,
-              padding: "16px 40px",
-              background: "linear-gradient(135deg, var(--gold-dark) 0%, var(--gold) 50%, var(--gold-dark) 100%)",
-              color: "#080808", textDecoration: "none",
-              fontSize: 11, letterSpacing: "0.25em", textTransform: "uppercase", fontWeight: 600,
-              borderRadius: 2, transition: "opacity 0.3s ease, transform 0.3s ease, box-shadow 0.3s ease",
-              boxShadow: "0 8px 32px rgba(201,169,110,0.3)",
-            }}
-            onMouseEnter={e => { const el = e.currentTarget; el.style.opacity = "0.88"; el.style.transform = "translateY(-2px)"; el.style.boxShadow = "0 16px 48px rgba(201,169,110,0.45)"; }}
-            onMouseLeave={e => { const el = e.currentTarget; el.style.opacity = "1"; el.style.transform = "none"; el.style.boxShadow = "0 8px 32px rgba(201,169,110,0.3)"; }}
-          >
-            Book Appointment <ArrowRight size={13} />
-          </Link>
-          <Link
-            href="/services"
-            style={{
-              display: "inline-flex", alignItems: "center", gap: 10,
-              padding: "15px 36px",
-              border: "1px solid var(--border-hover)",
-              color: "var(--text)", textDecoration: "none",
-              fontSize: 11, letterSpacing: "0.25em", textTransform: "uppercase", fontWeight: 500,
-              borderRadius: 2, transition: "border-color 0.3s ease, color 0.3s ease, background 0.3s ease",
-            }}
-            onMouseEnter={e => { const el = e.currentTarget; el.style.borderColor = "var(--gold)"; el.style.color = "var(--gold)"; el.style.background = "var(--gold-glow)"; }}
-            onMouseLeave={e => { const el = e.currentTarget; el.style.borderColor = "var(--border-hover)"; el.style.color = "var(--text)"; el.style.background = "transparent"; }}
-          >
-            Explore Services
-          </Link>
+          <MagneticButton>
+            <Link
+              href="/booking"
+              style={{
+                display: "inline-flex", alignItems: "center", gap: 10,
+                padding: "16px 40px",
+                background: "linear-gradient(135deg, var(--gold-dark) 0%, var(--gold) 50%, var(--gold-dark) 100%)",
+                color: "#080808", textDecoration: "none",
+                fontSize: 11, letterSpacing: "0.25em", textTransform: "uppercase", fontWeight: 600,
+                borderRadius: 2, transition: "opacity 0.3s ease, box-shadow 0.3s ease",
+                boxShadow: "0 8px 32px rgba(201,169,110,0.3)",
+              }}
+              onMouseEnter={e => { const el = e.currentTarget; el.style.opacity = "0.88"; el.style.boxShadow = "0 16px 48px rgba(201,169,110,0.45)"; }}
+              onMouseLeave={e => { const el = e.currentTarget; el.style.opacity = "1"; el.style.boxShadow = "0 8px 32px rgba(201,169,110,0.3)"; }}
+            >
+              Book Appointment <ArrowRight size={13} />
+            </Link>
+          </MagneticButton>
+          <MagneticButton>
+            <Link
+              href="/services"
+              style={{
+                display: "inline-flex", alignItems: "center", gap: 10,
+                padding: "15px 36px",
+                border: "1px solid var(--border-hover)",
+                color: "var(--text)", textDecoration: "none",
+                fontSize: 11, letterSpacing: "0.25em", textTransform: "uppercase", fontWeight: 500,
+                borderRadius: 2, transition: "border-color 0.3s ease, color 0.3s ease, background 0.3s ease",
+              }}
+              onMouseEnter={e => { const el = e.currentTarget; el.style.borderColor = "var(--gold)"; el.style.color = "var(--gold)"; el.style.background = "var(--gold-glow)"; }}
+              onMouseLeave={e => { const el = e.currentTarget; el.style.borderColor = "var(--border-hover)"; el.style.color = "var(--text)"; el.style.background = "transparent"; }}
+            >
+              Explore Services
+            </Link>
+          </MagneticButton>
         </motion.div>
       </div>
 

@@ -121,6 +121,25 @@ export interface CreateBookingInput {
   services: { serviceId: string; quantity: number }[];
 }
 
+export interface AdminServiceInput {
+  serviceId?: string;
+  customServiceName?: string;
+  customServicePrice?: number;
+  customServiceDuration?: number;
+  quantity: number;
+}
+
+export interface CreateAdminBookingInput {
+  userId?: string;
+  guestName?: string;
+  guestPhone?: string;
+  appointmentDate: string;
+  appointmentTime: string;
+  notes?: string;
+  paymentMethod: string;
+  services: AdminServiceInput[];
+}
+
 export async function createBooking(input: CreateBookingInput) {
   const { userId, appointmentDate, appointmentTime, notes, paymentMethod, services } = input;
 
@@ -169,6 +188,83 @@ export async function createBooking(input: CreateBookingInput) {
             price: svc.price * s.quantity,
           };
         }),
+      },
+    },
+    include: { bookingItems: { include: { service: true } } },
+  });
+}
+
+export async function createAdminBooking(input: CreateAdminBookingInput) {
+  const { userId, guestName, guestPhone, appointmentDate, appointmentTime, notes, paymentMethod, services } = input;
+
+  if (!userId && !guestName) {
+    throw new Error("Either a client or a guest name is required");
+  }
+
+  // Fetch catalog service records for items that reference an existing service
+  const catalogIds = services.filter((s) => s.serviceId).map((s) => s.serviceId!);
+  const catalogRecords = catalogIds.length
+    ? await prisma.service.findMany({ where: { id: { in: catalogIds } } })
+    : [];
+
+  // Build enriched item data
+  const itemData = services.map((s) => {
+    if (s.serviceId) {
+      const svc = catalogRecords.find((r) => r.id === s.serviceId);
+      if (!svc) throw new Error(`Service not found: ${s.serviceId}`);
+      return {
+        serviceId: s.serviceId as string,
+        customServiceName: null as string | null,
+        customServicePrice: null as number | null,
+        customServiceDuration: null as number | null,
+        price: svc.price * s.quantity,
+        duration: svc.duration,
+        quantity: s.quantity,
+      };
+    }
+    const price = s.customServicePrice ?? 0;
+    const duration = s.customServiceDuration ?? 60;
+    return {
+      serviceId: null as string | null,
+      customServiceName: (s.customServiceName ?? "Custom Service") as string | null,
+      customServicePrice: price as number | null,
+      customServiceDuration: duration as number | null,
+      price: price * s.quantity,
+      duration,
+      quantity: s.quantity,
+    };
+  });
+
+  const totalPrice = itemData.reduce((sum, s) => sum + s.price, 0);
+  const totalDuration = itemData.reduce((sum, s) => sum + s.duration * s.quantity, 0);
+
+  const date = new Date(appointmentDate);
+  const available = await isSlotAvailable(date, appointmentTime, totalDuration);
+  if (!available) {
+    throw new Error("This time slot is no longer available. Please choose another.");
+  }
+
+  return prisma.booking.create({
+    data: {
+      userId: userId ?? null,
+      guestName: guestName ?? null,
+      guestPhone: guestPhone ?? null,
+      appointmentDate: date,
+      appointmentTime,
+      notes,
+      paymentMethod,
+      totalPrice,
+      status: "Pending",
+      bookingItems: {
+        create: itemData.map((s) => ({
+          serviceId: s.serviceId,
+          customServiceName: s.customServiceName,
+          customServicePrice: s.customServicePrice,
+          customServiceDuration: s.customServiceDuration,
+          userId: userId ?? null,
+          quantity: s.quantity,
+          price: s.price,
+        })),
       },
     },
     include: { bookingItems: { include: { service: true } } },

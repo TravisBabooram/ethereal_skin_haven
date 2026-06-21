@@ -3,6 +3,8 @@ import { Cormorant_Garamond, Inter } from "next/font/google";
 import "@/src/app/globals.css";
 import ThemeProvider from "@/components/providers/ThemeProvider";
 import { AuthProvider } from "@/components/providers/AuthProvider";
+import LenisProvider from "@/components/animations/LenisProvider";
+import ScrollProgress from "@/components/animations/ScrollProgress";
 
 const cormorant = Cormorant_Garamond({
   variable: "--font-cormorant",
@@ -84,7 +86,14 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         />
       </head>
       <body>
-        <ThemeProvider><AuthProvider>{children}</AuthProvider></ThemeProvider>
+        <ThemeProvider>
+          <AuthProvider>
+            <LenisProvider>
+              <ScrollProgress />
+              {children}
+            </LenisProvider>
+          </AuthProvider>
+        </ThemeProvider>
       </body>
     </html>
   );

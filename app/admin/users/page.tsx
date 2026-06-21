@@ -1,18 +1,19 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Loader2, Search, User, X, Mail, Phone, Calendar, ShoppingBag, DollarSign, Clock, Trash2 } from "lucide-react";
+import { Loader2, Search, User, X, Mail, Phone, Calendar, ShoppingBag, DollarSign, Clock, Trash2, Plus, UserPlus } from "lucide-react";
 
 interface UserRecord {
   id: string;
   name: string;
   email: string;
   phone?: string;
+  isManualEntry?: boolean;
   createdAt: string;
   _count?: { bookings: number };
 }
 
-interface BookingItem { service?: { name: string; duration: number }; quantity: number; price: number; }
+interface BookingItem { service?: { name: string; duration: number } | null; customServiceName?: string | null; quantity: number; price: number; }
 interface Booking {
   id: string;
   appointmentDate: string;
@@ -35,6 +36,9 @@ const STATUS_COLOR: Record<string, string> = {
   Pending: "#C9A96E", Confirmed: "#4caf50", Completed: "#9A8878", Cancelled: "#e05555",
 };
 
+const inputStyle = { padding: "10px 12px", background: "var(--bg-elevated)", border: "1px solid var(--border)", borderRadius: 4, color: "var(--text)", fontSize: 13, outline: "none", width: "100%", boxSizing: "border-box" as const };
+const labelStyle = { fontSize: 9, letterSpacing: "0.2em", color: "var(--gold)", textTransform: "uppercase" as const, fontWeight: 600 };
+
 export default function AdminUsersPage() {
   const [users, setUsers] = useState<UserRecord[]>([]);
   const [loading, setLoading] = useState(true);
@@ -42,6 +46,12 @@ export default function AdminUsersPage() {
   const [selected, setSelected] = useState<UserDetail | null>(null);
   const [detailLoading, setDetailLoading] = useState(false);
   const [deleting, setDeleting] = useState(false);
+
+  // Add client modal
+  const [addOpen, setAddOpen] = useState(false);
+  const [addForm, setAddForm] = useState({ name: "", phone: "" });
+  const [addSaving, setAddSaving] = useState(false);
+  const [addError, setAddError] = useState("");
 
   const fetchUsers = () => {
     setLoading(true);
@@ -72,20 +82,53 @@ export default function AdminUsersPage() {
     fetchUsers();
   };
 
+  const handleAddClient = async () => {
+    if (!addForm.name.trim()) { setAddError("Name is required"); return; }
+    setAddSaving(true);
+    setAddError("");
+    const res = await fetch("/api/admin/users", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      credentials: "include",
+      body: JSON.stringify({ name: addForm.name.trim(), phone: addForm.phone.trim() || undefined }),
+    });
+    setAddSaving(false);
+    if (res.ok) {
+      setAddOpen(false);
+      setAddForm({ name: "", phone: "" });
+      fetchUsers();
+    } else {
+      const d = await res.json().catch(() => ({}));
+      setAddError(d.error ?? "Something went wrong");
+    }
+  };
+
   const filtered = users.filter(u =>
     search === "" ||
     u.name?.toLowerCase().includes(search.toLowerCase()) ||
-    u.email?.toLowerCase().includes(search.toLowerCase()) ||
+    (!u.isManualEntry && u.email?.toLowerCase().includes(search.toLowerCase())) ||
     u.phone?.includes(search)
   );
+
+  function serviceLabel(item: BookingItem) {
+    return item.customServiceName ?? item.service?.name ?? "Treatment";
+  }
 
   return (
     <div style={{ display: "flex", gap: 24, alignItems: "flex-start" }}>
       {/* Main table */}
       <div style={{ flex: 1, minWidth: 0 }}>
         <div style={{ marginBottom: 32 }}>
-          <p style={{ fontSize: 9, letterSpacing: "0.35em", color: "var(--gold)", textTransform: "uppercase", fontWeight: 600, marginBottom: 6 }}>Manage</p>
-          <h1 style={{ fontFamily: "var(--font-cormorant, Georgia, serif)", fontSize: 38, fontWeight: 300, color: "var(--text)", margin: "0 0 24px" }}>Clients</h1>
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end", marginBottom: 24 }}>
+            <div>
+              <p style={{ fontSize: 9, letterSpacing: "0.35em", color: "var(--gold)", textTransform: "uppercase", fontWeight: 600, marginBottom: 6 }}>Manage</p>
+              <h1 style={{ fontFamily: "var(--font-cormorant, Georgia, serif)", fontSize: 38, fontWeight: 300, color: "var(--text)", margin: 0 }}>Clients</h1>
+            </div>
+            <button onClick={() => { setAddForm({ name: "", phone: "" }); setAddError(""); setAddOpen(true); }}
+              style={{ display: "flex", alignItems: "center", gap: 8, padding: "11px 22px", background: "linear-gradient(135deg, var(--gold-dark), var(--gold))", color: "#080808", border: "none", borderRadius: 2, fontSize: 10, letterSpacing: "0.2em", textTransform: "uppercase", fontWeight: 600, cursor: "pointer" }}>
+              <UserPlus size={13} /> Add Client
+            </button>
+          </div>
           <div style={{ position: "relative", maxWidth: 340 }}>
             <Search size={14} style={{ position: "absolute", left: 12, top: "50%", transform: "translateY(-50%)", color: "var(--text-subtle)" }} />
             <input value={search} onChange={e => setSearch(e.target.value)} placeholder="Search by name, email, phone…"
@@ -108,7 +151,7 @@ export default function AdminUsersPage() {
               <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 13 }}>
                 <thead>
                   <tr style={{ borderBottom: "1px solid var(--border)" }}>
-                    {["Client", "Email", "Phone", "Bookings", "Joined"].map(h => (
+                    {["Client", "Email / Type", "Phone", "Bookings", "Joined"].map(h => (
                       <th key={h} style={{ padding: "12px 16px", textAlign: "left", fontSize: 9, letterSpacing: "0.18em", color: "var(--text-subtle)", textTransform: "uppercase", fontWeight: 600 }}>{h}</th>
                     ))}
                   </tr>
@@ -128,7 +171,11 @@ export default function AdminUsersPage() {
                           <span style={{ color: "var(--text)", fontWeight: 500 }}>{u.name}</span>
                         </div>
                       </td>
-                      <td style={{ padding: "14px 16px", color: "var(--text-muted)" }}>{u.email}</td>
+                      <td style={{ padding: "14px 16px", color: "var(--text-muted)" }}>
+                        {u.isManualEntry ? (
+                          <span style={{ fontSize: 9, letterSpacing: "0.12em", textTransform: "uppercase", color: "var(--text-subtle)", background: "var(--bg-elevated)", border: "1px solid var(--border)", borderRadius: 2, padding: "2px 6px" }}>Manual Entry</span>
+                        ) : u.email}
+                      </td>
                       <td style={{ padding: "14px 16px", color: "var(--text-muted)" }}>{u.phone || "—"}</td>
                       <td style={{ padding: "14px 16px", color: "var(--text-muted)" }}>{u._count?.bookings ?? 0}</td>
                       <td style={{ padding: "14px 16px", color: "var(--text-subtle)", fontSize: 12 }}>
@@ -161,8 +208,15 @@ export default function AdminUsersPage() {
                     <User size={18} style={{ color: "var(--gold)" }} />
                   </div>
                   <div>
-                    <p style={{ fontFamily: "var(--font-cormorant, Georgia, serif)", fontSize: 18, color: "var(--text)", margin: "0 0 2px", fontWeight: 500 }}>{selected.name}</p>
-                    <p style={{ fontSize: 10, color: "var(--text-subtle)", margin: 0, letterSpacing: "0.05em" }}>Client since {new Date(selected.createdAt).toLocaleDateString("en-US", { month: "long", year: "numeric" })}</p>
+                    <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                      <p style={{ fontFamily: "var(--font-cormorant, Georgia, serif)", fontSize: 18, color: "var(--text)", margin: "0 0 2px", fontWeight: 500 }}>{selected.name}</p>
+                      {selected.isManualEntry && (
+                        <span style={{ fontSize: 9, letterSpacing: "0.1em", textTransform: "uppercase", color: "var(--text-subtle)", background: "var(--bg-elevated)", border: "1px solid var(--border)", borderRadius: 2, padding: "2px 5px" }}>Manual</span>
+                      )}
+                    </div>
+                    <p style={{ fontSize: 10, color: "var(--text-subtle)", margin: 0, letterSpacing: "0.05em" }}>
+                      {selected.isManualEntry ? "Manually added" : "Client since"} {new Date(selected.createdAt).toLocaleDateString("en-US", { month: "long", year: "numeric" })}
+                    </p>
                   </div>
                 </div>
                 <button onClick={() => setSelected(null)} style={{ background: "none", border: "none", cursor: "pointer", color: "var(--text-muted)", padding: 4 }}>
@@ -173,10 +227,12 @@ export default function AdminUsersPage() {
               <div style={{ padding: "20px 24px", maxHeight: "calc(100vh - 200px)", overflowY: "auto" }}>
                 {/* Contact info */}
                 <div style={{ display: "flex", flexDirection: "column", gap: 10, marginBottom: 24 }}>
-                  <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-                    <Mail size={13} style={{ color: "var(--text-subtle)", flexShrink: 0 }} />
-                    <span style={{ fontSize: 13, color: "var(--text-muted)" }}>{selected.email}</span>
-                  </div>
+                  {!selected.isManualEntry && (
+                    <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                      <Mail size={13} style={{ color: "var(--text-subtle)", flexShrink: 0 }} />
+                      <span style={{ fontSize: 13, color: "var(--text-muted)" }}>{selected.email}</span>
+                    </div>
+                  )}
                   <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
                     <Phone size={13} style={{ color: "var(--text-subtle)", flexShrink: 0 }} />
                     <span style={{ fontSize: 13, color: "var(--text-muted)" }}>{selected.phone || "No phone on file"}</span>
@@ -210,7 +266,7 @@ export default function AdminUsersPage() {
                           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 6 }}>
                             <div>
                               <p style={{ fontSize: 12, color: "var(--text)", margin: "0 0 2px", fontWeight: 500 }}>
-                                {b.bookingItems.map(i => i.service?.name).filter(Boolean).join(", ") || "Treatment"}
+                                {b.bookingItems.map(i => serviceLabel(i)).filter(Boolean).join(", ") || "Treatment"}
                               </p>
                               <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
                                 <Calendar size={10} style={{ color: "var(--text-subtle)" }} />
@@ -254,12 +310,64 @@ export default function AdminUsersPage() {
                   <button onClick={() => handleDelete(selected.id, selected.name)} disabled={deleting}
                     style={{ width: "100%", padding: "10px", background: "rgba(224,85,85,0.07)", border: "1px solid rgba(224,85,85,0.25)", borderRadius: 4, color: "#e05555", fontSize: 11, letterSpacing: "0.15em", textTransform: "uppercase", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", gap: 7, fontWeight: 600 }}>
                     {deleting ? <Loader2 size={12} style={{ animation: "spin 1s linear infinite" }} /> : <Trash2 size={12} />}
-                    {deleting ? "Deleting…" : "Delete Client Account"}
+                    {deleting ? "Deleting…" : "Delete Client"}
                   </button>
                 </div>
               </div>
             </>
           )}
+        </div>
+      )}
+
+      {/* Add Client modal */}
+      {addOpen && (
+        <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.7)", zIndex: 100, display: "flex", alignItems: "center", justifyContent: "center", padding: 24 }}>
+          <div style={{ background: "var(--bg-card)", border: "1px solid var(--border)", borderRadius: 8, padding: "36px", width: "100%", maxWidth: 420, position: "relative" }}>
+            <button onClick={() => setAddOpen(false)} style={{ position: "absolute", top: 16, right: 16, background: "none", border: "none", cursor: "pointer", color: "var(--text-muted)", padding: 4 }}>
+              <X size={18} />
+            </button>
+            <h2 style={{ fontFamily: "var(--font-cormorant, Georgia, serif)", fontSize: 26, fontWeight: 400, color: "var(--text)", margin: "0 0 4px" }}>Add Client</h2>
+            <p style={{ fontSize: 12, color: "var(--text-muted)", margin: "0 0 24px" }}>Manually add a client to your records</p>
+
+            <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
+              <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+                <label style={labelStyle}>Name *</label>
+                <input
+                  placeholder="Full name"
+                  value={addForm.name}
+                  onChange={e => setAddForm(p => ({ ...p, name: e.target.value }))}
+                  style={inputStyle}
+                  autoFocus
+                />
+              </div>
+              <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+                <label style={labelStyle}>Phone Number</label>
+                <input
+                  placeholder="+1 (868) 000-0000"
+                  value={addForm.phone}
+                  onChange={e => setAddForm(p => ({ ...p, phone: e.target.value }))}
+                  style={inputStyle}
+                />
+              </div>
+              {addError && (
+                <p style={{ fontSize: 12, color: "#e05555", margin: 0 }}>{addError}</p>
+              )}
+              <p style={{ fontSize: 10, color: "var(--text-subtle)", margin: 0, lineHeight: 1.6 }}>
+                This client will be added to your records and can be selected when creating bookings. They will not receive a login account.
+              </p>
+            </div>
+
+            <div style={{ display: "flex", gap: 10, marginTop: 28, justifyContent: "flex-end" }}>
+              <button onClick={() => setAddOpen(false)}
+                style={{ padding: "10px 20px", background: "none", border: "1px solid var(--border)", borderRadius: 2, color: "var(--text-muted)", fontSize: 11, letterSpacing: "0.15em", textTransform: "uppercase", cursor: "pointer" }}>
+                Cancel
+              </button>
+              <button onClick={handleAddClient} disabled={addSaving || !addForm.name.trim()}
+                style={{ padding: "10px 24px", background: "linear-gradient(135deg, var(--gold-dark), var(--gold))", border: "none", borderRadius: 2, color: "#080808", fontSize: 11, letterSpacing: "0.15em", textTransform: "uppercase", fontWeight: 600, cursor: !addForm.name.trim() ? "not-allowed" : "pointer", opacity: !addForm.name.trim() ? 0.5 : 1 }}>
+                {addSaving ? "Saving…" : "Add Client"}
+              </button>
+            </div>
+          </div>
         </div>
       )}
 
