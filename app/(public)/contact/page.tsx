@@ -86,7 +86,7 @@ export default function ContactPage() {
 
       <section className="section-pad" style={{ background: "var(--bg)" }}>
         <div style={{ maxWidth: 1100, margin: "0 auto", padding: "0 clamp(16px, 5vw, 32px)" }}>
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 64, alignItems: "start" }} className="contact-grid">
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "clamp(32px, 5vw, 64px)", alignItems: "start" }} className="contact-grid">
 
             {/* Contact info */}
             <AnimatedSection direction="left">

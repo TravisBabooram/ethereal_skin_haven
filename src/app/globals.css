@@ -590,3 +590,89 @@ a { transition: color 0.22s ease; }
 @media (prefers-reduced-motion: reduce) {
   .gold-shimmer-text { animation: none; }
 }
+
+/* ─── Mobile polish ──────────────────────────────────────── */
+
+/* Prevent any element from causing horizontal overflow */
+*, *::before, *::after { box-sizing: border-box; }
+body { overflow-x: hidden; }
+
+/* Booking calendar grid — tighter on small screens */
+@media (max-width: 480px) {
+  .booking-calendar-grid { gap: 2px !important; }
+  .booking-calendar-day  { font-size: 11px !important; min-height: 36px !important; }
+  .booking-step-label    { display: none !important; }
+  .booking-slot-grid     { grid-template-columns: repeat(3, 1fr) !important; gap: 8px !important; }
+}
+@media (max-width: 360px) {
+  .booking-slot-grid { grid-template-columns: repeat(2, 1fr) !important; }
+}
+
+/* Featured cards — ensure single column below 480px */
+@media (max-width: 480px) {
+  .featured-grid { grid-template-columns: 1fr !important; }
+}
+
+/* Contact info items — stack icon + text on very small screens */
+@media (max-width: 400px) {
+  .contact-info-item { flex-direction: column !important; gap: 12px !important; }
+  .contact-icon-wrap { align-self: flex-start !important; }
+}
+
+/* Admin / dashboard sidebar — safe area on notched phones */
+@media (max-width: 900px) {
+  .admin-topbar, .dashboard-topbar {
+    padding-left: max(16px, env(safe-area-inset-left)) !important;
+    padding-right: max(16px, env(safe-area-inset-right)) !important;
+  }
+}
+
+/* Drawer nav — bump font down on very small screens */
+@media (max-width: 360px) {
+  .nav-drawer-link { font-size: 22px !important; }
+}
+
+/* Hero CTA buttons — full width on phones */
+@media (max-width: 480px) {
+  .hero-cta-wrap { flex-direction: column !important; align-items: stretch !important; }
+  .hero-cta-wrap a, .hero-cta-wrap button { justify-content: center !important; width: 100% !important; }
+}
+
+/* Gallery masonry — always fills container */
+@media (max-width: 600px) {
+  .gallery-masonry { columns: 2 !important; column-gap: 10px !important; }
+}
+@media (max-width: 360px) {
+  .gallery-masonry { columns: 1 !important; }
+}
+
+/* Testimonial quote — smaller on phones */
+@media (max-width: 480px) {
+  .testimonial-quote { font-size: 17px !important; }
+}
+
+/* Cards — reduce padding on phones */
+@media (max-width: 480px) {
+  .card-base { padding: clamp(16px, 4vw, 24px) !important; }
+}
+
+/* Filter bar buttons — bigger tap target on mobile */
+@media (max-width: 767px) {
+  .filter-scroll button { padding: 16px clamp(10px, 2.5vw, 16px) !important; min-height: 44px; }
+}
+
+/* Section padding — narrower horizontal breathing room on phones */
+@media (max-width: 480px) {
+  .page-hero > * { padding-left: clamp(16px, 5vw, 24px) !important; padding-right: clamp(16px, 5vw, 24px) !important; }
+}
+
+/* Dashboard / admin page padding on mobile */
+@media (max-width: 480px) {
+  .admin-page-pad, .dashboard-page-pad { padding: 16px !important; }
+}
+
+/* Tables inside admin — horizontal scroll container */
+.table-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+@media (max-width: 767px) {
+  .table-scroll table { min-width: 560px; }
+}

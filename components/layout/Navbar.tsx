@@ -88,13 +88,13 @@ export default function Navbar() {
           boxShadow: scrolled ? "0 4px 30px rgba(0,0,0,0.3)" : "none",
         }}
       >
-        <div style={{ maxWidth: 1280, margin: "0 auto", padding: "0 32px", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+        <div style={{ maxWidth: 1280, margin: "0 auto", padding: "0 clamp(16px, 5vw, 32px)", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
 
           {/* Left: Logo + Account dropdown */}
           <div style={{ display: "flex", alignItems: "center", gap: 20 }}>
             <Link href="/" style={{ textDecoration: "none", display: "inline-flex" }}>
-              <div className="logo-wrap" style={{ width: 60, height: 60 }}>
-                <Image src="/logo.png" alt="Ethereal Skin Haven" width={60} height={60} priority style={{ display: "block" }} />
+              <div className="logo-wrap" style={{ width: "clamp(44px, 8vw, 60px)", height: "clamp(44px, 8vw, 60px)" }}>
+                <Image src="/logo.png" alt="Ethereal Skin Haven" width={60} height={60} priority style={{ display: "block", width: "100%", height: "100%" }} />
               </div>
             </Link>
 
@@ -334,7 +334,7 @@ export default function Navbar() {
             <button
               onClick={toggleTheme}
               aria-label="Toggle theme"
-              style={{ width: 32, height: 32, display: "flex", alignItems: "center", justifyContent: "center", background: "none", border: "none", cursor: "pointer", color: "var(--text-muted)", transition: "color 0.2s ease" }}
+              style={{ width: 44, height: 44, display: "flex", alignItems: "center", justifyContent: "center", background: "none", border: "none", cursor: "pointer", color: "var(--text-muted)", transition: "color 0.2s ease" }}
               onMouseEnter={e => (e.currentTarget.style.color = "var(--gold)")}
               onMouseLeave={e => (e.currentTarget.style.color = "var(--text-muted)")}
             >
@@ -348,7 +348,7 @@ export default function Navbar() {
             <button
               onClick={() => setOpen(o => !o)}
               aria-label="Toggle menu"
-              style={{ width: 32, height: 32, display: "none", alignItems: "center", justifyContent: "center", background: "none", border: "none", cursor: "pointer", color: "var(--text-muted)" }}
+              style={{ width: 44, height: 44, display: "none", alignItems: "center", justifyContent: "center", background: "none", border: "none", cursor: "pointer", color: "var(--text-muted)" }}
               className="nav-menu-btn"
             >
               {open ? <X size={18} /> : <Menu size={18} />}

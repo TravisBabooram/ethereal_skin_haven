@@ -86,7 +86,7 @@ export default function Testimonials() {
     <section className="section-pad" style={{ background: "var(--bg)", position: "relative", overflow: "hidden" }}>
       <div style={{ position: "absolute", inset: 0, background: "radial-gradient(ellipse 60% 60% at 50% 100%, rgba(201,169,110,0.04) 0%, transparent 70%)", pointerEvents: "none" }} />
 
-      <div style={{ maxWidth: 900, margin: "0 auto", padding: "0 32px", position: "relative" }}>
+      <div style={{ maxWidth: 900, margin: "0 auto", padding: "0 clamp(16px, 5vw, 32px)", position: "relative" }}>
         <SectionHeader eyebrow="Client Reviews" title="Real Words from Real Clients" />
 
         <div style={{ position: "relative", minHeight: 300 }}>
@@ -173,7 +173,7 @@ export default function Testimonials() {
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.95, y: 20 }}
               transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
-              style={{ background: "var(--bg-card)", border: "1px solid var(--border)", borderRadius: 8, padding: "40px", maxWidth: 480, width: "100%", position: "relative" }}
+              style={{ background: "var(--bg-card)", border: "1px solid var(--border)", borderRadius: 8, padding: "clamp(24px, 6vw, 40px)", maxWidth: 480, width: "100%", position: "relative" }}
             >
               <div style={{ position: "absolute", top: 0, left: 40, right: 40, height: 1, background: "linear-gradient(90deg, transparent, var(--gold), transparent)" }} />
               <button onClick={() => setShowForm(false)} style={{ position: "absolute", top: 16, right: 16, background: "none", border: "none", cursor: "pointer", color: "var(--text-subtle)", display: "flex" }}>

@@ -32,10 +32,10 @@ export default function FeaturedProducts() {
 
   return (
     <section className="section-pad" style={{ background: "var(--bg-elevated)" }}>
-      <div style={{ maxWidth: 1280, margin: "0 auto", padding: "0 32px" }}>
+      <div style={{ maxWidth: 1280, margin: "0 auto", padding: "0 clamp(16px, 5vw, 32px)" }}>
         <SectionHeader eyebrow="Curated for You" title="Professional Products, Available for You" subtitle="We use and retail only the best — professionally vetted formulas chosen to extend your results beyond the treatment room." />
 
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(340px, 1fr))", gap: 24, maxWidth: 800, margin: "0 auto" }}>
+        <div className="featured-grid" style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(min(300px, 100%), 1fr))", gap: "clamp(16px, 3vw, 24px)", maxWidth: 800, margin: "0 auto" }}>
           {loading
             ? Array.from({ length: 2 }).map((_, i) => (
               <div key={i} style={{ background: "var(--bg-card)", border: "1px solid var(--border)", borderRadius: 6, overflow: "hidden", animation: "pulse 1.5s ease-in-out infinite" }}>
@@ -62,7 +62,7 @@ export default function FeaturedProducts() {
                       {p.category}
                     </span>
                   </div>
-                  <div style={{ padding: "28px 28px 32px", flex: 1, display: "flex", flexDirection: "column" }}>
+                  <div style={{ padding: "clamp(16px, 4vw, 28px) clamp(16px, 4vw, 28px) clamp(20px, 4vw, 32px)", flex: 1, display: "flex", flexDirection: "column" }}>
                     <h3 style={{ fontFamily: "var(--font-cormorant, Georgia, serif)", fontSize: 21, fontWeight: 400, color: "var(--text)", margin: "0 0 12px", lineHeight: 1.3 }}>{p.name}</h3>
                     <p style={{ fontSize: 13.5, lineHeight: 1.75, color: "var(--text-muted)", margin: "0 0 24px", flex: 1 }}>{p.description}</p>
                     <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", borderTop: "1px solid var(--border)", paddingTop: 18 }}>
